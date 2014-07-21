@@ -1,0 +1,13 @@
+Description: Tutorial table
+Created: 2014-07-18 20:46:01.205278 UTC
+Depends:
+Apply:
+  CREATE TABLE tutorial (
+    id serial PRIMARY KEY,
+    title varchar(255) NOT NULL,
+    x integer NOT NULL,
+    y integer NOT NULL
+  );
+
+Revert:
+  DROP TABLE tutorial;

@@ -4,6 +4,7 @@
 
 module Application where
 
+import Data.Monoid (Monoid, mappend)
 import Control.Lens
 import "mtl" Control.Monad.State (get)
 import Control.Monad.Trans (liftIO)
@@ -47,3 +48,6 @@ runRedis :: Redis a -> AppHandler a
 runRedis = runRedisDB redis
 
 type AppHandler = Handler App App
+
+(++) :: Monoid d => d -> d -> d
+(++) = mappend
