@@ -1,8 +1,5 @@
-*~
 dist/
 log/
-*#
-.#*
 prod.cfg
 site_key.txt
 cabal.sandbox*

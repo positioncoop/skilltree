@@ -1,7 +1,7 @@
 EXECUTABLE=$(BINDIR)/skilltree
 DEPS=
 TESTMAIN=src/Test/Main.hs
-INSTALLFLAGS=-j -fdevelopment
+INSTALLFLAGS=-j -fdevelopment --reorder-goals
 MOODEVEL=-c devel.cfg
 MOOTEST=-c test.cfg
 

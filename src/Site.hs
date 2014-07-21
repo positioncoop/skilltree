@@ -14,6 +14,7 @@ import           Snap.Snaplet
 import           Snap.Snaplet.Heist
 import           Snap.Snaplet.Session.Backends.CookieSession
 import           Snap.Snaplet.PostgresqlSimple
+import           Snap.Snaplet.Persistent
 import           Snap.Snaplet.RedisDB
 import           Snap.Util.FileServe
 import           Heist
@@ -44,12 +45,13 @@ app = makeSnaplet "app" "" Nothing $ do
     absPath <- liftIO (C.lookupDefault "" conf "absolutePath")
     s <- nestSnaplet "sess" sess $
            initCookieSessionManager (absPath ++ "site_key.txt") "sess" Nothing
+    p <- nestSnaplet "persistent" persistent $ initPersist (return ())
     d <- nestSnaplet "db" db pgsInit
     r <- nestSnaplet "redis" redis redisDBInitConf
     ns <- liftIO $ makeResolvSeed defaultResolvConf
     e <- getEnvironment
     addRoutes routes
-    return $ App h s d r ns url (T.pack e)
+    return $ App h s p d r ns url (T.pack e)
 
 prefixUrlSplice :: I.Splice AppHandler
 prefixUrlSplice = do node <- getParamNode
