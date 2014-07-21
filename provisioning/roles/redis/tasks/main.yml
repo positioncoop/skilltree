@@ -1,0 +1,6 @@
+---
+
+- name: install redis
+  sudo: yes
+  apt:  "pkg={{ item }} update_cache=yes"
+  with_items: redis_packages

@@ -1,0 +1,14 @@
+*~
+dist/
+log/
+*#
+.#*
+prod.cfg
+site_key.txt
+cabal.sandbox*
+.cabal-sandbox/
+.dir-locals.el
+*.o
+*.hi
+TAGS
+.vagrant

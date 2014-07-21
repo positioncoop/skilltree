@@ -1,0 +1,12 @@
+---
+- hosts: skilltree
+  gather_facts: yes
+
+  sudo: no
+
+  roles:
+    - ghc
+    - cabal
+    - postgresql
+    - redis
+    - development

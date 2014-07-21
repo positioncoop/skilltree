@@ -1,0 +1,6 @@
+---
+
+- name: install postgresql
+  sudo: yes
+  apt:  "pkg={{ item }} update_cache=yes"
+  with_items: postgresql_packages

@@ -1,0 +1,14 @@
+exec: ../skilltree
+args:
+    - -e
+    - prod
+host: 
+static-hosts:
+    - host: static.
+      root: ../static
+postgres: false
+redirects:
+    - from: beta.
+      to: 
+    - from: www.
+      to: 

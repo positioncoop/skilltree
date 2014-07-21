@@ -1,0 +1,13 @@
+---
+# file: dependency.yml
+- name: install packages
+  sudo: yes
+  apt:  "pkg={{ item }} update_cache=yes"
+  with_items: ghc_dependencies
+
+
+- name: make symlink of libraries
+  sudo: yes
+  file: "src={{ item.src }} dest={{ item.dest }} state=link"
+  with_items: ghc_symlinks
+  when: ghc_symlinks is defined
