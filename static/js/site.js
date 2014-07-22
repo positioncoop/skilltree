@@ -7,14 +7,16 @@ $(function() {
       .attr("class", "tutorial")
       .attr("xlink:href", function(d) {return "/img/images.jpeg";})
       .attr("width",60).attr("height",60)
-      .attr("x", function(d) {return d.x;})
-      .attr("y", function(d) {return d.y;});
+      .attr("x", function(d) {return d.x * 100;})
+      .attr("y", function(d) {return d.y * 50;});
   });
 
   d3.select("svg")
     .on("click", function() {
       var click = d3.mouse(this);
-      $.post("/tutorials", {"new.x": click[0] - 30, "new.y": click[1] - 30, "new.title": "nope"}, function() {
+      var x = Math.floor(click[0]/100);
+      var y = Math.floor(click[1]/50);
+      $.post("/tutorials", {"new.x": x , "new.y": y, "new.title": "nope"}, function() {
 	window.location.reload();
       });
   });
