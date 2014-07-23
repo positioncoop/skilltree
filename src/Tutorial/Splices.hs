@@ -15,23 +15,19 @@ import Tutorial.Types
 import Helpers
 import Application
 
-tutorialEditPath :: Key Tutorial -> Text
+tutorialEditPath :: Int -> Text
 tutorialEditPath tutorialId = (tutorialPath tutorialId) ++ "/edit"
 
-tutorialPath :: Key Tutorial -> Text
-tutorialPath tutorialId = "/tutorials/" ++ (P.showKey tutorialId)
+tutorialPath :: Int -> Text
+tutorialPath tutorialId = "/tutorials/" ++ (tshow tutorialId)
 
-tutorialsSplice :: [TutorialEntity] -> Splices (Splice AppHandler)
-tutorialsSplice tutorials = "tutorials" ## mapSplices (runChildrenWith . tutorialEntitySplice) tutorials
+tutorialsSplice :: [Tutorial] -> Splices (Splice AppHandler)
+tutorialsSplice tutorials = "tutorials" ## mapSplices (runChildrenWith . tutorialSplice) tutorials
 
 tutorialSplice :: Tutorial -> Splices (Splice AppHandler)
-tutorialSplice (Tutorial _x _y _title) = do
+tutorialSplice (Tutorial' _id _x _y _title) = do
+  "editLink" ## textSplice $ tutorialEditPath _id
+  "tutorialLink" ## textSplice $ tutorialPath _id
   "tutorialTitle" ## textSplice _title
   "tutorialX" ## textSplice $ tshow _x
   "tutorialY" ## textSplice $ tshow _y
-
-tutorialEntitySplice :: TutorialEntity -> Splices (Splice AppHandler)
-tutorialEntitySplice (Entity _id _tutorial) = do
-  "editLink" ## textSplice $ tutorialEditPath _id
-  "tutorialLink" ## textSplice $ tutorialPath _id
-  tutorialSplice _tutorial

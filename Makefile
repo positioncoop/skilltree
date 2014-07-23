@@ -1,6 +1,6 @@
 EXECUTABLE=$(BINDIR)/skilltree
-DEPS=positioncoop/restful-snap
-TESTMAIN=src/Testj.hs
+DEPS=positioncoop/restful-snap dbp/karamaan-opaleye karamaan/karamaan-plankton karamaan/product-profunctors
+TESTMAIN=src/Test.hs
 INSTALLFLAGS=-j -fdevelopment --reorder-goals
 MOODEVEL=-c devel.cfg
 MOOTEST=-c test.cfg
@@ -15,6 +15,8 @@ SHELL=/bin/bash
 
 .PHONY: all install clean superclean test init deps sandbox tags confirm \
 	dbup dbtest dbnew dbrevert
+
+
 
 all: init install test tags
 

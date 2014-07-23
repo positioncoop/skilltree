@@ -14,10 +14,11 @@ import Forms
 import Tutorial.Types
 import Application
 
-form :: Maybe Tutorial -> Form Text AppHandler Tutorial
+form :: Maybe Tutorial -> Form Text AppHandler NewTutorial
 form mTutorial = checkM "Tutorial overlaps with existing tutorial" overlapping $
-  Tutorial <$> "x" .: stringRead "Must be a number" (tutorialX <$> mTutorial)
-           <*> "y" .: stringRead "Must be a number" (tutorialY <$> mTutorial)
-           <*> "title" .: text (tutorialTitle <$> mTutorial)
- where overlapping (Tutorial x y _) = do result <- runPersist (selectList [TutorialX ==. x, TutorialY ==. y] [LimitTo 1])
-                                         return (result == [])
+  Tutorial' <$> pure Nothing
+            <*> "x" .: stringRead "Must be a number" (tutorialX <$> mTutorial)
+            <*> "y" .: stringRead "Must be a number" (tutorialY <$> mTutorial)
+            <*> "title" .: text (tutorialTitle <$> mTutorial)
+ where overlapping (Tutorial' _ x y _) =
+         null <$> (runO (tutorialsAtCoords x y) :: AppHandler [Tutorial])

@@ -3,6 +3,8 @@
 module Tutorial.Handlers where
 
 import Prelude hiding ((++))
+import Control.Applicative hiding (Const)
+import Data.Maybe
 import Data.ByteString (ByteString)
 import qualified Data.Text.Encoding as T
 import Data.Aeson
@@ -40,11 +42,11 @@ home = redirect $ T.encodeUtf8 $ rRoot resource
 
 tutorialsHandler :: ByteString -> AppHandler ()
 tutorialsHandler template =  do
-  tutorials <- runPersist $ selectList [] []
+  tutorials <- runO allTutorials
   renderWithSplices template (tutorialsSplice tutorials)
 
 indexH :: AppHandler ()
-indexH = do tutorials <- runPersist $ selectList [] [] :: AppHandler [Entity Tutorial]
+indexH = do tutorials <- runO allTutorials :: AppHandler [Tutorial]
             writeJSON tutorials
 
 showH :: AppHandler ()
@@ -53,7 +55,7 @@ showH = do
   case maybeTutorialKey of
     Nothing -> pass
     Just tutorialKey -> do
-      maybeTutorial <- runPersist $ get tutorialKey
+      maybeTutorial <- listToMaybe <$> runO (tutorialById tutorialKey)
       case maybeTutorial of
         Nothing -> pass
         Just tutorial -> renderWithSplices "/tutorials/show" $ tutorialSplice tutorial
@@ -64,7 +66,7 @@ newH = do
   case response of
     (v, Nothing) -> renderWithSplices "tutorials/form" (digestiveSplices v)
     (_, Just tutorial) -> do
-      runPersist $ insert tutorial
+      insertTutorial tutorial
       home
 
 editH :: AppHandler ()
@@ -73,12 +75,12 @@ editH = do
   case maybeTutorialKey of
     Nothing -> home
     Just tutorialKey -> do
-      maybeTutorial <- runPersist $ get tutorialKey
-      response <- runForm "edit-tutorial" (Tutorial.Form.form $ maybeTutorial)
+      maybeTutorial <- listToMaybe <$> runO (tutorialById tutorialKey)
+      response <- runForm "edit-tutorial" (Tutorial.Form.form maybeTutorial)
       case response of
         (v, Nothing) -> renderWithSplices "tutorials/form" (digestiveSplices v)
         (_, Just e) -> do
-          runPersist $ replace tutorialKey e
+          updateTutorial e { tutorialId = tutorialKey }
           home
 
 deleteH :: AppHandler ()
@@ -87,8 +89,8 @@ deleteH = do
   case maybeTutorialKey of
     Nothing -> home
     Just tutorialKey -> do
-      runPersist $ delete tutorialKey
+      deleteTutorialById tutorialKey
       home
 
-tutorialKeyParam :: MonadSnap m => ByteString -> m (Maybe (Key Tutorial))
-tutorialKeyParam name = fmap (fmap mkKeyBS) (getParam name)
+tutorialKeyParam :: MonadSnap m => ByteString -> m (Maybe Int)
+tutorialKeyParam name = (>>= breadSafe) <$> (getParam name)

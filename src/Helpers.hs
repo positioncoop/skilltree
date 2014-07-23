@@ -12,6 +12,7 @@ module Helpers (void
                , tNotNull
                , readSafe
                , treadSafe
+               , breadSafe
                , doIfJust
                , getId
                , require
@@ -76,6 +77,9 @@ readSafe = fmap fst . listToMaybe . reads
 
 treadSafe :: Read a => Text -> Maybe a
 treadSafe = readSafe . T.unpack
+
+breadSafe :: Read a => ByteString -> Maybe a
+breadSafe = readSafe . B8.unpack
 
 getId :: MonadSnap m => m Int
 getId = do mi <- getParam "id"
