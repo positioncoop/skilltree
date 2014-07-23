@@ -42,7 +42,7 @@ home = redirect $ T.encodeUtf8 $ rRoot resource
 
 tutorialsHandler :: ByteString -> AppHandler ()
 tutorialsHandler template =  do
-  tutorials <- runO allTutorials
+  tutorials <- getAllTutorials
   renderWithSplices template (tutorialsSplice tutorials)
 
 indexH :: AppHandler ()
