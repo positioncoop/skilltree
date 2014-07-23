@@ -8,17 +8,20 @@ import Control.Monad (void)
 import Control.Applicative hiding (Const)
 import Data.Text (Text)
 import Data.Aeson.Types
+import Data.Maybe
 import Karamaan.Opaleye.Reexports
 import Karamaan.Opaleye.Wire
 import Karamaan.Opaleye.Table
+import Karamaan.Opaleye.ShowConstant
 import Karamaan.Opaleye.ExprArr (ExprArr, Expr)
+import Karamaan.Opaleye.MakeExpr (makeExpr, makeJustExpr, makeMaybeExpr)
 import qualified Karamaan.Opaleye.ExprArr as E
 import Data.Profunctor
 import Data.Profunctor.Product
 import Data.Profunctor.Product.TH (makeAdaptorAndInstance)
 import Data.Profunctor.Product.Default (Default, def)
 import Control.Category ((<<<))
-import Control.Arrow (returnA)
+import Control.Arrow (returnA, arr)
 
 import Application
 
@@ -45,6 +48,33 @@ tutorialsTable = Table "tutorial" (Tutorial' (Wire "id") (Wire "x") (Wire "y") (
 allTutorials :: Query TutorialWire
 allTutorials = queryTable tutorialsTable
 
+getAllTutorials :: AppHandler [Tutorial]
+getAllTutorials = runO allTutorials
+
+getTutorialById :: Int -> AppHandler (Maybe Tutorial)
+getTutorialById _id = listToMaybe <$> runO (tutorialById _id)
+
+getTutorialAtCoords :: Int -> Int -> AppHandler (Maybe Tutorial)
+getTutorialAtCoords x y = listToMaybe <$> runO (tutorialsAtCoords x y)
+
+insertTutorial :: NewTutorial -> AppHandler ()
+insertTutorial tutorial@(Tutorial' _ x y t) = void $ insO tutorialsTable insertExpr
+  where insertExpr :: Expr TutorialMaybeWire
+        insertExpr = makeMaybeExpr tutorial { tutorialX = Just x
+                                            , tutorialY = Just y
+                                            , tutorialTitle = Just t
+                                            }
+
+deleteTutorialById :: Int -> AppHandler ()
+deleteTutorialById _id = void $ delO tutorialsTable (chooseTutorialById _id)
+
+updateTutorial :: Tutorial -> AppHandler ()
+updateTutorial tutorial@(Tutorial' _id _x _y _title) =
+  void $ updO tutorialsTable updExp (chooseTutorialById _id)
+  where updExp :: ExprArr TutorialWire TutorialMaybeWire
+        updExp = makeJustExpr tutorial <<< arr (const ())
+
+
 tutorialsAtCoords :: Int -> Int -> Query TutorialWire
 tutorialsAtCoords x y = proc () -> do tutorial <- allTutorials -< ()
                                       x' <- constant x -< ()
@@ -52,33 +82,13 @@ tutorialsAtCoords x y = proc () -> do tutorial <- allTutorials -< ()
                                       restrict <<< eq -< (tutorialX tutorial, x')
                                       restrict <<< eq -< (tutorialY tutorial, y')
                                       returnA -< tutorial
+
 tutorialById :: Int -> Query TutorialWire
 tutorialById _id = proc () -> do tutorial <- allTutorials -< ()
                                  id' <- constant _id -< ()
                                  restrict <<< eq -< (id', tutorialId tutorial)
                                  returnA -< tutorial
 
-
-insertTutorial :: NewTutorial -> AppHandler ()
-insertTutorial (Tutorial' _ x y title) = void $ insO tutorialsTable insertExpr
-  where insertExpr :: Expr TutorialMaybeWire
-        insertExpr = Tutorial' <$> pure (Nothing :: Maybe (Wire Int))
-                               <*> (Just <$> E.constant x)
-                               <*> (Just <$> E.constant y)
-                               <*> (Just <$> E.constant title)
-
 chooseTutorialById :: Int -> ExprArr TutorialWire (Wire Bool)
 chooseTutorialById _id = proc tutorial -> do id' <- E.constant _id -< ()
                                              E.eq -< (id', tutorialId tutorial)
-
-deleteTutorialById :: Int -> AppHandler ()
-deleteTutorialById _id = void $ delO tutorialsTable (chooseTutorialById _id)
-
-updateTutorial :: Tutorial -> AppHandler ()
-updateTutorial (Tutorial' _id _x _y _title) =
-  void $ updO tutorialsTable updExp (chooseTutorialById _id)
-  where updExp :: ExprArr TutorialWire TutorialMaybeWire
-        updExp = proc _ -> do x <- E.constant _x -< ()
-                              y <- E.constant _y -< ()
-                              title <- E.constant _title -< ()
-                              returnA -< Tutorial' Nothing (Just x) (Just y) (Just title)

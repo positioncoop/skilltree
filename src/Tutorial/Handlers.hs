@@ -46,7 +46,7 @@ tutorialsHandler template =  do
   renderWithSplices template (tutorialsSplice tutorials)
 
 indexH :: AppHandler ()
-indexH = do tutorials <- runO allTutorials :: AppHandler [Tutorial]
+indexH = do tutorials <- getAllTutorials
             writeJSON tutorials
 
 showH :: AppHandler ()
@@ -55,7 +55,7 @@ showH = do
   case maybeTutorialKey of
     Nothing -> pass
     Just tutorialKey -> do
-      maybeTutorial <- listToMaybe <$> runO (tutorialById tutorialKey)
+      maybeTutorial <- getTutorialById tutorialKey
       case maybeTutorial of
         Nothing -> pass
         Just tutorial -> renderWithSplices "/tutorials/show" $ tutorialSplice tutorial
@@ -75,7 +75,7 @@ editH = do
   case maybeTutorialKey of
     Nothing -> home
     Just tutorialKey -> do
-      maybeTutorial <- listToMaybe <$> runO (tutorialById tutorialKey)
+      maybeTutorial <- getTutorialById tutorialKey
       response <- runForm "edit-tutorial" (Tutorial.Form.form maybeTutorial)
       case response of
         (v, Nothing) -> renderWithSplices "tutorials/form" (digestiveSplices v)

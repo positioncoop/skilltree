@@ -7,8 +7,7 @@ import Control.Applicative
 import qualified Data.Text as T
 import Data.Text (Text)
 import Text.Digestive
-import Snap.Snaplet.Persistent
-import Database.Persist
+import Data.Maybe
 import Forms
 
 import Tutorial.Types
@@ -21,4 +20,4 @@ form mTutorial = checkM "Tutorial overlaps with existing tutorial" overlapping $
             <*> "y" .: stringRead "Must be a number" (tutorialY <$> mTutorial)
             <*> "title" .: text (tutorialTitle <$> mTutorial)
  where overlapping (Tutorial' _ x y _) =
-         null <$> (runO (tutorialsAtCoords x y) :: AppHandler [Tutorial])
+         isNothing <$> getTutorialAtCoords x y
