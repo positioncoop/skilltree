@@ -10,7 +10,11 @@
   </head>
   <body>
 
-    <apply-content/>
+    <svg width=600 height=1000 style='border: 1px solid black'>
+    </svg>
 
+    <div style='float:right'>
+      <apply-content/>
+    </div>
   </body>
 </html>
