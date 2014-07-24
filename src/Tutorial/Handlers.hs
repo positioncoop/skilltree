@@ -27,16 +27,16 @@ resource :: Resource
 resource = Resource "tutorial" "/tutorials" [] []
 
 crud :: [(CRUD, AppHandler ())]
-crud =  [ (RNew, newH)
+crud =  [ (RIndex, indexH)
         , (RShow, showH)
+        , (RNew, newH)
+        , (RCreate, newH)
         , (REdit, editH)
         , (RUpdate, editH)
-        , (RCreate, newH)
-        , (RIndex, indexH)
         ]
 
 home :: AppHandler ()
-home = redirect $ T.encodeUtf8 $ rRoot resource
+home = redirect $ T.encodeUtf8 $ "/"
 
 tutorialsHandler :: ByteString -> AppHandler ()
 tutorialsHandler template =  do
@@ -44,8 +44,9 @@ tutorialsHandler template =  do
   renderWithSplices template (tutorialsSplice tutorials)
 
 indexH :: AppHandler ()
-indexH = do tutorials <- runPersist $ selectList [] [] :: AppHandler [Entity Tutorial]
-            writeJSON tutorials
+indexH = do
+  tutorials <- runPersist $ selectList [] [] :: AppHandler [Entity Tutorial]
+  writeJSON tutorials
 
 showH :: AppHandler ()
 showH = do
@@ -60,7 +61,7 @@ showH = do
 
 newH :: AppHandler ()
 newH = do
-  response <- runForm "new" (Tutorial.Form.form Nothing)
+  response <- runForm "new" Tutorial.Form.newForm
   case response of
     (v, Nothing) -> renderWithSplices "tutorials/form" (digestiveSplices v)
     (_, Just tutorial) -> do
@@ -71,15 +72,18 @@ editH :: AppHandler ()
 editH = do
   maybeTutorialKey <- tutorialKeyParam "id"
   case maybeTutorialKey of
-    Nothing -> home
+    Nothing -> pass
     Just tutorialKey -> do
       maybeTutorial <- runPersist $ get tutorialKey
-      response <- runForm "edit-tutorial" (Tutorial.Form.form $ maybeTutorial)
-      case response of
-        (v, Nothing) -> renderWithSplices "tutorials/form" (digestiveSplices v)
-        (_, Just e) -> do
-          runPersist $ replace tutorialKey e
-          home
+      case maybeTutorial of
+        Nothing -> pass
+        Just tutorial -> do
+          response <- runForm "edit-tutorial" (Tutorial.Form.editForm $ tutorial)
+          case response of
+            (v, Nothing) -> renderWithSplices "tutorials/form" (digestiveSplices v)
+            (_, Just e) -> do
+              runPersist $ replace tutorialKey e
+              home
 
 deleteH :: AppHandler ()
 deleteH = do
