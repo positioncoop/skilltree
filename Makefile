@@ -1,6 +1,6 @@
 EXECUTABLE=$(BINDIR)/skilltree
 DEPS=positioncoop/restful-snap
-TESTMAIN=src/Testj.hs
+TESTMAIN=src/Test.hs
 INSTALLFLAGS=-j -fdevelopment --reorder-goals
 MOODEVEL=-c devel.cfg
 MOOTEST=-c test.cfg
