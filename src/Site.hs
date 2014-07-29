@@ -11,7 +11,6 @@ import           Data.Monoid
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import           Snap.Core
-import           Snap.Restful
 import           Snap.Snaplet
 import           Snap.Snaplet.Heist
 import           Snap.Snaplet.Session.Backends.CookieSession
@@ -35,11 +34,11 @@ import           FileStore
 import qualified Tutorial.Handlers
 
 routes :: [(ByteString, AppHandler ())]
-routes = [ ("",       heistServe)
-         , ("",       serveDirectory "static")
-         , ("store",  serveDirectory "store")
-
-         , ("",       render "notfound")
+routes = [ ("tutorials", route Tutorial.Handlers.routes)
+         , ("",          heistServe)
+         , ("",          serveDirectory "static")
+         , ("store",     serveDirectory "store")
+         , ("",          render "notfound")
          ]
 
 app :: SnapletInit App App
@@ -58,7 +57,6 @@ app = makeSnaplet "app" "" Nothing $ do
     r <- nestSnaplet "redis" redis redisDBInitConf
     ns <- liftIO $ makeResolvSeed defaultResolvConf
     e <- getEnvironment
-    addResource Tutorial.Handlers.resource Tutorial.Handlers.crud [] [] h
     addRoutes routes
     return $ App h s p d r ns url (T.pack e) (Directory (absPath ++ "store"))
 

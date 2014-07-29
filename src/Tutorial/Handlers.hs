@@ -10,7 +10,6 @@ import Snap (liftIO)
 import Snap.Core
 import Snap.Snaplet.Heist
 import Snap.Snaplet.Persistent
-import Snap.Restful
 import Snap.Extras.JSON
 import Database.Persist
 import Text.Digestive.Snap (runForm)
@@ -23,16 +22,28 @@ import Forms
 
 import Application
 
-resource :: Resource
-resource = Resource "tutorial" "/tutorials" [] []
 
-crud :: [(CRUD, AppHandler ())]
-crud =  [ (RIndex, indexH)
-        , (RNew, newH)
-        , (RCreate, newH)
-        , (REdit, editH)
-        , (RUpdate, editH)
-        ]
+routes :: [(ByteString, AppHandler ())]
+routes = [ ("", ifTop indexH)
+         , ("new", ifTop newH)
+         , (":id", tutorialHandler)
+         ]
+
+tutorialHandler :: AppHandler ()
+tutorialHandler = do
+  maybeTutorialKey <- tutorialKeyParam "id"
+  case maybeTutorialKey of
+    Nothing -> pass
+    Just tutorialKey -> do
+      maybeTutorial <- runPersist $ get tutorialKey
+      case maybeTutorial of
+        Nothing -> pass
+        Just tutorial -> do
+          let tentity = Entity tutorialKey tutorial
+          route [("", ifTop $ showH tentity)
+                ,("edit", ifTop $ editH tentity)
+                ,("delete", ifTop $ deleteH tentity)
+                ]
 
 home :: AppHandler ()
 home = redirect $ T.encodeUtf8 $ "/"
@@ -41,6 +52,10 @@ indexH :: AppHandler ()
 indexH = do
   tutorials <- runPersist $ selectList [] [] :: AppHandler [Entity Tutorial]
   writeJSON tutorials
+
+showH :: TutorialEntity -> AppHandler ()
+showH = undefined
+
 
 newH :: AppHandler ()
 newH = do
@@ -51,31 +66,19 @@ newH = do
       runPersist $ insert tutorial
       home
 
-editH :: AppHandler ()
-editH = do
-  maybeTutorialKey <- tutorialKeyParam "id"
-  case maybeTutorialKey of
-    Nothing -> pass
-    Just tutorialKey -> do
-      maybeTutorial <- runPersist $ get tutorialKey
-      case maybeTutorial of
-        Nothing -> pass
-        Just tutorial -> do
-          response <- runMultipartForm "edit-tutorial" (Tutorial.Form.editForm $ tutorial)
-          case response of
-            (v, Nothing) -> renderWithSplices "tutorials/form" (digestiveSplices v)
-            (_, Just _tutorial) -> do
-              runPersist $ replace tutorialKey _tutorial
-              redirect $ "/tutorials/" ++ (showKeyBS tutorialKey) ++ "/edit"
+editH :: TutorialEntity -> AppHandler ()
+editH (Entity tutorialKey tutorial) = do
+  response <- runMultipartForm "edit-tutorial" (Tutorial.Form.editForm $ tutorial)
+  case response of
+    (v, Nothing) -> renderWithSplices "tutorials/form" (digestiveSplices v)
+    (_, Just _tutorial) -> do
+      runPersist $ replace tutorialKey _tutorial
+      redirect $ "/tutorials/" ++ (showKeyBS tutorialKey) ++ "/edit"
 
-deleteH :: AppHandler ()
-deleteH = do
-  maybeTutorialKey <- tutorialKeyParam "id"
-  case maybeTutorialKey of
-    Nothing -> home
-    Just tutorialKey -> do
-      runPersist $ delete tutorialKey
-      home
+deleteH :: TutorialEntity -> AppHandler ()
+deleteH (Entity tutorialKey _) = do
+  runPersist $ delete tutorialKey
+  home
 
 tutorialKeyParam :: MonadSnap m => ByteString -> m (Maybe (Key Tutorial))
 tutorialKeyParam name = fmap (fmap mkKeyBS) (getParam name)
