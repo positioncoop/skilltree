@@ -13,6 +13,7 @@ import Snap
 import Snap.Snaplet.Persistent
 import Database.Persist
 import FileStore
+import Forms
 
 import qualified Data.Conduit as C
 import qualified Data.Conduit.Binary as CB
@@ -35,10 +36,11 @@ newForm = checkM "Tutorial overlaps with existing tutorial" overlapping $
                                             return (result == [])
 
 editForm :: Tutorial -> Form Text AppHandler Tutorial
-editForm (Tutorial x y title mIconPath) = validateM mkMedia $ Tutorial x y <$> "title" .: text (Just title) <*> "iconPath" .: file
-    where mkMedia :: Tutorial -> AppHandler (Result Text Tutorial)
-          mkMedia (Tutorial a b c Nothing) = return $ Success $ Tutorial a b c mIconPath
-          mkMedia (Tutorial a b c (Just _path)) =
+editForm (Tutorial x y title mIconPath) = Tutorial x y <$> "title" .: nonEmpty (text (Just title))
+                                          <*> "iconPath" .: validateM mkMedia file
+    where mkMedia :: Maybe FilePath -> AppHandler (Result Text (Maybe FilePath))
+          mkMedia Nothing = return $ Success mIconPath
+          mkMedia (Just _path) =
             do store <- use filestore
                res <- liftIO $ R.runResourceT$ runEitherT $
                  do (_, inputH) <- lift $ R.allocate (IO.openFile _path IO.ReadMode) IO.hClose
@@ -48,5 +50,5 @@ editForm (Tutorial x y title mIconPath) = validateM mkMedia $ Tutorial x y <$> "
                       _ -> return False
                case res of
                  Right True -> do url <- storeFile store _path Nothing
-                                  return $ Success $ Tutorial a b c (Just $ T.unpack url)
+                                  return $ Success (Just $ T.unpack url)
                  _ -> return $ Error "Image must be a PNG, 60x60 pixels"
