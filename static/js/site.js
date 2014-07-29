@@ -5,7 +5,7 @@ $(function() {
       .attr("xlink:href", function(d) {return "/tutorials/" + d.id + "/edit";})
       .append("image")
       .attr("class", "tutorial")
-      .attr("xlink:href", function(d) {return "/img/images.jpeg";})
+      .attr("xlink:href", function(d) {return d.iconPath || "/img/images.jpeg";})
       .attr("width",60).attr("height",60)
       .attr("x", function(d) {return d.x * 100 + 20;})
       .attr("y", function(d) {return d.y * 50 + 20;});
