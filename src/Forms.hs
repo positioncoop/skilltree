@@ -11,6 +11,9 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import Data.Text (Text)
 import Data.Char
+import Snap
+import Text.Digestive.Snap
+import Snap.Util.FileUploads
 import Network.DNS.Lookup
 import Network.DNS.Resolver
 import Network.DNS.Types
@@ -70,3 +73,8 @@ deleteForm t = snd <$> ((,) <$> "prompt" .: text (Just t)
 
 numericTextForm :: Form Text AppHandler Text
 numericTextForm = check "Must be all numbers" ((all isDigit).T.unpack) (text Nothing)
+
+runMultipartForm :: MonadSnap m	=> Text -> Form v m a -> m (View v, Maybe a)
+runMultipartForm = runFormWith (defaultSnapFormConfig { uploadPolicy = setMaximumFormInputSize tenmegs defaultUploadPolicy
+                                                      , partPolicy = const $ allowWithMaximumSize tenmegs})
+  where tenmegs = 10 * 1024 * 1024

@@ -17,7 +17,7 @@ $(function() {
       var x = Math.floor(click[0]/100);
       var y = Math.floor((click[1] - 25)/50);
 
-      $.post("/tutorials", {"new.x": x , "new.y": y, "new.title": "nope"}, function() {
+      $.post("/tutorials/new", {"new.x": x , "new.y": y, "new.title": "nope"}, function() {
 	window.location.reload();
       });
     })

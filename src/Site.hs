@@ -29,12 +29,14 @@ import qualified Data.Configurator as C
 
 import           Helpers
 import           Application
+import           FileStore
 
 import qualified Tutorial.Handlers
 
 routes :: [(ByteString, AppHandler ())]
 routes = [ ("",       heistServe)
          , ("",       serveDirectory "static")
+         , ("store",  serveDirectory "store")
          , ("",       render "notfound")
          ]
 
@@ -56,7 +58,7 @@ app = makeSnaplet "app" "" Nothing $ do
     e <- getEnvironment
     addResource Tutorial.Handlers.resource Tutorial.Handlers.crud [] [] h
     addRoutes routes
-    return $ App h s p d r ns url (T.pack e)
+    return $ App h s p d r ns url (T.pack e) (Directory (absPath ++ "store"))
 
 prefixUrlSplice :: I.Splice AppHandler
 prefixUrlSplice = do node <- getParamNode

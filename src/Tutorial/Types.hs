@@ -16,6 +16,7 @@ Tutorial
   x Int
   y Int
   title Text
+  iconPath FilePath Maybe
   deriving Show
   deriving Eq
 |]
@@ -23,4 +24,5 @@ Tutorial
 type TutorialEntity = Entity Tutorial
 
 instance ToJSON (Entity Tutorial) where
-  toJSON (Entity id (Tutorial x y title)) = object ["id" .= showKey id, "x" .= x, "y" .= y, "title" .= title]
+  toJSON (Entity id (Tutorial x y title iconPath)) =
+    object ["id" .= showKey id, "x" .= x, "y" .= y, "title" .= title, "iconPath" .= iconPath]

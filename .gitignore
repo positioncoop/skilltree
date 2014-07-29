@@ -9,3 +9,4 @@ cabal.sandbox*
 *.hi
 TAGS
 .vagrant
+store/

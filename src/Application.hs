@@ -20,7 +20,7 @@ import Network.DNS.Resolver
 import Control.Monad.Logger
 import Data.Pool
 import Database.PostgreSQL.Simple (Connection)
-
+import FileStore
 
 data App = App
      { _heist :: Snaplet (Heist App)
@@ -31,6 +31,7 @@ data App = App
      , _dns :: ResolvSeed
      , _siteUrl :: Text
      , _env :: Text
+     , _filestore :: FileStore
      }
 
 makeLenses ''App

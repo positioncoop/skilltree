@@ -1,0 +1,8 @@
+Description: (Description here.)
+Created: 2014-07-25 13:51:11.527171 UTC
+Depends: tutorial
+Apply:
+  ALTER TABLE tutorial ADD COLUMN icon_path varchar(255);
+
+Revert:
+  ALTER TABLE tutorial DROP COLUMN IF EXISTS icon_path;

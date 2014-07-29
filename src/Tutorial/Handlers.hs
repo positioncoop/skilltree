@@ -20,6 +20,7 @@ import Tutorial.Splices
 import Tutorial.Form
 import Tutorial.Types
 import Helpers
+import Forms
 
 import Application
 
@@ -37,11 +38,6 @@ crud =  [ (RIndex, indexH)
 
 home :: AppHandler ()
 home = redirect $ T.encodeUtf8 $ "/"
-
-tutorialsHandler :: ByteString -> AppHandler ()
-tutorialsHandler template =  do
-  tutorials <- runPersist $ selectList [] []
-  renderWithSplices template (tutorialsSplice tutorials)
 
 indexH :: AppHandler ()
 indexH = do
@@ -78,11 +74,11 @@ editH = do
       case maybeTutorial of
         Nothing -> pass
         Just tutorial -> do
-          response <- runForm "edit-tutorial" (Tutorial.Form.editForm $ tutorial)
+          response <- runMultipartForm "edit-tutorial" (Tutorial.Form.editForm $ tutorial)
           case response of
             (v, Nothing) -> renderWithSplices "tutorials/form" (digestiveSplices v)
-            (_, Just e) -> do
-              runPersist $ replace tutorialKey e
+            (_, Just _tutorial) -> do
+              runPersist $ replace tutorialKey _tutorial
               home
 
 deleteH :: AppHandler ()
