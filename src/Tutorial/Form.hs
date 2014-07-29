@@ -14,6 +14,13 @@ import Snap.Snaplet.Persistent
 import Database.Persist
 import FileStore
 
+import qualified Data.Conduit as C
+import qualified Data.Conduit.Binary as CB
+import qualified System.IO as IO
+import qualified Control.Monad.Trans.Resource as R
+import Control.Monad.Trans.Either (runEitherT, left, right)
+import Data.Conduit.ImageSize
+
 import Tutorial.Types
 import Application
 
@@ -31,6 +38,15 @@ editForm :: Tutorial -> Form Text AppHandler Tutorial
 editForm (Tutorial x y title mIconPath) = validateM mkMedia $ Tutorial x y <$> "title" .: text (Just title) <*> "iconPath" .: file
     where mkMedia :: Tutorial -> AppHandler (Result Text Tutorial)
           mkMedia (Tutorial a b c Nothing) = return $ Success $ Tutorial a b c mIconPath
-          mkMedia (Tutorial a b c (Just _path)) = do store <- use filestore
-                                                     url <- storeFile store _path Nothing
-                                                     return $ Success $ Tutorial a b c (Just $ T.unpack url)
+          mkMedia (Tutorial a b c (Just _path)) =
+            do store <- use filestore
+               res <- liftIO $ R.runResourceT$ runEitherT $
+                 do (_, inputH) <- lift $ R.allocate (IO.openFile _path IO.ReadMode) IO.hClose
+                    info <- CB.sourceHandle inputH C.$$ sinkImageInfo
+                    case info of
+                      Just (size, PNG) -> return (width size == 60 && height size == 60)
+                      _ -> return False
+               case res of
+                 Right True -> do url <- storeFile store _path Nothing
+                                  return $ Success $ Tutorial a b c (Just $ T.unpack url)
+                 _ -> return $ Error "Image must be a PNG, 60x60 pixels"

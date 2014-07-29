@@ -58,7 +58,11 @@ Executable skilltree
     base                      >= 4.4      && < 5,
     lens                      >= 4.0      && < 4.4,
     directory,
-    filepath
+    filepath,
+    resourcet,
+    imagesize-conduit >= 1.0 && < 1.1,
+    conduit,
+    either
 
 
   if flag(development)

@@ -19,6 +19,7 @@ import           Snap.Snaplet.PostgresqlSimple
 import           Snap.Snaplet.Persistent
 import           Snap.Snaplet.RedisDB
 import           Snap.Util.FileServe
+import           Snap.Util.FileUploads
 import           Heist
 import qualified Heist.Interpreted as I
 import qualified Text.XmlHtml as X
@@ -37,6 +38,7 @@ routes :: [(ByteString, AppHandler ())]
 routes = [ ("",       heistServe)
          , ("",       serveDirectory "static")
          , ("store",  serveDirectory "store")
+
          , ("",       render "notfound")
          ]
 
