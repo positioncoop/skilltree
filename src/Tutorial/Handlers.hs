@@ -16,7 +16,6 @@ import Database.Persist
 import Text.Digestive.Snap (runForm)
 import Text.Digestive.Heist
 
-import Tutorial.Splices
 import Tutorial.Form
 import Tutorial.Types
 import Helpers
@@ -29,7 +28,6 @@ resource = Resource "tutorial" "/tutorials" [] []
 
 crud :: [(CRUD, AppHandler ())]
 crud =  [ (RIndex, indexH)
-        , (RShow, showH)
         , (RNew, newH)
         , (RCreate, newH)
         , (REdit, editH)
@@ -43,17 +41,6 @@ indexH :: AppHandler ()
 indexH = do
   tutorials <- runPersist $ selectList [] [] :: AppHandler [Entity Tutorial]
   writeJSON tutorials
-
-showH :: AppHandler ()
-showH = do
-  maybeTutorialKey <- tutorialKeyParam "id"
-  case maybeTutorialKey of
-    Nothing -> pass
-    Just tutorialKey -> do
-      maybeTutorial <- runPersist $ get tutorialKey
-      case maybeTutorial of
-        Nothing -> pass
-        Just tutorial -> renderWithSplices "/tutorials/show" $ tutorialSplice tutorial
 
 newH :: AppHandler ()
 newH = do
@@ -79,7 +66,7 @@ editH = do
             (v, Nothing) -> renderWithSplices "tutorials/form" (digestiveSplices v)
             (_, Just _tutorial) -> do
               runPersist $ replace tutorialKey _tutorial
-              home
+              redirect $ "/tutorials/" ++ (showKeyBS tutorialKey) ++ "/edit"
 
 deleteH :: AppHandler ()
 deleteH = do
