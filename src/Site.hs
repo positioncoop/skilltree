@@ -32,6 +32,8 @@ import           Application
 import           FileStore
 
 import qualified Tutorial.Handlers
+import qualified Step.Handlers
+
 
 routes :: [(ByteString, AppHandler ())]
 routes = [ ("tutorials", route Tutorial.Handlers.routes)

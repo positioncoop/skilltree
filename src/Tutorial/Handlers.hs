@@ -4,6 +4,7 @@ module Tutorial.Handlers where
 
 import Prelude hiding ((++))
 import Data.ByteString (ByteString)
+import Data.Text (Text)
 import qualified Data.Text.Encoding as T
 import Data.Aeson
 import Snap (liftIO)
@@ -17,11 +18,12 @@ import Text.Digestive.Heist
 
 import Tutorial.Form
 import Tutorial.Types
+import Tutorial.Splices
+import qualified Step.Handlers
 import Helpers
 import Forms
 
 import Application
-
 
 routes :: [(ByteString, AppHandler ())]
 routes = [ ("", ifTop indexH)
@@ -70,7 +72,8 @@ editH :: TutorialEntity -> AppHandler ()
 editH (Entity tutorialKey tutorial) = do
   response <- runMultipartForm "edit-tutorial" (Tutorial.Form.editForm $ tutorial)
   case response of
-    (v, Nothing) -> renderWithSplices "tutorials/form" (digestiveSplices v)
+    (v, Nothing) -> renderWithSplices "tutorials/form" (do Tutorial.Splices.entitySplice (Entity tutorialKey tutorial)
+                                                           digestiveSplices v)
     (_, Just _tutorial) -> do
       runPersist $ replace tutorialKey _tutorial
       redirect $ "/tutorials/" ++ (showKeyBS tutorialKey) ++ "/edit"

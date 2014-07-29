@@ -8,4 +8,10 @@
     <br />
     <dfInputSubmit value="Enter" class="btn btn-lg btn-primary btn-block" />
   </dfForm>
+
+  <hr/>
+
+  <a href="/tutorial/${tutorialId}/step/new">New Step</a>
+
+
 </apply>
