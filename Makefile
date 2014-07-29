@@ -42,7 +42,11 @@ confirm:
 init: sandbox deps
 
 
-deps: $(patsubst %, $(DEPDIR)/%.d, $(DEPS))
+deps: $(patsubst %, $(DEPDIR)/%.d, $(DEPS)) $(DEPDIR)/digestive-functors
+
+$(DEPDIR)/digestive-functors:
+	git clone -b snap-upload-fix git@github.com:positioncoop/digestive-functors.git $@
+	cabal sandbox add-source $(DEPDIR)/digestive-functors/digestive-functors-snap
 
 
 $(DEPDIR)/%.d:
