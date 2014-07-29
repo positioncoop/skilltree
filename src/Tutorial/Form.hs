@@ -37,18 +37,24 @@ newForm = checkM "Tutorial overlaps with existing tutorial" overlapping $
 
 editForm :: Tutorial -> Form Text AppHandler Tutorial
 editForm (Tutorial x y title mIconPath) = Tutorial x y <$> "title" .: nonEmpty (text (Just title))
-                                          <*> "iconPath" .: validateM mkMedia file
-    where mkMedia :: Maybe FilePath -> AppHandler (Result Text (Maybe FilePath))
-          mkMedia Nothing = return $ Success mIconPath
-          mkMedia (Just _path) =
+                                          <*> "iconPath" .: moveFile mIconPath (enforceImageSize file)
+
+moveFile :: Maybe FilePath -> Form Text AppHandler (Maybe FilePath) -> Form Text AppHandler (Maybe FilePath)
+moveFile def existing = validateM mkMedia existing
+  where  mkMedia :: Maybe FilePath -> AppHandler (Result Text (Maybe FilePath))
+         mkMedia Nothing = return $ Success def
+         mkMedia (Just _path) =
             do store <- use filestore
-               res <- liftIO $ R.runResourceT$ runEitherT $
-                 do (_, inputH) <- lift $ R.allocate (IO.openFile _path IO.ReadMode) IO.hClose
-                    info <- CB.sourceHandle inputH C.$$ sinkImageInfo
-                    case info of
-                      Just (size, PNG) -> return (width size == 60 && height size == 60)
-                      _ -> return False
-               case res of
-                 Right True -> do url <- storeFile store _path Nothing
-                                  return $ Success (Just $ T.unpack url)
-                 _ -> return $ Error "Image must be a PNG, 60x60 pixels"
+               url <- storeFile store _path Nothing
+               return $ Success (Just $ T.unpack url)
+
+enforceImageSize :: Form Text AppHandler (Maybe FilePath) -> Form Text AppHandler (Maybe FilePath)
+enforceImageSize = checkM "Image must be a PNG, 60x60." $ \mFilePath -> case mFilePath of
+  Nothing -> return True
+  Just filePath -> do res <- liftIO $ R.runResourceT $ runEitherT $
+                        do (_, inputH) <- lift $ R.allocate (IO.openFile filePath IO.ReadMode) IO.hClose
+                           info <- CB.sourceHandle inputH C.$$ sinkImageInfo
+                           case info of
+                             Just (size, PNG) -> return (width size == 60 && height size == 60)
+                             _ -> return False
+                      return $ either (const False) id res
