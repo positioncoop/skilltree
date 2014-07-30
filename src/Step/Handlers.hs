@@ -26,18 +26,13 @@ import Forms
 
 import Application
 
-lookupStepFromParam :: AppHandler (Maybe StepEntity)
-lookupStepFromParam = runMaybeT (do key <- MaybeT $ stepKeyParam "id"
-                                    step <- MaybeT $ runPersist $ get key
-                                    return (Entity key step))
-
 routeWithoutTutorial :: [(ByteString, AppHandler ())]
-routeWithoutTutorial = [(":id", handler >>= maybe pass (uncurry stepHandler))]
-  where handler = runMaybeT $
-          do (Entity key step) <- MaybeT lookupStepFromParam
-             let tkey = Persistent.mkKey $ stepTutorialId step
-             tut <- MaybeT $ runPersist $ get tkey
-             return (Entity tkey tut, Entity key step)
+routeWithoutTutorial = [(":id", handler)]
+  where handler = do key <- getParam' "id" :: AppHandler (Key Step)
+                     step <- require $ runPersist $ get key
+                     let tkey = Persistent.mkKey $ stepTutorialId step
+                     tut <- require $ runPersist $ get tkey
+                     stepHandler (Entity tkey tut) (Entity key step)
 
 routes :: TutorialEntity -> [(ByteString, AppHandler ())]
 routes tutorial = [("new", ifTop $ newH tutorial)
@@ -70,6 +65,3 @@ deleteH :: TutorialEntity -> StepEntity -> AppHandler ()
 deleteH entity (Entity stepKey _) = do
   runPersist $ delete stepKey
   redirect $ tutorialEditPath entity
-
-stepKeyParam :: MonadSnap m => ByteString -> m (Maybe (Key Step))
-stepKeyParam name = fmap (fmap Persistent.mkKeyBS) (getParam name)

@@ -1,11 +1,11 @@
-{-# LANGUAGE OverloadedStrings, PackageImports #-}
+{-# LANGUAGE OverloadedStrings, PackageImports, FlexibleInstances, TypeFamilies #-}
 
 module SnapPrelude (void
                , io
                , tshow
                , tNotNull
                , readSafe
-               , getId
+               , getParam'
                , require
                , require'
                , getCurrentPath
@@ -23,6 +23,8 @@ import Data.Maybe
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
+import qualified Snap.Snaplet.Persistent as Persistent
+import qualified Database.Persist as Persistent
 
 ifIsUrl :: MonadSnap m => Text -> m a -> m a -> m a
 ifIsUrl u is not' = do matches <- matchesUrl u
@@ -46,11 +48,20 @@ tNotNull = not.T.null
 readSafe :: Read a => Text -> Maybe a
 readSafe = fmap fst . listToMaybe . reads . T.unpack
 
-getId :: MonadSnap m => m Int
-getId = do mi <- getParam "id"
-           case fmap T.decodeUtf8 mi >>= readSafe of
-             Nothing -> pass
-             Just i -> return i
+class Paramable t where
+  parseParamable :: Text -> Maybe t
+
+instance Paramable Text where
+  parseParamable = Just
+instance Paramable Int where
+  parseParamable = readSafe
+instance (Persistent.PersistEntityBackend record) ~ backend =>
+         Paramable (Persistent.KeyBackend backend record) where
+  parseParamable param = fmap Persistent.mkKey $ readSafe param
+
+getParam' :: (MonadSnap m, Paramable t) => Text -> m t
+getParam' name = do param <- require $ getParam $ T.encodeUtf8 name
+                    require' $ parseParamable $ T.decodeUtf8 param
 
 require :: MonadPlus m => m (Maybe a) -> m a
 require ma = do a' <- ma

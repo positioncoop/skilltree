@@ -33,20 +33,14 @@ routes = [ ("", ifTop indexH)
 
 tutorialHandler :: AppHandler ()
 tutorialHandler = do
-  maybeTutorialKey <- tutorialKeyParam "id"
-  case maybeTutorialKey of
-    Nothing -> pass
-    Just tutorialKey -> do
-      maybeTutorial <- runPersist $ get tutorialKey
-      case maybeTutorial of
-        Nothing -> pass
-        Just tutorial -> do
-          let tentity = Entity tutorialKey tutorial
-          route [("", ifTop $ showH tentity)
-                ,("edit", ifTop $ editH tentity)
-                ,("delete", ifTop $ deleteH tentity)
-                ,("steps", route (Step.Handlers.routes tentity))
-                ]
+  tutorialKey <- getParam' "id"
+  tutorial <- require $ runPersist $ get tutorialKey
+  let tentity = Entity tutorialKey tutorial
+  route [("", ifTop $ showH tentity)
+        ,("edit", ifTop $ editH tentity)
+        ,("delete", ifTop $ deleteH tentity)
+        ,("steps", route (Step.Handlers.routes tentity))
+        ]
 
 home :: AppHandler ()
 home = redirect "/"
@@ -84,5 +78,3 @@ deleteH (Entity tutorialKey _) = do
   runPersist $ delete tutorialKey
   home
 
-tutorialKeyParam :: MonadSnap m => ByteString -> m (Maybe (Key Tutorial))
-tutorialKeyParam name = fmap (fmap mkKeyBS) (getParam name)
