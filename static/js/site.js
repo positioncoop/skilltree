@@ -1,14 +1,24 @@
 $(function() {
   d3.json("/tutorials", function(error, events) {
-    d3.select("svg").selectAll("image.tutorial").data(events).enter()
-      .append("a")
-      .attr("xlink:href", function(d) {return "/tutorials/" + d.id + "/edit";})
-      .append("image")
+    gs = d3.select("svg").selectAll("image.tutorial").data(events).enter().append("g")
+      .attr("transform", function(d) {
+	var dx = d.x * 100 + 20;
+	var dy = d.y * 50 + 20;
+	return "translate(" + dx + ", " + dy + ")";
+      });
+
+    as = gs.append("a")
+      .attr("xlink:href", function(d) {return "/tutorials/" + d.id + "/edit";});
+
+    imgs = as.append("image")
       .attr("class", "tutorial")
       .attr("xlink:href", function(d) {return d.iconPath || "/img/images.jpeg";})
-      .attr("width",60).attr("height",60)
-      .attr("x", function(d) {return d.x * 100 + 20;})
-      .attr("y", function(d) {return d.y * 50 + 20;});
+      .attr("width",60).attr("height",60);
+
+    as.append("text")
+      .attr("dx", 5)
+      .attr("dy", 72)
+      .text(function(d) { return d.title });
   });
 
   d3.select("svg")
