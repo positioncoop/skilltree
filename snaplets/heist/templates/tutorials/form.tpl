@@ -13,5 +13,10 @@
 
   <a href="/tutorials/${tutorialId}/steps/new">New Step</a>
 
+  <tutorialSteps>
+    <div>
+      <stepContent/>
+    </div>
+  </tutorialSteps>
 
 </apply>
