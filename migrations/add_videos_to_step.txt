@@ -1,0 +1,12 @@
+Description: (Description here.)
+Created: 2014-07-30 21:16:54.903743 UTC
+Depends: add_steps
+Apply:
+  ALTER TABLE step
+    ADD COLUMN video_code Text,
+    ADD COLUMN video_provider Text;
+
+Revert:
+  ALTER TABLE step
+    DROP COLUMN video_code,
+    DROP COLUMN video_provider;

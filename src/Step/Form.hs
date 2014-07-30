@@ -15,13 +15,22 @@ import Database.Persist
 import FileStore
 import Forms
 
+import Step.VideoType
 import Step.Types
 import Application
 
 newForm :: Int -> Form Text AppHandler Step
 newForm _tutorialId = Step _tutorialId <$> "content" .: text Nothing
                                        <*> "ordinal" .: stringRead "Must be a number" Nothing
+                                       <*> "video-code" .: optionalText Nothing
+                                       <*> "video-provider" .: choice [(Nothing, ""),
+                                                                       (Just YouTube, "YouTube"),
+                                                                       (Just Vimeo, "Vimeo")] Nothing
 
 editForm :: Step -> Form Text AppHandler Step
-editForm (Step _tutorialId _content _ordinal) = Step _tutorialId <$> "content" .: text (Just _content)
+editForm (Step _tutorialId _content _ordinal _videoCode _videoProvider) = Step _tutorialId <$> "content" .: text (Just _content)
                                                                  <*> "ordinal" .: stringRead "Must be a number" (Just _ordinal)
+                                                                 <*> "video-code" .: optionalText _videoCode
+                                                                 <*> "video-provider" .: choice [(Nothing, ""),
+                                                                                                 (Just YouTube, "YouTube"),
+                                                                                                 (Just Vimeo, "Vimeo")] (Just _videoProvider)

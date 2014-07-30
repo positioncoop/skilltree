@@ -8,6 +8,7 @@ import Data.Text (Text)
 import Database.Persist.Types
 import Database.Persist.TH
 import Snap.Snaplet.Persistent (showKey)
+import Step.VideoType
 
 import Application
 
@@ -16,6 +17,8 @@ Step
   tutorialId Int
   content Text
   ordinal Int
+  videoCode Text Maybe
+  videoProvider VideoProvider Maybe
   deriving Show
   deriving Eq
 |]
