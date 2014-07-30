@@ -61,7 +61,8 @@ Executable skilltree
     resourcet,
     imagesize-conduit >= 1.0 && < 1.1,
     conduit,
-    either
+    either,
+    transformers
 
 
   if flag(development)

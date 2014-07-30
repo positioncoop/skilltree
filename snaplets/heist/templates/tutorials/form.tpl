@@ -11,7 +11,7 @@
 
   <hr/>
 
-  <a href="/tutorial/${tutorialId}/step/new">New Step</a>
+  <a href="/tutorials/${tutorialId}/steps/new">New Step</a>
 
 
 </apply>

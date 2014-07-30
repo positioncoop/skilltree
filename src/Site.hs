@@ -37,6 +37,7 @@ import qualified Step.Handlers
 
 routes :: [(ByteString, AppHandler ())]
 routes = [ ("tutorials", route Tutorial.Handlers.routes)
+         , ("steps",     route Step.Handlers.routeWithoutTutorial)
          , ("",          heistServe)
          , ("",          serveDirectory "static")
          , ("store",     serveDirectory "store")

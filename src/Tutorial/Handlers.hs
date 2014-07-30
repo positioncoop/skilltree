@@ -45,6 +45,7 @@ tutorialHandler = do
           route [("", ifTop $ showH tentity)
                 ,("edit", ifTop $ editH tentity)
                 ,("delete", ifTop $ deleteH tentity)
+                ,("steps", route (Step.Handlers.routes tentity))
                 ]
 
 home :: AppHandler ()

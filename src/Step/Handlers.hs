@@ -3,41 +3,61 @@
 module Step.Handlers where
 
 import Prelude hiding ((++))
+import Control.Applicative
 import Data.ByteString (ByteString)
 import qualified Data.Text.Encoding as T
-import Data.Aeson
 import Snap (liftIO)
 import Snap.Core
 import Snap.Snaplet.Heist
 import Snap.Snaplet.Persistent
-import Snap.Restful
 import Snap.Extras.JSON
 import Database.Persist
 import Text.Digestive.Snap (runForm)
 import Text.Digestive.Heist
+import Control.Monad.Trans.Maybe
+
 
 import Step.Form
 import Step.Types
+import Tutorial.Types
 import Helpers
 import Forms
 
 import Application
 
-resource :: Resource
-resource = Resource "step" "/steps" [] []
+routeWithoutTutorial :: [(ByteString, AppHandler ())]
+routeWithoutTutorial = [(":id", handler >>= maybe pass (uncurry stepHandler))]
+  where handler = runMaybeT $
+          do key <- MaybeT $ stepKeyParam "id"
+             step <- MaybeT $ runPersist $ get key
+             let tkey = mkKey $ stepTutorialId step
+             tut <- MaybeT $ runPersist $ get tkey
+             return (Entity tkey tut, Just $ Entity key step)
 
-crud :: [(CRUD, AppHandler ())]
-crud =  [ (RNew, newH)
-        , (RCreate, newH)
-        , (REdit, editH)
-        , (RUpdate, editH)
-        ]
+routes :: TutorialEntity -> [(ByteString, AppHandler ())]
+routes tutorial = [("new", ifTop $ newH tutorial)
+                  ,(":id", stepHandler tutorial Nothing)]
+
+stepHandler :: TutorialEntity -> Maybe StepEntity -> AppHandler ()
+stepHandler tutorial mstep =
+  do (Entity stepKey step) <- fromMaybe lookup (return <$> mstep)
+     route [("edit", ifTop $ editH tutorial (Entity stepKey step))
+                                  ,("delete", ifTop $ deleteH tutorial (Entity stepKey step))]
+  where lookup = do maybeStepKey <- stepKeyParam "id"
+                    case maybeStepKey of
+                      Nothing -> pass
+                      Just stepKey -> do
+                        maybeStep <- runPersist $ get stepKey
+                        case maybeStep of
+                          Nothing -> pass
+                          Just step -> return (Entity stepKey step)
+
 
 home :: AppHandler ()
 home = redirect $ T.encodeUtf8 $ "/"
 
-newH :: AppHandler ()
-newH = do
+newH :: TutorialEntity -> AppHandler ()
+newH tutorial = do
   response <- runForm "new" (Step.Form.newForm 0)
   case response of
     (v, Nothing) -> renderWithSplices "steps/form" (digestiveSplices v)
@@ -45,31 +65,19 @@ newH = do
       runPersist $ insert step
       home
 
-editH :: AppHandler ()
-editH = do
-  maybeStepKey <- stepKeyParam "id"
-  case maybeStepKey of
-    Nothing -> pass
-    Just stepKey -> do
-      maybeStep <- runPersist $ get stepKey
-      case maybeStep of
-        Nothing -> pass
-        Just step -> do
-          response <- runMultipartForm "edit-step" (Step.Form.editForm $ step)
-          case response of
-            (v, Nothing) -> renderWithSplices "steps/form" (digestiveSplices v)
-            (_, Just _step) -> do
-              runPersist $ replace stepKey _step
-              redirect $ "/steps/" ++ (showKeyBS stepKey) ++ "/edit"
+editH :: TutorialEntity -> StepEntity -> AppHandler ()
+editH tutorial (Entity stepKey step) = do
+  response <- runMultipartForm "edit-step" (Step.Form.editForm step)
+  case response of
+    (v, Nothing) -> renderWithSplices "steps/form" (digestiveSplices v)
+    (_, Just _step) -> do
+      runPersist $ replace stepKey _step
+      redirect $ "/steps/" ++ (showKeyBS stepKey) ++ "/edit"
 
-deleteH :: AppHandler ()
-deleteH = do
-  maybeStepKey <- stepKeyParam "id"
-  case maybeStepKey of
-    Nothing -> home
-    Just stepKey -> do
-      runPersist $ delete stepKey
-      home
+deleteH :: TutorialEntity -> StepEntity -> AppHandler ()
+deleteH tutorial (Entity stepKey _) = do
+  runPersist $ delete stepKey
+  home
 
 stepKeyParam :: MonadSnap m => ByteString -> m (Maybe (Key Step))
 stepKeyParam name = fmap (fmap mkKeyBS) (getParam name)

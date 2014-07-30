@@ -10,3 +10,4 @@ cabal.sandbox*
 TAGS
 .vagrant
 store/
+deps/
