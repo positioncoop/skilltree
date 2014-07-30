@@ -40,7 +40,7 @@ editForm (Tutorial x y title mIconPath) = Tutorial x y <$> "title" .: nonEmpty (
                                           <*> "iconPath" .: moveFile mIconPath (enforceImageSize file)
 
 moveFile :: Maybe FilePath -> Form Text AppHandler (Maybe FilePath) -> Form Text AppHandler (Maybe FilePath)
-moveFile def existing = validateM mkMedia existing
+moveFile def = validateM mkMedia
   where  mkMedia :: Maybe FilePath -> AppHandler (Result Text (Maybe FilePath))
          mkMedia Nothing = return $ Success def
          mkMedia (Just _path) =
@@ -51,10 +51,10 @@ moveFile def existing = validateM mkMedia existing
 enforceImageSize :: Form Text AppHandler (Maybe FilePath) -> Form Text AppHandler (Maybe FilePath)
 enforceImageSize = checkM "Image must be a PNG, 60x60." $ \mFilePath -> case mFilePath of
   Nothing -> return True
-  Just filePath -> do res <- liftIO $ R.runResourceT $ runEitherT $
-                        do (_, inputH) <- lift $ R.allocate (IO.openFile filePath IO.ReadMode) IO.hClose
-                           info <- CB.sourceHandle inputH C.$$ sinkImageInfo
-                           case info of
-                             Just (size, PNG) -> return (width size == 60 && height size == 60)
-                             _ -> return False
-                      return $ either (const False) id res
+  Just filePath ->
+    liftIO $ R.runResourceT $
+      do (_, inputH) <- R.allocate (IO.openFile filePath IO.ReadMode) IO.hClose
+         info <- CB.sourceHandle inputH C.$$ sinkImageInfo
+         case info of
+           Just (size, PNG) -> return (width size == 60 && height size == 60)
+           _ -> return False
