@@ -25,11 +25,15 @@ import Forms
 
 import Application
 
+lookupStepFromParam :: AppHandler (Maybe StepEntity)
+lookupStepFromParam = runMaybeT (do key <- MaybeT $ stepKeyParam "id"
+                                    step <- MaybeT $ runPersist $ get key
+                                    return (Entity key step))
+
 routeWithoutTutorial :: [(ByteString, AppHandler ())]
 routeWithoutTutorial = [(":id", handler >>= maybe pass (uncurry stepHandler))]
   where handler = runMaybeT $
-          do key <- MaybeT $ stepKeyParam "id"
-             step <- MaybeT $ runPersist $ get key
+          do (Entity key step) <- MaybeT lookupStepFromParam
              let tkey = mkKey $ stepTutorialId step
              tut <- MaybeT $ runPersist $ get tkey
              return (Entity tkey tut, Just $ Entity key step)
@@ -40,18 +44,11 @@ routes tutorial = [("new", ifTop $ newH tutorial)
 
 stepHandler :: TutorialEntity -> Maybe StepEntity -> AppHandler ()
 stepHandler tutorial mstep =
-  do (Entity stepKey step) <- fromMaybe lookup (return <$> mstep)
+  do (Entity stepKey step) <- case mstep of
+                                Nothing -> lookupStepFromParam >>= maybe pass return
+                                Just step -> return step
      route [("edit", ifTop $ editH tutorial (Entity stepKey step))
                                   ,("delete", ifTop $ deleteH tutorial (Entity stepKey step))]
-  where lookup = do maybeStepKey <- stepKeyParam "id"
-                    case maybeStepKey of
-                      Nothing -> pass
-                      Just stepKey -> do
-                        maybeStep <- runPersist $ get stepKey
-                        case maybeStep of
-                          Nothing -> pass
-                          Just step -> return (Entity stepKey step)
-
 
 home :: AppHandler ()
 home = redirect $ T.encodeUtf8 $ "/"
