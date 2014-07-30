@@ -9,7 +9,8 @@ import qualified Data.Text.Encoding as T
 import Snap (liftIO)
 import Snap.Core
 import Snap.Snaplet.Heist
-import Snap.Snaplet.Persistent
+import Snap.Snaplet.Persistent (runPersist)
+import qualified Snap.Snaplet.Persistent as Persistent
 import Snap.Extras.JSON
 import Database.Persist
 import Text.Digestive.Snap (runForm)
@@ -34,47 +35,44 @@ routeWithoutTutorial :: [(ByteString, AppHandler ())]
 routeWithoutTutorial = [(":id", handler >>= maybe pass (uncurry stepHandler))]
   where handler = runMaybeT $
           do (Entity key step) <- MaybeT lookupStepFromParam
-             let tkey = mkKey $ stepTutorialId step
+             let tkey = Persistent.mkKey $ stepTutorialId step
              tut <- MaybeT $ runPersist $ get tkey
-             return (Entity tkey tut, Just $ Entity key step)
+             return (Entity tkey tut, Entity key step)
 
 routes :: TutorialEntity -> [(ByteString, AppHandler ())]
 routes tutorial = [("new", ifTop $ newH tutorial)
-                  ,(":id", stepHandler tutorial Nothing)]
+                  ]
 
-stepHandler :: TutorialEntity -> Maybe StepEntity -> AppHandler ()
-stepHandler tutorial mstep =
-  do (Entity stepKey step) <- case mstep of
-                                Nothing -> lookupStepFromParam >>= maybe pass return
-                                Just step -> return step
-     route [("edit", ifTop $ editH tutorial (Entity stepKey step))
-                                  ,("delete", ifTop $ deleteH tutorial (Entity stepKey step))]
+stepHandler :: TutorialEntity -> StepEntity -> AppHandler ()
+stepHandler tutorial (Entity stepKey step) =
+  do route [("edit", ifTop $ editH tutorial (Entity stepKey step))
+           ,("delete", ifTop $ deleteH tutorial (Entity stepKey step))]
 
 home :: AppHandler ()
 home = redirect $ T.encodeUtf8 $ "/"
 
 newH :: TutorialEntity -> AppHandler ()
-newH tutorial = do
-  response <- runForm "new" (Step.Form.newForm 0)
+newH tutorial@(Entity key _) = do
+  response <- runForm "new" (Step.Form.newForm $ Persistent.mkInt key)
   case response of
     (v, Nothing) -> renderWithSplices "steps/form" (digestiveSplices v)
     (_, Just step) -> do
       runPersist $ insert step
-      home
+      redirect $ tutorialPath tutorial
 
 editH :: TutorialEntity -> StepEntity -> AppHandler ()
-editH tutorial (Entity stepKey step) = do
+editH _ (Entity stepKey step) = do
   response <- runMultipartForm "edit-step" (Step.Form.editForm step)
   case response of
     (v, Nothing) -> renderWithSplices "steps/form" (digestiveSplices v)
     (_, Just _step) -> do
       runPersist $ replace stepKey _step
-      redirect $ "/steps/" ++ (showKeyBS stepKey) ++ "/edit"
+      redirect $ "/steps/" ++ (Persistent.showKeyBS stepKey) ++ "/edit"
 
 deleteH :: TutorialEntity -> StepEntity -> AppHandler ()
-deleteH tutorial (Entity stepKey _) = do
+deleteH _ (Entity stepKey _) = do
   runPersist $ delete stepKey
   home
 
 stepKeyParam :: MonadSnap m => ByteString -> m (Maybe (Key Step))
-stepKeyParam name = fmap (fmap mkKeyBS) (getParam name)
+stepKeyParam name = fmap (fmap Persistent.mkKeyBS) (getParam name)

@@ -4,7 +4,7 @@ Depends: tutorial
 Apply:
   CREATE TABLE step (
     id serial PRIMARY KEY,
-    tutorialId integer NOT NULL references tutorial(id),
+    tutorial_id integer NOT NULL references tutorial(id),
     content text NOT NULL,
     ordinal integer NOT NULL
   );

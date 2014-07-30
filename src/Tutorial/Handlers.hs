@@ -70,14 +70,14 @@ newH = do
       home
 
 editH :: TutorialEntity -> AppHandler ()
-editH (Entity tutorialKey tutorial) = do
+editH tentity@(Entity tutorialKey tutorial) = do
   response <- runMultipartForm "edit-tutorial" (Tutorial.Form.editForm $ tutorial)
   case response of
-    (v, Nothing) -> renderWithSplices "tutorials/form" (do Tutorial.Splices.entitySplice (Entity tutorialKey tutorial)
-                                                           digestiveSplices v)
+    (v, Nothing) -> renderWithSplices "tutorials/form" $ do Tutorial.Splices.entitySplice tentity
+                                                            digestiveSplices v
     (_, Just _tutorial) -> do
       runPersist $ replace tutorialKey _tutorial
-      redirect $ "/tutorials/" ++ (showKeyBS tutorialKey) ++ "/edit"
+      redirect $ tutorialPath tentity
 
 deleteH :: TutorialEntity -> AppHandler ()
 deleteH (Entity tutorialKey _) = do
