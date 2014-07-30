@@ -7,7 +7,7 @@ import Control.Applicative
 import Data.ByteString (ByteString)
 import qualified Data.Text.Encoding as T
 import Snap (liftIO)
-import Snap.Core
+import Snap.Core hiding (redirect)
 import Snap.Snaplet.Heist
 import Snap.Snaplet.Persistent (runPersist)
 import qualified Snap.Snaplet.Persistent as Persistent
@@ -48,9 +48,6 @@ stepHandler tutorial (Entity stepKey step) =
   do route [("edit", ifTop $ editH tutorial (Entity stepKey step))
            ,("delete", ifTop $ deleteH tutorial (Entity stepKey step))]
 
-home :: AppHandler ()
-home = redirect $ T.encodeUtf8 $ "/"
-
 newH :: TutorialEntity -> AppHandler ()
 newH tutorial@(Entity key _) = do
   response <- runForm "new" (Step.Form.newForm $ Persistent.mkInt key)
@@ -58,21 +55,21 @@ newH tutorial@(Entity key _) = do
     (v, Nothing) -> renderWithSplices "steps/form" (digestiveSplices v)
     (_, Just step) -> do
       runPersist $ insert step
-      redirect $ tutorialPath tutorial
+      redirect $ tutorialEditPath tutorial
 
 editH :: TutorialEntity -> StepEntity -> AppHandler ()
-editH _ (Entity stepKey step) = do
+editH tutorial (Entity stepKey step) = do
   response <- runMultipartForm "edit-step" (Step.Form.editForm step)
   case response of
     (v, Nothing) -> renderWithSplices "steps/form" (digestiveSplices v)
     (_, Just _step) -> do
       runPersist $ replace stepKey _step
-      redirect $ "/steps/" ++ (Persistent.showKeyBS stepKey) ++ "/edit"
+      redirect $ tutorialEditPath tutorial
 
 deleteH :: TutorialEntity -> StepEntity -> AppHandler ()
-deleteH _ (Entity stepKey _) = do
+deleteH entity (Entity stepKey _) = do
   runPersist $ delete stepKey
-  home
+  redirect $ tutorialEditPath entity
 
 stepKeyParam :: MonadSnap m => ByteString -> m (Maybe (Key Step))
 stepKeyParam name = fmap (fmap Persistent.mkKeyBS) (getParam name)

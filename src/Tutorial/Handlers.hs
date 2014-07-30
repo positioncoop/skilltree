@@ -8,7 +8,7 @@ import Data.Text (Text)
 import qualified Data.Text.Encoding as T
 import Data.Aeson
 import Snap (liftIO)
-import Snap.Core
+import Snap.Core hiding (redirect)
 import Snap.Snaplet.Heist
 import Snap.Snaplet.Persistent
 import Snap.Extras.JSON
@@ -49,7 +49,7 @@ tutorialHandler = do
                 ]
 
 home :: AppHandler ()
-home = redirect $ T.encodeUtf8 $ "/"
+home = redirect "/"
 
 indexH :: AppHandler ()
 indexH = do
@@ -70,14 +70,14 @@ newH = do
       home
 
 editH :: TutorialEntity -> AppHandler ()
-editH tentity@(Entity tutorialKey tutorial) = do
+editH entity@(Entity tutorialKey tutorial) = do
   response <- runMultipartForm "edit-tutorial" (Tutorial.Form.editForm $ tutorial)
   case response of
-    (v, Nothing) -> renderWithSplices "tutorials/form" $ do Tutorial.Splices.entitySplice tentity
+    (v, Nothing) -> renderWithSplices "tutorials/form" $ do Tutorial.Splices.entitySplice entity
                                                             digestiveSplices v
     (_, Just _tutorial) -> do
       runPersist $ replace tutorialKey _tutorial
-      redirect $ tutorialPath tentity
+      redirect $ tutorialEditPath entity
 
 deleteH :: TutorialEntity -> AppHandler ()
 deleteH (Entity tutorialKey _) = do

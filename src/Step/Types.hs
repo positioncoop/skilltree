@@ -3,11 +3,13 @@
 
 module Step.Types where
 
+import Prelude hiding ((++))
 import Data.Text (Text)
 import Database.Persist.Types
 import Database.Persist.TH
+import Snap.Snaplet.Persistent (showKey)
 
-import Application ()
+import Application
 
 share [mkPersist sqlSettings] [persistLowerCase|
 Step
@@ -19,3 +21,6 @@ Step
 |]
 
 type StepEntity = Entity Step
+
+stepEditPath :: StepEntity -> Text
+stepEditPath (Entity key _) = "/steps/" ++ (showKey key) ++ "/edit"

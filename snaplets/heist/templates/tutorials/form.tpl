@@ -11,11 +11,12 @@
 
   <hr/>
 
-  <a href="/tutorials/${tutorialId}/steps/new">New Step</a>
+  <a href="${tutorialStepNewPath}">Add a step!</a>
 
   <tutorialSteps>
     <div>
       <stepContent/>
+      <a href="${stepEditPath}">Edit</a>
     </div>
   </tutorialSteps>
 

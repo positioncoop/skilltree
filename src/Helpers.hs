@@ -20,9 +20,11 @@ module Helpers (void
                , ifIsUrl
                , matchesUrl
                , fromMaybe
+               , redirect
                ) where
 
-import Snap.Core
+import Snap.Core hiding (redirect)
+import qualified Snap.Core
 import "mtl" Control.Monad.Trans (MonadIO, liftIO)
 import Control.Monad (void, join, MonadPlus, mzero)
 import Data.Maybe
@@ -101,3 +103,6 @@ doIfJust (Just a) _ f = f a
 getCurrentPath :: MonadSnap m => m Text
 getCurrentPath = fmap ( T.decodeUtf8 . urlEncode . T.encodeUtf8
                       . fst . T.breakOn "?" . T.decodeUtf8 . rqURI) getRequest
+
+redirect :: MonadSnap m => Text -> m a
+redirect = Snap.Core.redirect . T.encodeUtf8

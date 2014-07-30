@@ -20,11 +20,13 @@ import Helpers
 import Application
 
 entitySplice :: TutorialEntity -> Splices (Splice AppHandler)
-entitySplice (Entity _id (Tutorial _x _y _title _iconPath)) = do
+entitySplice entity@(Entity _id (Tutorial _x _y _title _iconPath)) = do
   "tutorialId" ## textSplice $ P.showKey _id
   "tutorialX" ## textSplice $ tshow _x
   "tutorialY" ## textSplice $ tshow _y
   "tutorialTitle" ## textSplice _title
   "tutorialIconPath" ## textSplice $ maybe "" T.pack _iconPath
-  "tutorialSteps" ## do steps <- lift $ P.runPersist $ selectList [StepTutorialId ==. P.mkInt _id] [Asc StepOrdinal]
+  "tutorialStepNewPath" ## textSplice $ tutorialStepNewPath entity
+  "tutorialSteps" ## do steps <- lift $ P.runPersist $
+                                   selectList [StepTutorialId ==. P.mkInt _id] [Asc StepOrdinal]
                         mapSplices (runChildrenWith . Step.Splices.entitySplice) steps

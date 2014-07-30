@@ -17,8 +17,9 @@ import Helpers
 import Application
 
 entitySplice :: StepEntity -> Splices (Splice AppHandler)
-entitySplice (Entity _id (Step _tutorialId _content _ordinal)) = do
+entitySplice entity@(Entity _id (Step _tutorialId _content _ordinal)) = do
   "stepId" ## textSplice $ P.showKey _id
   "stepTutorialId" ## textSplice $ tshow _tutorialId
   "stepContent" ## textSplice _content
   "stepOrdinal" ## textSplice $ tshow _ordinal
+  "stepEditPath" ## textSplice $ stepEditPath entity
