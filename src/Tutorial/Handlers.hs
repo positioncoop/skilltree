@@ -20,7 +20,7 @@ import Tutorial.Form
 import Tutorial.Types
 import Tutorial.Splices
 import qualified Step.Handlers
-import Helpers
+import SnapPrelude
 import Forms
 
 import Application

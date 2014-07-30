@@ -16,7 +16,7 @@ import Database.Persist
 import Tutorial.Types
 import Step.Types
 import qualified Step.Splices
-import Helpers
+import SnapPrelude
 import Application
 
 entitySplice :: TutorialEntity -> Splices (Splice AppHandler)

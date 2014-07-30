@@ -25,7 +25,7 @@ import           Snap.Core
 import           System.Environment (lookupEnv)
 import           System.IO
 import           Site
-import           Helpers
+import           SnapPrelude
 
 #ifdef DEVELOPMENT
 import           Snap.Loader.Dynamic
@@ -78,7 +78,7 @@ main = do
                                           'getActions
                                           ["snaplets/heist/templates"])
     portS <- lookupEnv "PORT"
-    let conf' = case portS >>= readSafe  of
+    let conf' = case portS >>= readSafe . T.pack  of
                   Nothing -> conf
                   Just p -> setPort p conf
     _ <- try $ httpServe conf' site :: IO (Either SomeException ())

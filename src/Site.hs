@@ -27,7 +27,7 @@ import           Heist.Splices.Ignore
 import           Network.DNS.Resolver
 import qualified Data.Configurator as C
 
-import           Helpers
+import           SnapPrelude
 import           Application
 import           FileStore
 

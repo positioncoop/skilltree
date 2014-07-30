@@ -26,7 +26,7 @@ import Snap.Snaplet.Auth
 import Snap.Snaplet.Session
 import Snap.Test.BDD
 
-import Helpers
+import SnapPrelude
 import Application
 import Site
 

@@ -19,7 +19,7 @@ import Network.DNS.Resolver
 import Network.DNS.Types
 
 import Application
-import Helpers
+import SnapPrelude
 
 requiredForm :: Text -> Form Text AppHandler (Maybe a) -> Form Text AppHandler a
 requiredForm msg = validate (maybe (Error msg) Success)

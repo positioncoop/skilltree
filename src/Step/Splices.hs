@@ -13,7 +13,7 @@ import Database.Persist.Types
 import qualified Snap.Snaplet.Persistent as P
 
 import Step.Types
-import Helpers
+import SnapPrelude
 import Application
 
 entitySplice :: StepEntity -> Splices (Splice AppHandler)
