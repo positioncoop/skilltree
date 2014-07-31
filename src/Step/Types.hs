@@ -25,5 +25,12 @@ Step
 
 type StepEntity = Entity Step
 
+
+stepPath :: StepEntity -> Text
+stepPath (Entity key _) = "/steps/" ++ showKey key
+
 stepEditPath :: StepEntity -> Text
-stepEditPath (Entity key _) = "/steps/" ++ (showKey key) ++ "/edit"
+stepEditPath entity = stepPath entity ++ "/edit"
+
+stepDeletePath :: StepEntity -> Text
+stepDeletePath entity = stepPath entity ++ "/delete"

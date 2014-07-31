@@ -14,13 +14,15 @@
   <a href="${tutorialStepNewPath}">Add a step!</a>
 
   <tutorialSteps>
-    <div>
+    <div class="tutorial-step">
       <stepContent/>
       <a href="${stepEditPath}">Edit</a>
+      <a onclick="return confirm('Are you sure you want to delete this?')" href="${stepDeletePath}">Delete</a>
+      <hr/>
+      <stepVideo>
+	<iframe src="${url}" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+      </stepVideo>
     </div>
-    <stepVideo>
-      <iframe src="${url}" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-    </stepVideo>
   </tutorialSteps>
 
 </apply>

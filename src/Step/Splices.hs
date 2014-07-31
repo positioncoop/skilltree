@@ -24,6 +24,7 @@ entitySplice entity@(Entity id (Step tutorialId content ordinal videoCode videoP
   "stepContent" ## textSplice content
   "stepOrdinal" ## textSplice $ tshow ordinal
   "stepEditPath" ## textSplice $ stepEditPath entity
+  "stepDeletePath" ## textSplice $ stepDeletePath entity
   "stepVideoCode" ## textSplice $ fromMaybe "" videoCode
   "stepVideo" ## case (,) <$> videoProvider <*> videoCode of
     Nothing -> return []

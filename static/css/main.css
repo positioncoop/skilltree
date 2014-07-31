@@ -19,3 +19,14 @@ svg {
     fill: none;
     stroke: lightgrey;
 }
+
+.tutorial-step {
+  margin: 10px;
+  padding: 10px;
+  background-color: #efefef;
+  border: 1px solid #ccc;
+}
+
+.tutorial-step hr {
+  border-color: transparent;
+}
