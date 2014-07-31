@@ -3,6 +3,7 @@
 module Tutorial.Handlers where
 
 import Prelude hiding ((++))
+import Control.Monad (when)
 import Data.ByteString (ByteString)
 import Data.Text (Text)
 import qualified Data.Text.Encoding as T
@@ -15,13 +16,14 @@ import Snap.Extras.JSON
 import Database.Persist
 import Text.Digestive.Snap (runForm)
 import Text.Digestive.Heist
+import SnapPrelude
+import Forms
 
 import Tutorial.Form
 import Tutorial.Types
 import Tutorial.Splices
 import qualified Step.Handlers
-import SnapPrelude
-import Forms
+import Tutorial.Queries
 
 import Application
 
@@ -74,7 +76,10 @@ editH entity@(Entity tutorialKey tutorial) = do
       redirect $ tutorialEditPath entity
 
 deleteH :: TutorialEntity -> AppHandler ()
-deleteH (Entity tutorialKey _) = do
-  runPersist $ delete tutorialKey
-  home
+deleteH entity@(Entity tutorialKey _) = do
+  steps <- lookupTutorialSteps entity
+  if null steps
+    then do runPersist $ delete tutorialKey
+            home
+    else redirect $ tutorialEditPath entity
 

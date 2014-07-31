@@ -10,7 +10,7 @@
   </head>
   <body>
 
-    <svg width=600 height=1000 style='border: 1px solid black'>
+    <svg class='grid' width=600 height=1000>
     </svg>
 
     <div style='float:right'>

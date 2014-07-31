@@ -10,15 +10,14 @@ import Data.Text (Text)
 import Heist
 import Heist.Interpreted
 import Snap
-
 import Database.Persist.Types
 import qualified Snap.Snaplet.Persistent as P
-import Database.Persist
-
-import Tutorial.Types
-import Step.Types
 import qualified Step.Splices
 import SnapPrelude
+
+import Tutorial.Types
+import Tutorial.Queries
+
 import Application
 
 entitySplice :: TutorialEntity -> Splices (Splice AppHandler)
@@ -29,6 +28,7 @@ entitySplice entity@(Entity _id (Tutorial _x _y _title _iconPath)) = do
   "tutorialTitle" ## textSplice _title
   "tutorialIconPath" ## textSplice $ maybe "" T.pack _iconPath
   "tutorialStepNewPath" ## textSplice $ tutorialStepNewPath entity
-  "tutorialSteps" ## do steps <- lift $ P.runPersist $
-                                   selectList [StepTutorialId ==. P.mkInt _id] [Asc StepOrdinal]
+  "tutorialDeletePath" ## textSplice $ tutorialDeletePath entity
+  "tutorialSteps" ## do steps <- lift $ lookupTutorialSteps entity
                         mapSplices (runChildrenWith . Step.Splices.entitySplice) steps
+

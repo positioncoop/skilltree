@@ -7,6 +7,8 @@ import Prelude hiding ((++))
 import Data.Text (Text)
 import Database.Persist.Types
 import Database.Persist.TH
+import qualified Snap.Snaplet.Persistent as P
+import Database.Persist
 import Data.Aeson.Types
 import Snap.Snaplet.Persistent (showKey)
 
@@ -28,8 +30,14 @@ instance ToJSON (Entity Tutorial) where
   toJSON (Entity id (Tutorial x y title iconPath)) =
     object ["id" .= showKey id, "x" .= x, "y" .= y, "title" .= title, "iconPath" .= iconPath]
 
+tutorialPath :: TutorialEntity -> Text
+tutorialPath (Entity key _) = "/tutorials/" ++ showKey key
+
 tutorialEditPath :: TutorialEntity -> Text
-tutorialEditPath (Entity key _) = "/tutorials/" ++ (showKey key) ++ "/edit"
+tutorialEditPath entity = tutorialPath entity ++ "/edit"
+
+tutorialDeletePath :: TutorialEntity -> Text
+tutorialDeletePath entity = tutorialPath entity ++ "/delete"
 
 tutorialStepNewPath :: TutorialEntity -> Text
-tutorialStepNewPath (Entity key _) = "/tutorials/" ++ (showKey key) ++ "/steps/new"
+tutorialStepNewPath entity = tutorialPath entity ++ "/steps/new"

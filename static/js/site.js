@@ -12,7 +12,7 @@ $(function() {
 
     imgs = as.append("image")
       .attr("class", "tutorial")
-      .attr("xlink:href", function(d) {return d.iconPath || "/img/images.jpeg";})
+      .attr("xlink:href", function(d) {return d.iconPath || "/img/example.png";})
       .attr("width",60).attr("height",60);
 
     as.append("text")
@@ -42,7 +42,7 @@ $(function() {
   var feedback = d3.select("svg")
       .append("image")
       .attr("class", "feedback")
-      .attr("xlink:href", "/img/images.jpeg")
+      .attr("xlink:href", "/img/example.png")
       .attr("width", 60).attr("height", 60)
       .attr("x", -100)
       .attr("y", -100)

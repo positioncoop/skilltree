@@ -3,12 +3,12 @@
     <dfInputText ref="title" size="40" placeholder="Title"/>
     <dfChildErrorList ref="title" />
     <br />
-    <dfInputFile ref="iconPath" />
+    <dfInputFile ref="iconPath" onchange="$(this).parents('form').submit()"/>
     <dfChildErrorList ref="iconPath" />
     <br />
     <dfInputSubmit value="Enter" class="btn btn-lg btn-primary btn-block" />
   </dfForm>
-
+  <a onclick="return confirm('Are you sure you want to delete this?')" href="${tutorialDeletePath}">Delete this tutorial!</a>
   <hr/>
 
   <a href="${tutorialStepNewPath}">Add a step!</a>
