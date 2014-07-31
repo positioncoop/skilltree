@@ -1,4 +1,6 @@
-{-# Language OverloadedStrings, GADTs, TemplateHaskell, QuasiQuotes, FlexibleInstances, TypeFamilies, NoMonomorphismRestriction, ScopedTypeVariables, FlexibleContexts #-}
+{-# LANGUAGE OverloadedStrings, GADTs, FlexibleInstances,
+    TypeFamilies, NoMonomorphismRestriction, ScopedTypeVariables,
+    FlexibleContexts #-}
 
 module Tutorial.Splices where
 

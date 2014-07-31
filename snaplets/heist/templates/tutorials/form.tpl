@@ -18,6 +18,9 @@
       <stepContent/>
       <a href="${stepEditPath}">Edit</a>
     </div>
+    <stepVideo>
+      <iframe src="${url}" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+    </stepVideo>
   </tutorialSteps>
 
 </apply>
