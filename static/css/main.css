@@ -15,3 +15,7 @@ svg.grid {
 .tutorial-step hr {
   border-color: transparent;
 }
+
+.move-icon:hover {
+  cursor: pointer;
+}

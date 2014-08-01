@@ -23,14 +23,15 @@ $(function() {
       .text(function(d) { return d.title });
 
     gs.append("text")
-      .attr("dx", 5)
-      .attr("dy", 0)
+      .attr("dx", 58)
+      .attr("dy", 40)
       .attr("data-json", function(d) {return JSON.stringify(d);})
-      .attr("style","color: blue; text-decoration: underline;")
-      .text("move me")
+      .attr("style","font-size: 25px; font-weight: regular")
+      .text("")
+      .attr("class", "fa move-icon")
       .on("click", function () {
 	moveTarget = $(this).data("json");
-	feedback.attr("xlink:href", moveTarget.iconPath);
+	feedback.attr("xlink:href", moveTarget.iconPath || "/img/example.png");
 	d3.event.stopPropagation();
       });
   });
