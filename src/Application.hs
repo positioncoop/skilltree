@@ -15,6 +15,7 @@ import Snap.Snaplet.Session
 import Snap.Snaplet.PostgresqlSimple
 import Snap.Snaplet.Persistent
 import Snap.Snaplet.RedisDB
+import Snap.Snaplet.Auth
 import Database.Redis (Redis)
 import Network.DNS.Resolver
 import Control.Monad.Logger
@@ -25,6 +26,7 @@ import FileStore
 data App = App
      { _heist :: Snaplet (Heist App)
      , _sess :: Snaplet SessionManager
+     , _auth :: Snaplet (AuthManager App)
      , _persistent :: Snaplet PersistState
      , _db :: Snaplet Postgres
      , _redis :: Snaplet RedisDB

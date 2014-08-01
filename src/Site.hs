@@ -14,6 +14,7 @@ import           Snap.Core
 import           Snap.Snaplet
 import           Snap.Snaplet.Heist
 import           Snap.Snaplet.Session.Backends.CookieSession
+import           Snap.Snaplet.Auth.Backends.PostgresqlSimple
 import           Snap.Snaplet.PostgresqlSimple
 import           Snap.Snaplet.Persistent
 import           Snap.Snaplet.RedisDB
@@ -58,10 +59,11 @@ app = makeSnaplet "app" "" Nothing $ do
     p <- nestSnaplet "persistent" persistent $ initPersist (return ())
     d <- nestSnaplet "db" db pgsInit
     r <- nestSnaplet "redis" redis redisDBInitConf
+    a <- nestSnaplet "auth" auth $ initPostgresAuth sess d
     ns <- liftIO $ makeResolvSeed defaultResolvConf
     e <- getEnvironment
     addRoutes routes
-    return $ App h s p d r ns url (T.pack e) (Directory (absPath ++ "store"))
+    return $ App h s a p d r ns url (T.pack e) (Directory (absPath ++ "store"))
 
 prefixUrlSplice :: I.Splice AppHandler
 prefixUrlSplice = do node <- getParamNode

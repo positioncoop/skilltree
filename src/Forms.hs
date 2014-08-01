@@ -28,14 +28,14 @@ nameForm :: Maybe Text -> Form Text AppHandler Text
 nameForm = nonEmpty . text
 
 emailForm :: Maybe Text -> Form Text AppHandler (Maybe Text)
-emailForm t = emailDnsCheck $ fst <$>
+emailForm t = fmap T.toLower <$> (emailDnsCheck $ fst <$>
               (matching $ (,) <$> "address" .: emailValidateSimple (optionalText t)
-                              <*> "confirm" .: emailValidateSimple (optionalText t))
+                              <*> "confirm" .: emailValidateSimple (optionalText t)))
   where matching = check "Email addresses do not match."
                          (maybe True (uncurry (==)) . uncurry (liftM2 (,)))
 
 emailFormSingle :: Maybe Text -> Form Text AppHandler (Maybe Text)
-emailFormSingle t = emailDnsCheck $ "address" .: emailValidateSimple (optionalText t)
+emailFormSingle t = fmap T.toLower <$> (emailDnsCheck $ "address" .: emailValidateSimple (optionalText t))
 
 emailValidateSimple :: Form Text AppHandler (Maybe Text) -> Form Text AppHandler (Maybe Text)
 emailValidateSimple = check "Email address not valid (missing @)." (maybe True ("@" `T.isInfixOf`))
