@@ -3,12 +3,7 @@
 module Tutorial.Handlers where
 
 import Prelude hiding ((++))
-import Control.Monad (when)
 import Data.ByteString (ByteString)
-import Data.Text (Text)
-import qualified Data.Text.Encoding as T
-import Data.Aeson
-import Snap (liftIO)
 import Snap.Core hiding (redirect)
 import Snap.Snaplet.Heist
 import Snap.Snaplet.Persistent
