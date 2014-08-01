@@ -41,6 +41,7 @@ tutorialHandler = do
   route [("", ifTop $ showH tentity)
         ,("edit", ifTop $ editH tentity)
         ,("delete", ifTop $ deleteH tentity)
+        ,("move", ifTop $ moveH tentity)
         ,("steps", route (Step.Handlers.routes tentity))
         ]
 
@@ -55,19 +56,27 @@ indexH = do
 showH :: TutorialEntity -> AppHandler ()
 showH = undefined
 
-
 newH :: AppHandler ()
 newH = do
   response <- runForm "new" Tutorial.Form.newForm
   case response of
-    (v, Nothing) -> renderWithSplices "tutorials/form" (digestiveSplices v)
+    (_, Nothing) -> return ()
     (_, Just tutorial) -> do
-      runPersist $ insert tutorial
-      home
+      void $ runPersist $ insert tutorial
+      return ()
+
+moveH :: TutorialEntity -> AppHandler ()
+moveH entity@(Entity tutorialKey _) = do
+  response <- runForm "move" (Tutorial.Form.moveForm entity)
+  case response of
+    (_, Nothing) -> return ()
+    (_, Just _tutorial) -> do
+      runPersist $ replace tutorialKey _tutorial
+      return ()
 
 editH :: TutorialEntity -> AppHandler ()
 editH entity@(Entity tutorialKey tutorial) = do
-  response <- runMultipartForm "edit-tutorial" (Tutorial.Form.editForm $ tutorial)
+  response <- runMultipartForm "edit" (Tutorial.Form.editForm tutorial)
   case response of
     (v, Nothing) -> renderWithSplices "tutorials/form" $ do Tutorial.Splices.entitySplice entity
                                                             digestiveSplices v

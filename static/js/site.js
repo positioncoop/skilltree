@@ -1,4 +1,6 @@
 $(function() {
+  var moveTarget = null;
+
   d3.json("/tutorials", function(error, events) {
     gs = d3.select("svg").selectAll("image.tutorial").data(events).enter().append("g")
       .attr("transform", function(d) {
@@ -19,6 +21,18 @@ $(function() {
       .attr("dx", 5)
       .attr("dy", 72)
       .text(function(d) { return d.title });
+
+    gs.append("text")
+      .attr("dx", 5)
+      .attr("dy", 0)
+      .attr("data-json", function(d) {return JSON.stringify(d);})
+      .attr("style","color: blue; text-decoration: underline;")
+      .text("move me")
+      .on("click", function () {
+	moveTarget = $(this).data("json");
+	feedback.attr("xlink:href", moveTarget.iconPath);
+	d3.event.stopPropagation();
+      });
   });
 
   d3.select("svg")
@@ -27,9 +41,17 @@ $(function() {
       var x = Math.floor(click[0]/100);
       var y = Math.floor((click[1] - 25)/50);
 
-      $.post("/tutorials/new", {"new.x": x , "new.y": y, "new.title": "nope"}, function() {
-	window.location.reload();
-      });
+      if(moveTarget === null) {
+	$.post("/tutorials/new", {"new.x": x , "new.y": y}, function() {
+	  window.location.reload();
+	});
+      } else {
+	$.post("/tutorials/" + moveTarget.id + "/move", {"move.x": x , "move.y": y}, function() {
+	  moveTarget = null;
+	  feedback.attr("xlink:href", "/img/example.png");
+	  window.location.reload();
+	});
+      }
     })
     .on("mousemove", function() {
       var point = d3.mouse(this);

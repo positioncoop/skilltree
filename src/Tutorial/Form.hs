@@ -29,11 +29,20 @@ untitledTutorial :: Int -> Int -> Tutorial
 untitledTutorial a b = Tutorial a b "Untitled" Nothing
 
 newForm :: Form Text AppHandler Tutorial
-newForm = checkM "Tutorial overlaps with existing tutorial" overlapping $
+newForm = checkM "Tutorial overlaps" overlapping $
   untitledTutorial <$> "x" .: stringRead "Must be a number" Nothing
                    <*> "y" .: stringRead "Must be a number" Nothing
   where overlapping (Tutorial x y _ _) = do result <- runPersist (selectList [TutorialX ==. x, TutorialY ==. y] [LimitTo 1])
                                             return (result == [])
+
+moveForm :: TutorialEntity -> Form Text AppHandler Tutorial
+moveForm (Entity key (Tutorial _ _ title iconPath)) = checkM "Tutorial overlaps" overlapping $
+  Tutorial <$> "x" .: stringRead "Must be a number" Nothing
+           <*> "y" .: stringRead "Must be a number" Nothing
+           <*> pure title <*> pure iconPath
+  where overlapping (Tutorial x y _ _) = do
+          result <- runPersist (selectList [TutorialX ==. x, TutorialY ==. y, TutorialId !=. key] [LimitTo 1])
+          return (result == [])
 
 editForm :: Tutorial -> Form Text AppHandler Tutorial
 editForm (Tutorial x y title mIconPath) = Tutorial x y <$> "title" .: nonEmpty (text (Just title))
