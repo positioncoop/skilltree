@@ -1,4 +1,4 @@
-<apply template="base">
+<apply template="graph">
   <dfForm class="form-step">
     <dfInputTextArea ref="content" placeholder="Please describe the step"/>
     <dfChildErrorList ref="content" />

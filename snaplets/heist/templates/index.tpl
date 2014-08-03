@@ -1,2 +1,2 @@
-<apply template="base">
+<apply template="graph">
 </apply>

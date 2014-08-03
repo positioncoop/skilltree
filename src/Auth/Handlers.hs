@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Auth.Handlers where
 
+import qualified Data.Text.Encoding as T
 import Data.Text (Text)
 import Snap hiding (redirect, route)
 import SnapPrelude
@@ -33,4 +34,5 @@ signupH :: AppHandler ()
 signupH = do r <- runForm "signup" signupForm
              case r of
                (v, Nothing) -> renderWithSplices "auth/signup" (digestiveSplices v)
-               (_, _) -> redirect "/"
+               (_, Just (email, password)) -> do with auth $ createUser email $ T.encodeUtf8 password
+                                                 redirect "/"

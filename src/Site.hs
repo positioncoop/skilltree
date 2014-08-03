@@ -14,6 +14,7 @@ import           Snap.Core hiding (route)
 import           Snap.Snaplet
 import           Snap.Snaplet.Heist
 import           Snap.Snaplet.Session.Backends.CookieSession
+import           Snap.Snaplet.Auth
 import           Snap.Snaplet.Auth.Backends.PostgresqlSimple
 import           Snap.Snaplet.PostgresqlSimple
 import           Snap.Snaplet.Persistent
@@ -40,6 +41,7 @@ routes :: [(ByteString, AppHandler ())]
 routes = [ ("tutorials", route Tutorial.Handlers.routes)
          , ("steps",     route Step.Handlers.routeWithoutTutorial)
          , ("auth",      route Auth.Handlers.routes)
+         , ("",          heistServe)
          , ("",          serveDirectory "static")
          , ("store",     serveDirectory "store")
          , ("",          render "notfound")
@@ -62,6 +64,7 @@ app = makeSnaplet "app" "" Nothing $ do
     a <- nestSnaplet "auth" auth $ initPostgresAuth sess d
     ns <- liftIO $ makeResolvSeed defaultResolvConf
     e <- getEnvironment
+    addAuthSplices h auth
     addRoutes routes
     return $ App h s a p d r ns url (T.pack e) (Directory (absPath ++ "store"))
 

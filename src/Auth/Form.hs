@@ -20,4 +20,4 @@ loginForm = checkM "Unknown email or password" exists $
 signupForm :: Form Text AppHandler (Text, Text)
 signupForm = (,) <$> "email" .: exists (requiredForm "Enter an email address" (emailForm Nothing))
                  <*> "password" .: text Nothing
-  where exists = checkM "Email already taken" $ with auth . usernameExists
+  where exists = checkM "Email already taken" $ with auth . fmap not . usernameExists

@@ -5,6 +5,7 @@
 
     <dfSubView ref="email">
       <dfInput ref="address"/>
+      <dfInput ref="confirm"/>
     </dfSubView>
 
     <br/>

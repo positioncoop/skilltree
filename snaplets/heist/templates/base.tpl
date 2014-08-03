@@ -13,12 +13,6 @@
     <script type="text/javascript" src="/js/site.js"></script>
   </head>
   <body>
-
-    <svg class='grid' width=600 height=1000>
-    </svg>
-
-    <div style='float:right'>
-      <apply-content/>
-    </div>
+    <apply-content/>
   </body>
 </html>
