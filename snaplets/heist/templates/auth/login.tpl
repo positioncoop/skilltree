@@ -2,7 +2,10 @@
 
   <dfForm method="post">
 
-    <dfInput ref="email.address"/>
+    <dfSubView ref="email">
+      <dfInput ref="address"/>
+    </dfSubView>
+
     <br/>
     <dfInput ref="password" />
     <br/>

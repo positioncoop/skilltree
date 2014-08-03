@@ -32,6 +32,7 @@ import           SnapPrelude
 import           Application
 import           FileStore
 
+import qualified Auth.Handlers
 import qualified Tutorial.Handlers
 import qualified Step.Handlers
 
@@ -39,7 +40,7 @@ import qualified Step.Handlers
 routes :: [(ByteString, AppHandler ())]
 routes = [ ("tutorials", route Tutorial.Handlers.routes)
          , ("steps",     route Step.Handlers.routeWithoutTutorial)
-         , ("",          heistServe)
+         , ("auth",      route Auth.Handlers.routes)
          , ("",          serveDirectory "static")
          , ("store",     serveDirectory "store")
          , ("",          render "notfound")
