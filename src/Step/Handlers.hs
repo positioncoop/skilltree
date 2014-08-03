@@ -6,6 +6,7 @@ import Prelude hiding ((++))
 import qualified Data.Text.Encoding as T
 import Snap.Plus
 import Snap.Snaplet.Heist
+import Snap.Snaplet.Auth
 import Snap.Snaplet.Persistent (runPersist)
 import qualified Snap.Snaplet.Persistent as Persistent
 import Snap.Extras.JSON
@@ -23,7 +24,7 @@ import Snap.Plus.Forms
 import Application
 
 routeWithoutTutorial :: [(Text, AppHandler ())]
-routeWithoutTutorial = [(":id", handler)]
+routeWithoutTutorial = [(":id", requireUser auth pass handler)]
   where handler = do key <- getParam' "id" :: AppHandler (Key Step)
                      step <- require $ runPersist $ get key
                      let tkey = Persistent.mkKey $ stepTutorialId step
@@ -31,7 +32,7 @@ routeWithoutTutorial = [(":id", handler)]
                      stepHandler (Entity tkey tut) (Entity key step)
 
 routes :: TutorialEntity -> [(Text, AppHandler ())]
-routes tutorial = [("new", ifTop $ newH tutorial)
+routes tutorial = [("new", ifTop $ requireUser auth pass $ newH tutorial)
                   ]
 
 stepHandler :: TutorialEntity -> StepEntity -> AppHandler ()

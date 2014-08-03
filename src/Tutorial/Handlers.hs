@@ -6,6 +6,7 @@ import Prelude hiding ((++))
 import Snap.Plus
 import Snap.Plus.Forms
 import Snap.Snaplet.Heist
+import Snap.Snaplet.Auth
 import Snap.Snaplet.Persistent
 import Snap.Extras.JSON
 import Database.Persist
@@ -22,8 +23,8 @@ import Application
 
 routes :: [(Text, AppHandler ())]
 routes = [ ("", ifTop indexH)
-         , ("new", ifTop newH)
-         , (":id", tutorialHandler)
+         , ("new", ifTop $ requireUser auth pass newH)
+         , (":id", requireUser auth pass tutorialHandler)
          ]
 
 tutorialHandler :: AppHandler ()
