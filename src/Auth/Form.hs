@@ -2,12 +2,11 @@
 module Auth.Form where
 
 import Control.Applicative
-import Snap
+import Snap.Plus
+import Snap.Plus.Forms
 import Snap.Snaplet.Auth
 import qualified Data.Text.Encoding as T
-import Data.Text (Text)
 import Text.Digestive
-import Forms
 import Application
 
 loginForm :: Form Text AppHandler (Text, Text)

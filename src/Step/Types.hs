@@ -4,13 +4,11 @@
 module Step.Types where
 
 import Prelude hiding ((++))
-import Data.Text (Text)
+import Snap.Plus
 import Database.Persist.Types
 import Database.Persist.TH
 import Snap.Snaplet.Persistent (showKey)
 import Step.VideoType
-
-import Application
 
 share [mkPersist sqlSettings] [persistLowerCase|
 Step

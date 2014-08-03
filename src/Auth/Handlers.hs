@@ -3,8 +3,7 @@ module Auth.Handlers where
 
 import qualified Data.Text.Encoding as T
 import Data.Text (Text)
-import Snap hiding (redirect, route)
-import SnapPrelude
+import Snap.Plus
 import Snap.Snaplet.Auth
 import Snap.Snaplet.Heist
 import Text.Digestive

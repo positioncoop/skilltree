@@ -10,7 +10,7 @@ import           Data.ByteString (ByteString)
 import           Data.Monoid
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
-import           Snap.Core hiding (route)
+import           Snap.Plus
 import           Snap.Snaplet
 import           Snap.Snaplet.Heist
 import           Snap.Snaplet.Session.Backends.CookieSession
@@ -29,7 +29,6 @@ import           Heist.Splices.Ignore
 import           Network.DNS.Resolver
 import qualified Data.Configurator as C
 
-import           SnapPrelude
 import           Application
 import           FileStore
 
@@ -66,7 +65,7 @@ app = makeSnaplet "app" "" Nothing $ do
     e <- getEnvironment
     addAuthSplices h auth
     addRoutes routes
-    return $ App h s a p d r ns url (T.pack e) (Directory (absPath ++ "store"))
+    return $ App h s a p d r ns url (pack e) (Directory (absPath ++ "store"))
 
 prefixUrlSplice :: I.Splice AppHandler
 prefixUrlSplice = do node <- getParamNode

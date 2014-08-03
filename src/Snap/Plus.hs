@@ -1,32 +1,39 @@
-{-# LANGUAGE OverloadedStrings, PackageImports, FlexibleInstances, TypeFamilies #-}
+{-# LANGUAGE OverloadedStrings, FlexibleInstances, TypeFamilies #-}
 
-module SnapPrelude (void
-               , io
-               , tshow
-               , tNotNull
-               , readSafe
-               , getParam'
-               , require
-               , require'
-               , getCurrentPath
-               , ifIsUrl
-               , matchesUrl
-               , fromMaybe
-               , redirect
-               , route
-               ) where
+module Snap.Plus ( module Snap
+                 , module Control.Applicative
+                 , module Data.Text
+                 , (++)
+                 , io
+                 , tshow
+                 , tNotNull
+                 , readSafe
+                 , getParam'
+                 , require
+                 , require'
+                 , getCurrentPath
+                 , ifIsUrl
+                 , matchesUrl
+                 , fromMaybe
+                 , redirect
+                 , route
+                 ) where
 
-import Snap.Core hiding (redirect, route)
+import Prelude hiding ((++))
+import Snap hiding (redirect, route, get)
 import qualified Snap.Core
-import "mtl" Control.Monad.Trans (MonadIO, liftIO)
-import Control.Monad (void, MonadPlus, mzero)
+import Control.Applicative ((<$>), (<*>))
 import Control.Arrow (first)
+import Data.Monoid (Monoid, mappend)
 import Data.Maybe
-import Data.Text (Text)
+import Data.Text (Text, pack, unpack)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Snap.Snaplet.Persistent as Persistent
 import qualified Database.Persist as Persistent
+
+(++) :: Monoid d => d -> d -> d
+(++) = mappend
 
 ifIsUrl :: MonadSnap m => Text -> m a -> m a -> m a
 ifIsUrl u is not' = do matches <- matchesUrl u

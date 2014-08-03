@@ -4,16 +4,12 @@ module Tutorial.Form where
 
 import Control.Lens
 import Prelude hiding ((++))
-import Data.Maybe
-import Control.Applicative
-import qualified Data.Text as T
-import Data.Text (Text)
 import Text.Digestive
-import Snap
+import Snap.Plus
+import Snap.Plus.Forms
 import Snap.Snaplet.Persistent
 import Database.Persist
 import FileStore
-import Forms
 
 import qualified Data.Conduit as C
 import qualified Data.Conduit.Binary as CB
@@ -55,7 +51,7 @@ moveFile def = validateM mkMedia
          mkMedia (Just _path) =
             do store <- use filestore
                url <- storeFile store _path Nothing
-               return $ Success (Just $ T.unpack url)
+               return $ Success (Just $ unpack url)
 
 enforceImageSize :: Form Text AppHandler (Maybe FilePath) -> Form Text AppHandler (Maybe FilePath)
 enforceImageSize = checkM "Image must be a PNG, 60x60." $ \mFilePath -> case mFilePath of

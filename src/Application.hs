@@ -51,6 +51,3 @@ runRedis :: Redis a -> AppHandler a
 runRedis = runRedisDB redis
 
 type AppHandler = Handler App App
-
-(++) :: Monoid d => d -> d -> d
-(++) = mappend

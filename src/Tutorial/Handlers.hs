@@ -3,16 +3,14 @@
 module Tutorial.Handlers where
 
 import Prelude hiding ((++))
-import Data.Text (Text)
-import Snap.Core hiding (redirect, route)
+import Snap.Plus
+import Snap.Plus.Forms
 import Snap.Snaplet.Heist
 import Snap.Snaplet.Persistent
 import Snap.Extras.JSON
 import Database.Persist
 import Text.Digestive.Snap (runForm)
 import Text.Digestive.Heist
-import SnapPrelude
-import Forms
 
 import Tutorial.Form
 import Tutorial.Types

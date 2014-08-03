@@ -2,18 +2,14 @@
 
 module Step.Form where
 
-import Control.Lens
 import Prelude hiding ((++))
-import Data.Maybe
-import Control.Applicative
-import qualified Data.Text as T
-import Data.Text (Text)
+import Control.Lens
 import Text.Digestive
-import Snap
+import Snap.Plus
+import Snap.Plus.Forms
 import Snap.Snaplet.Persistent
 import Database.Persist
 import FileStore
-import Forms
 
 import Step.VideoType
 import Step.Types

@@ -7,14 +7,13 @@ import qualified Data.Text as T
 import Data.Text (Text)
 import Heist
 import Heist.Interpreted
-import Snap
+import Snap.Plus
 
 import Database.Persist.Types
 import qualified Snap.Snaplet.Persistent as P
 
 import Step.VideoType
 import Step.Types
-import SnapPrelude
 import Application
 
 entitySplice :: StepEntity -> Splices (Splice AppHandler)

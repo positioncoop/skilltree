@@ -3,11 +3,8 @@
 module Step.Handlers where
 
 import Prelude hiding ((++))
-import Control.Applicative
-import Data.Text (Text)
 import qualified Data.Text.Encoding as T
-import Snap (liftIO)
-import Snap.Core hiding (redirect, route)
+import Snap.Plus
 import Snap.Snaplet.Heist
 import Snap.Snaplet.Persistent (runPersist)
 import qualified Snap.Snaplet.Persistent as Persistent
@@ -21,8 +18,7 @@ import Control.Monad.Trans.Maybe
 import Step.Form
 import Step.Types
 import Tutorial.Types
-import SnapPrelude
-import Forms
+import Snap.Plus.Forms
 
 import Application
 

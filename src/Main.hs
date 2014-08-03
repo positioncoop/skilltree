@@ -21,11 +21,10 @@ import qualified Data.Text as T
 import           Snap.Http.Server
 import           Snap.Snaplet
 import           Snap.Snaplet.Config
-import           Snap.Core
 import           System.Environment (lookupEnv)
 import           System.IO
 import           Site
-import           SnapPrelude
+import           Snap.Plus
 
 #ifdef DEVELOPMENT
 import           Snap.Loader.Dynamic

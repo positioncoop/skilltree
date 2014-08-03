@@ -1,17 +1,14 @@
 {-# LANGUAGE OverloadedStrings, TupleSections #-}
 
-module Forms where
+module Snap.Plus.Forms where
 
 import Control.Monad
-import Control.Monad.Trans (liftIO)
 import Control.Lens
 import Control.Applicative
 import Text.Digestive
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
-import Data.Text (Text)
 import Data.Char
-import Snap
 import Text.Digestive.Snap
 import Snap.Util.FileUploads
 import Network.DNS.Lookup
@@ -19,7 +16,7 @@ import Network.DNS.Resolver
 import Network.DNS.Types
 
 import Application
-import SnapPrelude
+import Snap.Plus
 
 requiredForm :: Text -> Form Text AppHandler (Maybe a) -> Form Text AppHandler a
 requiredForm msg = validate (maybe (Error msg) Success)
@@ -28,14 +25,14 @@ nameForm :: Maybe Text -> Form Text AppHandler Text
 nameForm = nonEmpty . text
 
 emailForm :: Maybe Text -> Form Text AppHandler (Maybe Text)
-emailForm t = fmap T.toLower <$> (emailDnsCheck $ fst <$>
-              (matching $ (,) <$> "address" .: emailValidateSimple (optionalText t)
-                              <*> "confirm" .: emailValidateSimple (optionalText t)))
+emailForm t =  fmap T.toLower <$> emailDnsCheck
+               (fst <$> matching ((,) <$> "address" .: emailValidateSimple (optionalText t)
+                                      <*> "confirm" .: emailValidateSimple (optionalText t)))
   where matching = check "Email addresses do not match."
                          (maybe True (uncurry (==)) . uncurry (liftM2 (,)))
 
 emailFormSingle :: Maybe Text -> Form Text AppHandler (Maybe Text)
-emailFormSingle t = fmap T.toLower <$> (emailDnsCheck $ "address" .: emailValidateSimple (optionalText t))
+emailFormSingle t = fmap T.toLower <$> emailDnsCheck ("address" .: emailValidateSimple (optionalText t))
 
 emailValidateSimple :: Form Text AppHandler (Maybe Text) -> Form Text AppHandler (Maybe Text)
 emailValidateSimple = check "Email address not valid (missing @)." (maybe True ("@" `T.isInfixOf`))
@@ -64,7 +61,7 @@ nonEmptyTextForm = nonEmpty (text Nothing)
 
 
 slugForm :: Formlet Text AppHandler Text
-slugForm = check "Cannot have spaces" (not . T.isInfixOf " ") . text
+slugForm t = T.toLower <$> check "Cannot have spaces" (not . T.isInfixOf " ") (text t)
 
 
 deleteForm :: Text -> Form Text AppHandler Bool
@@ -72,7 +69,7 @@ deleteForm t = snd <$> ((,) <$> "prompt" .: text (Just t)
                             <*> "confirm" .: bool Nothing)
 
 numericTextForm :: Form Text AppHandler Text
-numericTextForm = check "Must be all numbers" ((all isDigit).T.unpack) (text Nothing)
+numericTextForm = check "Must be all numbers" (all isDigit . T.unpack) (text Nothing)
 
 runMultipartForm :: MonadSnap m	=> Text -> Form v m a -> m (View v, Maybe a)
 runMultipartForm = runFormWith (defaultSnapFormConfig { uploadPolicy = setMaximumFormInputSize tenmegs defaultUploadPolicy

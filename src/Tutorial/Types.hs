@@ -4,15 +4,11 @@
 module Tutorial.Types where
 
 import Prelude hiding ((++))
-import Data.Text (Text)
+import Snap.Plus
 import Database.Persist.Types
 import Database.Persist.TH
-import qualified Snap.Snaplet.Persistent as P
-import Database.Persist
 import Data.Aeson.Types
 import Snap.Snaplet.Persistent (showKey)
-
-import Application
 
 share [mkPersist sqlSettings] [persistLowerCase|
 Tutorial
