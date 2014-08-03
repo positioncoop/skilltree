@@ -4,10 +4,10 @@ module Step.Handlers where
 
 import Prelude hiding ((++))
 import Control.Applicative
-import Data.ByteString (ByteString)
+import Data.Text (Text)
 import qualified Data.Text.Encoding as T
 import Snap (liftIO)
-import Snap.Core hiding (redirect)
+import Snap.Core hiding (redirect, route)
 import Snap.Snaplet.Heist
 import Snap.Snaplet.Persistent (runPersist)
 import qualified Snap.Snaplet.Persistent as Persistent
@@ -26,7 +26,7 @@ import Forms
 
 import Application
 
-routeWithoutTutorial :: [(ByteString, AppHandler ())]
+routeWithoutTutorial :: [(Text, AppHandler ())]
 routeWithoutTutorial = [(":id", handler)]
   where handler = do key <- getParam' "id" :: AppHandler (Key Step)
                      step <- require $ runPersist $ get key
@@ -34,7 +34,7 @@ routeWithoutTutorial = [(":id", handler)]
                      tut <- require $ runPersist $ get tkey
                      stepHandler (Entity tkey tut) (Entity key step)
 
-routes :: TutorialEntity -> [(ByteString, AppHandler ())]
+routes :: TutorialEntity -> [(Text, AppHandler ())]
 routes tutorial = [("new", ifTop $ newH tutorial)
                   ]
 

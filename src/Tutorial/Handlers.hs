@@ -3,8 +3,8 @@
 module Tutorial.Handlers where
 
 import Prelude hiding ((++))
-import Data.ByteString (ByteString)
-import Snap.Core hiding (redirect)
+import Data.Text (Text)
+import Snap.Core hiding (redirect, route)
 import Snap.Snaplet.Heist
 import Snap.Snaplet.Persistent
 import Snap.Extras.JSON
@@ -22,7 +22,7 @@ import Tutorial.Queries
 
 import Application
 
-routes :: [(ByteString, AppHandler ())]
+routes :: [(Text, AppHandler ())]
 routes = [ ("", ifTop indexH)
          , ("new", ifTop newH)
          , (":id", tutorialHandler)

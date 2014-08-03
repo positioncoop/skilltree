@@ -13,12 +13,14 @@ module SnapPrelude (void
                , matchesUrl
                , fromMaybe
                , redirect
+               , route
                ) where
 
-import Snap.Core hiding (redirect)
+import Snap.Core hiding (redirect, route)
 import qualified Snap.Core
 import "mtl" Control.Monad.Trans (MonadIO, liftIO)
 import Control.Monad (void, MonadPlus, mzero)
+import Control.Arrow (first)
 import Data.Maybe
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -78,3 +80,6 @@ getCurrentPath = fmap ( T.decodeUtf8 . urlEncode . T.encodeUtf8
 
 redirect :: MonadSnap m => Text -> m a
 redirect = Snap.Core.redirect . T.encodeUtf8
+
+route :: MonadSnap m => [(Text, m a)] -> m a
+route = Snap.Core.route . map (first T.encodeUtf8)

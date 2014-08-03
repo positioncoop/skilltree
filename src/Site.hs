@@ -10,7 +10,7 @@ import           Data.ByteString (ByteString)
 import           Data.Monoid
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
-import           Snap.Core
+import           Snap.Core hiding (route)
 import           Snap.Snaplet
 import           Snap.Snaplet.Heist
 import           Snap.Snaplet.Session.Backends.CookieSession
@@ -35,7 +35,6 @@ import           FileStore
 import qualified Auth.Handlers
 import qualified Tutorial.Handlers
 import qualified Step.Handlers
-
 
 routes :: [(ByteString, AppHandler ())]
 routes = [ ("tutorials", route Tutorial.Handlers.routes)

@@ -1,9 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Auth.Handlers where
 
-import Data.ByteString (ByteString)
 import Data.Text (Text)
-import Snap hiding (redirect)
+import Snap hiding (redirect, route)
 import SnapPrelude
 import Snap.Snaplet.Auth
 import Snap.Snaplet.Heist
@@ -13,7 +12,7 @@ import Text.Digestive.Heist
 import Auth.Form
 import Application
 
-routes :: [(ByteString, AppHandler ())]
+routes :: [(Text, AppHandler ())]
 routes = [("logout", logoutH)
          ,("", do isl <- with auth isLoggedIn
                   if isl
