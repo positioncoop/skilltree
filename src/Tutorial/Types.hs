@@ -23,8 +23,8 @@ Tutorial
 type TutorialEntity = Entity Tutorial
 
 instance ToJSON (Entity Tutorial) where
-  toJSON (Entity id (Tutorial x y title iconPath)) =
-    object ["id" .= showKey id, "x" .= x, "y" .= y, "title" .= title, "iconPath" .= iconPath]
+  toJSON (Entity key (Tutorial x y title iconPath)) =
+    object ["id" .= showKey key, "x" .= x, "y" .= y, "title" .= title, "iconPath" .= iconPath]
 
 tutorialPath :: TutorialEntity -> Text
 tutorialPath (Entity key _) = "/tutorials/" ++ showKey key

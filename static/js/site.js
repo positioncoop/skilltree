@@ -2,7 +2,7 @@ $(function() {
   var moveTarget = null;
 
   d3.json("/tutorials", function(error, events) {
-    gs = d3.select("svg").selectAll("image.tutorial").data(events).enter().append("g")
+    gs = d3.select("svg").selectAll("image.tutorial").data(events.tutorials).enter().append("g")
       .attr("transform", function(d) {
 	var dx = d.x * 100 + 20;
 	var dy = d.y * 50 + 20;

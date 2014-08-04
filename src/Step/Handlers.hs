@@ -1,20 +1,18 @@
-{-# Language OverloadedStrings, GADTs, TemplateHaskell, QuasiQuotes, FlexibleInstances, TypeFamilies, NoMonomorphismRestriction, ScopedTypeVariables, FlexibleContexts #-}
+{-# LANGUAGE OverloadedStrings, GADTs, FlexibleInstances,
+    TypeFamilies, NoMonomorphismRestriction, ScopedTypeVariables,
+    FlexibleContexts #-}
 
 module Step.Handlers where
 
 import Prelude hiding ((++))
-import qualified Data.Text.Encoding as T
 import Snap.Plus
 import Snap.Snaplet.Heist
 import Snap.Snaplet.Auth
 import Snap.Snaplet.Persistent (runPersist)
 import qualified Snap.Snaplet.Persistent as Persistent
-import Snap.Extras.JSON
 import Database.Persist
 import Text.Digestive.Snap (runForm)
 import Text.Digestive.Heist
-import Control.Monad.Trans.Maybe
-
 
 import Step.Form
 import Step.Types
@@ -37,8 +35,8 @@ routes tutorial = [("new", ifTop $ requireUser auth pass $ newH tutorial)
 
 stepHandler :: TutorialEntity -> StepEntity -> AppHandler ()
 stepHandler tutorial (Entity stepKey step) =
-  do route [("edit", ifTop $ editH tutorial (Entity stepKey step))
-           ,("delete", ifTop $ deleteH tutorial (Entity stepKey step))]
+  route [("edit", ifTop $ editH tutorial (Entity stepKey step))
+        ,("delete", ifTop $ deleteH tutorial (Entity stepKey step))]
 
 newH :: TutorialEntity -> AppHandler ()
 newH tutorial@(Entity key _) = do
@@ -46,7 +44,7 @@ newH tutorial@(Entity key _) = do
   case response of
     (v, Nothing) -> renderWithSplices "steps/form" (digestiveSplices v)
     (_, Just step) -> do
-      runPersist $ insert step
+      void $ runPersist $ insert step
       redirect $ tutorialEditPath tutorial
 
 editH :: TutorialEntity -> StepEntity -> AppHandler ()

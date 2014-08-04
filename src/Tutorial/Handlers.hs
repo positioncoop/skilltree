@@ -1,4 +1,6 @@
-{-# Language OverloadedStrings, GADTs, TemplateHaskell, QuasiQuotes, FlexibleInstances, TypeFamilies, NoMonomorphismRestriction, ScopedTypeVariables, FlexibleContexts #-}
+{-# LANGUAGE OverloadedStrings, GADTs, FlexibleInstances,
+    TypeFamilies, NoMonomorphismRestriction, ScopedTypeVariables,
+    FlexibleContexts #-}
 
 module Tutorial.Handlers where
 
@@ -9,7 +11,8 @@ import Snap.Snaplet.Heist
 import Snap.Snaplet.Auth
 import Snap.Snaplet.Persistent
 import Snap.Extras.JSON
-import Database.Persist
+import Data.Aeson
+import Database.Persist (selectList, delete)
 import Text.Digestive.Snap (runForm)
 import Text.Digestive.Heist
 
@@ -18,6 +21,8 @@ import Tutorial.Types
 import Tutorial.Splices
 import qualified Step.Handlers
 import Tutorial.Queries
+import qualified Dependency.Types as D
+import Database.Esqueleto hiding (delete)
 
 import Application
 
@@ -45,7 +50,16 @@ home = redirect "/"
 indexH :: AppHandler ()
 indexH = do
   tutorials <- runPersist $ selectList [] [] :: AppHandler [Entity Tutorial]
-  writeJSON tutorials
+  dependencies <- getDependencyPair
+  writeJSON $ object ["tutorials" .= tutorials, "dependencies" .= map toLine dependencies]
+  where
+    getDependencyPair = runPersist $ select $
+                        from $ \(depend `InnerJoin` djoin `InnerJoin` tutorial) -> do
+                          on (tutorial ^. TutorialId ==. djoin ^. D.DependencyTutorialId)
+                          on (depend ^. TutorialId ==. djoin ^. D.DependencyDependencyId)
+                          return (depend, tutorial)
+    toLine (Entity _ (Tutorial x1 y1 _ _), Entity _ (Tutorial x2 y2 _ _)) =
+      object ["x1" .= x1, "y1" .= y1, "x2" .= x2, "y2" .= y2]
 
 showH :: TutorialEntity -> AppHandler ()
 showH = undefined
