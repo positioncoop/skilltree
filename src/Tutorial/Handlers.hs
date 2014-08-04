@@ -58,8 +58,9 @@ indexH = do
                           on (tutorial ^. TutorialId ==. djoin ^. D.DependencyTutorialId)
                           on (depend ^. TutorialId ==. djoin ^. D.DependencyDependencyId)
                           return (depend, tutorial)
-    toLine (Entity _ (Tutorial x1 y1 _ _), Entity _ (Tutorial x2 y2 _ _)) =
-      object ["x1" .= x1, "y1" .= y1, "x2" .= x2, "y2" .= y2]
+    toPoint (Tutorial x y _ _) = object ["x" .= x, "y" .= y]
+    toLine (Entity _ target, Entity _ source) =
+      object ["target" .= toPoint(target), "source" .= toPoint(source)]
 
 showH :: TutorialEntity -> AppHandler ()
 showH = undefined
