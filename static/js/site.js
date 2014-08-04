@@ -2,7 +2,8 @@ $(function() {
   var moveTarget = null;
 
   d3.json("/tutorials", function(error, events) {
-    gs = d3.select("svg").selectAll("image.tutorial").data(events.tutorials).enter().append("g")
+    gs = d3.select("svg").selectAll("image.tutorial").data(events.tutorials).enter()
+      .append("g")
       .attr("transform", function(d) {
 	var dx = d.x * 100 + 20;
 	var dy = d.y * 50 + 20;
@@ -34,6 +35,14 @@ $(function() {
 	feedback.attr("xlink:href", moveTarget.iconPath || "/img/example.png");
 	d3.event.stopPropagation();
       });
+
+    lines = d3.select("svg").selectAll("line.dependency").data(events.dependencies).enter()
+      .append("line")
+      .attr("x1", function(d) {return d.x1 * 100 + 20 + 60;})
+      .attr("y1", function(d) {return d.y1 * 50 + 20 + 30;})
+      .attr("x2", function(d) {return d.x2 * 100 + 20;})
+      .attr("y2", function(d) {return d.y2 * 50 + 20 + 30;})
+      .attr("style", "stroke:rgb(255,0,0);stroke-width:2");
   });
 
   d3.select("svg")
