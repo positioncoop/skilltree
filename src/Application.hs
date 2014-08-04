@@ -17,7 +17,6 @@ import Snap.Snaplet.Persistent
 import Snap.Snaplet.RedisDB
 import Snap.Snaplet.Auth
 import Database.Redis (Redis)
-import Network.DNS.Resolver
 import Control.Monad.Logger
 import Data.Pool
 import Database.PostgreSQL.Simple (Connection)
@@ -30,7 +29,6 @@ data App = App
      , _persistent :: Snaplet PersistState
      , _db :: Snaplet Postgres
      , _redis :: Snaplet RedisDB
-     , _dns :: ResolvSeed
      , _siteUrl :: Text
      , _env :: Text
      , _filestore :: FileStore

@@ -3,17 +3,12 @@
 module Snap.Plus.Forms where
 
 import Control.Monad
-import Control.Lens
 import Control.Applicative
 import Text.Digestive
 import qualified Data.Text as T
-import qualified Data.Text.Encoding as T
 import Data.Char
 import Text.Digestive.Snap
 import Snap.Util.FileUploads
-import Network.DNS.Lookup
-import Network.DNS.Resolver
-import Network.DNS.Types
 
 import Application
 import Snap.Plus
@@ -25,30 +20,17 @@ nameForm :: Maybe Text -> Form Text AppHandler Text
 nameForm = nonEmpty . text
 
 emailForm :: Maybe Text -> Form Text AppHandler (Maybe Text)
-emailForm t =  fmap T.toLower <$> emailDnsCheck
+emailForm t =  fmap T.toLower <$>
                (fst <$> matching ((,) <$> "address" .: emailValidateSimple (optionalText t)
                                       <*> "confirm" .: emailValidateSimple (optionalText t)))
   where matching = check "Email addresses do not match."
                          (maybe True (uncurry (==)) . uncurry (liftM2 (,)))
 
 emailFormSingle :: Maybe Text -> Form Text AppHandler (Maybe Text)
-emailFormSingle t = fmap T.toLower <$> emailDnsCheck ("address" .: emailValidateSimple (optionalText t))
+emailFormSingle t = fmap T.toLower <$> ("address" .: emailValidateSimple (optionalText t))
 
 emailValidateSimple :: Form Text AppHandler (Maybe Text) -> Form Text AppHandler (Maybe Text)
 emailValidateSimple = check "Email address not valid (missing @)." (maybe True ("@" `T.isInfixOf`))
-
-emailDnsCheck :: Form Text AppHandler (Maybe Text) -> Form Text AppHandler (Maybe Text)
-emailDnsCheck = checkM "Email address domain (after the @) not valid." $ maybe (return True) $ \e ->
-                       do seed <- use dns
-                          let host = T.encodeUtf8 (T.drop 1 (snd (T.breakOn "@" e)))
-                          res <- liftIO $ withResolver seed (`lookupMX` host)
-                          case res of
-                            Left err -> case err of
-                                          IllegalDomain -> return False
-                                          NameError -> return False
-                                          _ -> return True
-                            Right [] -> return False
-                            _ -> return True
 
 passwordForm :: Form Text AppHandler Text
 passwordForm = nonEmptyTextForm

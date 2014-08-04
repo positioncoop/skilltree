@@ -26,7 +26,6 @@ import qualified Heist.Interpreted as I
 import qualified Text.XmlHtml as X
 import           Heist.Splices.BindStrict
 import           Heist.Splices.Ignore
-import           Network.DNS.Resolver
 import qualified Data.Configurator as C
 
 import           Application
@@ -61,11 +60,10 @@ app = makeSnaplet "app" "" Nothing $ do
     d <- nestSnaplet "db" db pgsInit
     r <- nestSnaplet "redis" redis redisDBInitConf
     a <- nestSnaplet "auth" auth $ initPostgresAuth sess d
-    ns <- liftIO $ makeResolvSeed defaultResolvConf
     e <- getEnvironment
     addAuthSplices h auth
     addRoutes routes
-    return $ App h s a p d r ns url (pack e) (Directory (absPath ++ "store"))
+    return $ App h s a p d r url (pack e) (Directory (absPath ++ "store"))
 
 prefixUrlSplice :: I.Splice AppHandler
 prefixUrlSplice = do node <- getParamNode
