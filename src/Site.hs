@@ -34,15 +34,17 @@ import           FileStore
 import qualified Auth.Handlers
 import qualified Tutorial.Handlers
 import qualified Step.Handlers
+import qualified Dependency.Handlers
 
 routes :: [(ByteString, AppHandler ())]
-routes = [ ("tutorials", route Tutorial.Handlers.routes)
-         , ("steps",     route Step.Handlers.routeWithoutTutorial)
-         , ("auth",      route Auth.Handlers.routes)
-         , ("",          heistServe)
-         , ("",          serveDirectory "static")
-         , ("store",     serveDirectory "store")
-         , ("",          render "notfound")
+routes = [ ("tutorials",    route Tutorial.Handlers.routes)
+         , ("steps",        route Step.Handlers.routeWithoutTutorial)
+         , ("dependencies", route Dependency.Handlers.routes)
+         , ("auth",         route Auth.Handlers.routes)
+         , ("",             heistServe)
+         , ("",             serveDirectory "static")
+         , ("store",        serveDirectory "store")
+         , ("",             render "notfound")
          ]
 
 app :: SnapletInit App App

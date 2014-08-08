@@ -9,7 +9,21 @@ var from_mouse = function(mouse) {
 }
 
 $(function() {
+  d3.json("/tutorials", function(error, data) {
+    var enter = d3.select("svg.grid").selectAll("image.tutorial").data(data.tutorials).enter();
+
+    lines = d3.select("svg.grid").selectAll("line.dependency").data(data.dependencies).enter()
+      .append("line")
+      .attr("x1", function(d) {return to_display(d.source).x;})
+      .attr("y1", function(d) {return to_display(d.source).y + 30;})
+      .attr("x2", function(d) {return to_display(d.target).x + 60;})
+      .attr("y2", function(d) {return to_display(d.target).y + 30;})
+      .attr("style", "stroke:rgb(255,0,0);stroke-width:2");
+    appendTutorial(enter);
+  });
+
   var moveTarget = null;
+  var dependencySource = null;
   var appendTutorial = function(enter) {
     group = enter.append("g")
       .attr("transform", function(d) {
@@ -18,6 +32,7 @@ $(function() {
       });
 
     group.append("a")
+      .attr("class", "tutorial-container")
       .attr("xlink:href", function(d) {return "/tutorials/" + d.id + "/edit";})
       .append("image")
       .attr("class", "tutorial")
@@ -30,8 +45,37 @@ $(function() {
       .text(function(d) { return d.title });
 
     group.append("text")
-      .attr("dx", 58)
-      .attr("dy", 40)
+      .attr("dx", -22).attr("dy", 30)
+      .attr("data-json", function(d) {return JSON.stringify(d);})
+      .attr("style","font-size: 18px; font-weight: regular")
+      .text("")
+      .attr("class", "fa fa-star-o")
+      .on("click", function () {
+	dependencySource = $(this).data("json");
+	feedback.attr("xlink:href", "/img/left-arrow.jpg");
+	d3.event.stopPropagation();
+      });
+
+    group.append("text")
+      .attr("dx", 60).attr("dy", 50)
+      .attr("data-json", function(d) {return JSON.stringify(d);})
+      .attr("style","font-size: 25px; font-weight: regular")
+      .text("")
+      .attr("class", "fa fa-bullseye")
+      .on("click", function (d) {
+	console.log(d);
+	if (dependencySource !== null) {
+	  $.post("/dependencies/new", {"new.tutorialId": dependencySource.id, "new.dependencyId": d.id}, function() {
+	    dependencySource = null;
+	    feedback.attr("xlink:href", "/img/example.png");
+	    window.location.reload();
+	  });
+	}
+	d3.event.stopPropagation();
+      });
+
+    group.append("text")
+      .attr("dx", 58).attr("dy", 0)
       .attr("data-json", function(d) {return JSON.stringify(d);})
       .attr("style","font-size: 25px; font-weight: regular")
       .text("")
@@ -43,28 +87,19 @@ $(function() {
       });
   }
 
-  d3.json("/tutorials", function(error, events) {
-    var enter = d3.select("svg.grid").selectAll("image.tutorial").data(events.tutorials).enter();
-    appendTutorial(enter);
-
-    lines = d3.select("svg.grid").selectAll("line.dependency").data(events.dependencies).enter()
-      .append("line")
-      .attr("x1", function(d) {return to_display(d.source).x;})
-      .attr("y1", function(d) {return to_display(d.source).y + 30;})
-      .attr("x2", function(d) {return to_display(d.target).x + 60;})
-      .attr("y2", function(d) {return to_display(d.target).y + 30;})
-      .attr("style", "stroke:rgb(255,0,0);stroke-width:2");
-  });
-
   d3.select("svg.grid")
     .on("click", function() {
       var p = from_mouse(d3.mouse(this));
 
-      if(moveTarget === null) {
+      if(moveTarget === null && dependencySource === null) {
 	$.post("/tutorials/new", {"new.x": p.x , "new.y": p.y}, function() {
 	  window.location.reload();
 	});
-      } else {
+      } else if (dependencySource !== null) {
+	  dependencySource = null;
+	  feedback.attr("xlink:href", "/img/example.png");
+      } else if (moveTarget !== null) {
+	d3.event.stopPropagation();
 	$.post("/tutorials/" + moveTarget.id + "/move", {"move.x": p.x , "move.y": p.y}, function() {
 	  moveTarget = null;
 	  feedback.attr("xlink:href", "/img/example.png");
