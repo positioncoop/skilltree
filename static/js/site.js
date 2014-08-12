@@ -24,6 +24,7 @@ $(function() {
 
   var moveTarget = null;
   var dependencySource = null;
+  var bullseyes = null;
   var appendTutorial = function(enter) {
     group = enter.append("g")
       .attr("class", "tutorial")
@@ -32,9 +33,7 @@ $(function() {
 	return "translate(" + point.x + ", " + point.y + ")";
       });
 
-    group.append("a")
-      .attr("xlink:href", function(d) {return "/tutorials/" + d.id + "/edit";})
-      .append("image")
+    group.append("image")
       .attr("xlink:href", function(d) {return d.iconPath || "/img/example.png";})
       .attr("width",60).attr("height",60);
 
@@ -45,20 +44,21 @@ $(function() {
 
     group.append("text")
       .attr("dx", -22).attr("dy", 30)
-      .attr("data-json", function(d) {return JSON.stringify(d);})
       .attr("style","font-size: 18px; font-weight: regular")
       .text("")
+      .attr("data-json", function(d) {return JSON.stringify(d);})
       .attr("class", "fa fa-star-o")
       .on("click", function () {
 	dependencySource = $(this).data("json");
 	feedback.attr("xlink:href", "/img/left-arrow.jpg");
+	bullseyes.style("opacity", 1);
 	d3.event.stopPropagation();
       });
 
-    group.append("text")
+    bullseyes = group.append("text")
       .attr("dx", 60).attr("dy", 50)
-      .attr("data-json", function(d) {return JSON.stringify(d);})
-      .attr("style","font-size: 25px; font-weight: regular")
+      .attr("style","font-size: 25px; font-weight: regular;")
+      .style("opacity", 0)
       .text("")
       .attr("class", "fa fa-bullseye")
       .on("click", function (d) {
@@ -83,6 +83,16 @@ $(function() {
 	feedback.attr("xlink:href", moveTarget.iconPath || "/img/example.png");
 	d3.event.stopPropagation();
       });
+
+    group.append("text")
+      .on("click", function(d) {
+	d3.event.stopPropagation();
+	window.location.href = "/tutorials/" + d.id + "/edit";
+      })
+      .attr("dx", 0).attr("dy", 0)
+      .attr("style","font-size: 25px; font-weight: regular")
+      .text("")
+      .attr("class", "fa fa-pencil");
   }
 
   d3.select("svg.grid")
@@ -94,8 +104,9 @@ $(function() {
 	  window.location.reload();
 	});
       } else if (dependencySource !== null) {
-	  dependencySource = null;
-	  feedback.attr("xlink:href", "/img/example.png");
+	dependencySource = null;
+	bullseyes.style("opacity", 0);
+	feedback.attr("xlink:href", "/img/example.png");
       } else if (moveTarget !== null) {
 	d3.event.stopPropagation();
 	$.post("/tutorials/" + moveTarget.id + "/move", {"move.x": p.x , "move.y": p.y}, function() {

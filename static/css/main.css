@@ -16,6 +16,6 @@ svg.grid {
   border-color: transparent;
 }
 
-.move-icon:hover {
+.fa:hover {
   cursor: pointer;
 }
