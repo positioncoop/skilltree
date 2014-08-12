@@ -10,7 +10,7 @@ var from_mouse = function(mouse) {
 
 $(function() {
   d3.json("/tutorials", function(error, data) {
-    var enter = d3.select("svg.grid").selectAll("image.tutorial").data(data.tutorials).enter();
+    var enter = d3.select("svg.grid").selectAll("g.tutorial").data(data.tutorials).enter();
 
     lines = d3.select("svg.grid").selectAll("line.dependency").data(data.dependencies).enter()
       .append("line")
@@ -26,16 +26,15 @@ $(function() {
   var dependencySource = null;
   var appendTutorial = function(enter) {
     group = enter.append("g")
+      .attr("class", "tutorial")
       .attr("transform", function(d) {
 	var point = to_display(d);
 	return "translate(" + point.x + ", " + point.y + ")";
       });
 
     group.append("a")
-      .attr("class", "tutorial-container")
       .attr("xlink:href", function(d) {return "/tutorials/" + d.id + "/edit";})
       .append("image")
-      .attr("class", "tutorial")
       .attr("xlink:href", function(d) {return d.iconPath || "/img/example.png";})
       .attr("width",60).attr("height",60);
 
@@ -63,7 +62,6 @@ $(function() {
       .text("")
       .attr("class", "fa fa-bullseye")
       .on("click", function (d) {
-	console.log(d);
 	if (dependencySource !== null) {
 	  $.post("/dependencies/new", {"new.tutorialId": dependencySource.id, "new.dependencyId": d.id}, function() {
 	    dependencySource = null;
