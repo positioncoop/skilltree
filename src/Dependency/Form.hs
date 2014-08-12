@@ -22,11 +22,15 @@ import Dependency.Types
 import Application
 
 newForm :: Form Text AppHandler Dependency
-newForm = checkM "Dependency cannot be to the right of tutorial" canit $
+newForm = checkM "Dependency invalid" validateDep $
   Dependency <$> "tutorialId" .: keyForm Nothing
              <*> "dependencyId" .: keyForm Nothing
   where
-    canit = const $ return True
+    validateDep (Dependency tutorialKey dependencyKey) | tutorialKey == dependencyKey = return False
+    validateDep (Dependency tutorialKey dependencyKey) = do result <- runPersist (selectList [DependencyTutorialId ==. tutorialKey,
+                                                                                              DependencyDependencyId ==. dependencyKey]
+                                                                                  [LimitTo 1])
+                                                            return (result == [])
     keyForm def = validate (\s -> case readSafe s of
                                     Nothing -> Error "Not a number"
                                     Just i -> Success (mkKey i)) (text def)
