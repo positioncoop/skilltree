@@ -26,10 +26,13 @@ import Database.Esqueleto hiding (delete)
 
 import Application
 
+authCheck :: AppHandler ()
+authCheck = redirect "/auth/login"
+
 routes :: [(Text, AppHandler ())]
 routes = [ ("", ifTop indexH)
-         , ("new", ifTop $ requireUser auth pass newH)
-         , (":id", requireUser auth pass tutorialHandler)
+         , ("new", ifTop $ requireUser auth authCheck newH)
+         , (":id", requireUser auth authCheck tutorialHandler)
          ]
 
 tutorialHandler :: AppHandler ()
