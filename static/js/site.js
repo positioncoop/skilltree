@@ -18,9 +18,10 @@ $(function() {
       .attr("y1", function(d) {return to_display(d.source).y + 30;})
       .attr("x2", function(d) {return to_display(d.target).x + 60;})
       .attr("y2", function(d) {return to_display(d.target).y + 30;})
-      .attr("style", "stroke:rgb(255,0,0);stroke-width:2");
+      .attr("style", "stroke:#A2A1A1;stroke-width:2;stroke-dasharray:3;");
     appendTutorial(enter);
   });
+
 
   var moveTarget = null;
   var dependencySource = null;
@@ -43,20 +44,20 @@ $(function() {
       .text(function(d) { return d.title });
 
     group.append("text")
-      .attr("dx", -22).attr("dy", 30)
-      .attr("style","font-size: 18px; font-weight: regular")
-      .text("")
+      .attr("dx", -15).attr("dy", -2)
+      .attr("style","font-size: 25px; font-weight: regular")
+      .text("")
       .attr("data-json", function(d) {return JSON.stringify(d);})
-      .attr("class", "fa fa-star-o")
+      .attr("class", "fa fa-long-arrow-left")
       .on("click", function () {
 	dependencySource = $(this).data("json");
-	feedback.attr("xlink:href", "/img/left-arrow.jpg");
+	feedback.attr("xlink:href", "");
 	bullseyes.style("opacity", 1);
 	d3.event.stopPropagation();
       });
 
     bullseyes = group.append("text")
-      .attr("dx", 60).attr("dy", 50)
+      .attr("dx", 60).attr("dy", 38)
       .attr("style","font-size: 25px; font-weight: regular;")
       .style("opacity", 0)
       .text("")
@@ -73,7 +74,7 @@ $(function() {
       });
 
     group.append("text")
-      .attr("dx", 58).attr("dy", 0)
+      .attr("dx", 40).attr("dy", -2)
       .attr("data-json", function(d) {return JSON.stringify(d);})
       .attr("style","font-size: 25px; font-weight: regular")
       .text("")
@@ -89,7 +90,7 @@ $(function() {
 	d3.event.stopPropagation();
 	window.location.href = "/tutorials/" + d.id + "/edit";
       })
-      .attr("dx", 0).attr("dy", 0)
+      .attr("dx", 15).attr("dy", -2)
       .attr("style","font-size: 25px; font-weight: regular")
       .text("")
       .attr("class", "fa fa-pencil");
