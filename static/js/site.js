@@ -10,24 +10,19 @@ function from_mouse(mouse) {
 
 $(function() {
   var grid = d3.select("svg.grid");
-  var moveTarget = null;
-  var dependencySource = null;
   var bullseyes = null;
   var toolboxes = null;
+
+  var moveTarget = null;
+  var dependencySource = null;
   var tutorialData = null;
   var dependencyData = null;
 
   function draw() {
     if (tutorialData !== null && dependencyData !== null) {
-      grid.selectAll("line.dependency").data(dependencyData).enter()
-	.append("line")
-	.attr("x1", function(d) {return to_display(d.source).x;})
-	.attr("y1", function(d) {return to_display(d.source).y + 30;})
-	.attr("x2", function(d) {return to_display(d.target).x + 60;})
-	.attr("y2", function(d) {return to_display(d.target).y + 30;})
-	.attr("style", "stroke:#A2A1A1;stroke-width:2;stroke-dasharray:3;");
-
-      appendTutorial(grid.selectAll("g.tutorial").data(tutorialData).enter());
+      drawLines(dependencyData);
+      var tutorials = drawTutorials(tutorialData);
+      drawToolboxes(tutorials);
     }
   }
 
@@ -41,7 +36,8 @@ $(function() {
     draw();
   });
 
-  function appendTutorial(enter) {
+  function drawTutorials(tutorialData) {
+    var enter = grid.selectAll("g.tutorial").data(tutorialData).enter();
     var tutorials = enter.append("g")
 	.attr("class", "tutorial")
 	.attr("transform", function(d) {
@@ -57,7 +53,10 @@ $(function() {
       .attr("dx", 5)
       .attr("dy", 72)
       .text(function(d) { return d.title });
+    return tutorials;
+  }
 
+  function drawToolboxes(tutorials) {
     toolboxes = tutorials.append("g")
       .attr("transform", function(d) {
 	return "translate(-15, -2)";
@@ -115,6 +114,17 @@ $(function() {
 	}
 	d3.event.stopPropagation();
       });
+    return toolboxes;
+  }
+
+  function drawLines(dependencyData) {
+    grid.selectAll("line.dependency").data(dependencyData).enter()
+      .append("line")
+      .attr("x1", function(d) {return to_display(d.source).x;})
+      .attr("y1", function(d) {return to_display(d.source).y + 30;})
+      .attr("x2", function(d) {return to_display(d.target).x + 60;})
+      .attr("y2", function(d) {return to_display(d.target).y + 30;})
+      .attr("style", "stroke:#A2A1A1;stroke-width:2;stroke-dasharray:3;");
   }
 
   grid
