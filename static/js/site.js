@@ -22,7 +22,9 @@ $(function() {
     if (tutorialData !== null && dependencyData !== null) {
       drawLines(dependencyData);
       var tutorials = drawTutorials(tutorialData);
-      drawToolboxes(tutorials);
+      if (window.isLoggedIn) {
+	drawToolboxes(tutorials);
+      }
     }
   }
 
