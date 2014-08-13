@@ -12,6 +12,7 @@ $(function() {
   var grid = d3.select("svg.grid");
   var bullseyes = null;
   var toolboxes = null;
+  var feedback = null;
 
   var moveTarget = null;
   var dependencySource = null;
@@ -24,6 +25,7 @@ $(function() {
       var tutorials = drawTutorials(tutorialData);
       if (window.isLoggedIn) {
 	drawToolboxes(tutorials);
+	addEditHandlers();
       }
     }
   }
@@ -47,7 +49,9 @@ $(function() {
 	  return "translate(" + point.x + ", " + point.y + ")";
 	});
 
-    tutorials.append("image")
+    tutorials.append("a")
+      .attr("xlink:href", function(d) {return "/tutorials/" + d.id;})
+      .append("image")
       .attr("xlink:href", function(d) {return d.iconPath || "/img/example.png";})
       .attr("width",60).attr("height",60);
 
@@ -129,46 +133,47 @@ $(function() {
       .attr("style", "stroke:#A2A1A1;stroke-width:2;stroke-dasharray:3;");
   }
 
-  grid
-    .on("click", function() {
-      var p = from_mouse(d3.mouse(this));
+  function addEditHandlers() {
+    grid
+      .on("click", function() {
+	var p = from_mouse(d3.mouse(this));
 
-      if(moveTarget === null && dependencySource === null) {
-	$.post("/tutorials/new", {"new.x": p.x , "new.y": p.y}, function() {
-	  window.location.reload();
-	});
-      } else if (dependencySource !== null) {
-	dependencySource = null;
-	bullseyes.style("opacity", 0);
-	toolboxes.style("opacity", 1);
-	feedback.attr("xlink:href", "/img/example.png");
-      } else if (moveTarget !== null) {
-	d3.event.stopPropagation();
-	$.post("/tutorials/" + moveTarget.id + "/move", {"move.x": p.x , "move.y": p.y}, function() {
-	  moveTarget = null;
+	if(moveTarget === null && dependencySource === null) {
+	  $.post("/tutorials/new", {"new.x": p.x , "new.y": p.y}, function() {
+	    window.location.reload();
+	  });
+	} else if (dependencySource !== null) {
+	  dependencySource = null;
+	  bullseyes.style("opacity", 0);
+	  toolboxes.style("opacity", 1);
 	  feedback.attr("xlink:href", "/img/example.png");
-	  window.location.reload();
-	});
-      }
-    })
-    .on("mousemove", function() {
-      var gridPos = from_mouse(d3.mouse(this));
-      var p = to_display(gridPos);
+	} else if (moveTarget !== null) {
+	  d3.event.stopPropagation();
+	  $.post("/tutorials/" + moveTarget.id + "/move", {"move.x": p.x , "move.y": p.y}, function() {
+	    moveTarget = null;
+	    feedback.attr("xlink:href", "/img/example.png");
+	    window.location.reload();
+	  });
+	}
+      })
+      .on("mousemove", function() {
+	var gridPos = from_mouse(d3.mouse(this));
+	var p = to_display(gridPos);
 
-      var overlaps = tutorialData.filter(function(t) {
-	return (t.x == gridPos.x) &&
-	  ((t.y == gridPos.y - 1) || (t.y == gridPos.y) || (t.y == gridPos.y + 1));
+	var overlaps = tutorialData.filter(function(t) {
+	  return (t.x == gridPos.x) &&
+	    ((t.y == gridPos.y - 1) || (t.y == gridPos.y) || (t.y == gridPos.y + 1));
+	});
+
+	if (overlaps.length !== 0) {
+	  feedback.attr("opacity", 0);
+	} else {
+	  feedback.attr("opacity", 0.5);
+	  feedback.attr("x", p.x) .attr("y", p.y);
+	}
       });
 
-      if (overlaps.length !== 0) {
-	feedback.attr("opacity", 0);
-      } else {
-	feedback.attr("opacity", 0.5);
-	feedback.attr("x", p.x) .attr("y", p.y);
-      }
-    });
-
-  var feedback = grid
+    feedback = grid
       .append("image")
       .attr("class", "feedback")
       .attr("xlink:href", "/img/example.png")
@@ -176,4 +181,5 @@ $(function() {
       .attr("x", -100)
       .attr("y", -100)
       .attr("opacity", 0.5);
+  }
 });

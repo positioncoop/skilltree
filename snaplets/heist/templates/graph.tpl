@@ -3,17 +3,15 @@
   </svg>
 
   <div style='float:right'>
-    <ifLoggedIn>
-      <h1>Hi,
-	<loggedInUser>
-	  <userLogin />
-	</loggedInUser>
-      </h1>
-      <a href="/auth/logout">Logout</a>
-    </ifLoggedIn>
-    <ifLoggedOut>
-      <a href="/auth/login">Login</a>
-    </ifLoggedOut>
+    <p>
+      <ifLoggedIn>
+	Hi, <loggedInUser><userLogin /></loggedInUser>
+	<a href="/auth/logout">Logout</a>
+      </ifLoggedIn>
+      <ifLoggedOut>
+	<a href="/auth/login">Login</a>
+      </ifLoggedOut>
+    </p>
     <apply-content/>
   </div>
 </apply>

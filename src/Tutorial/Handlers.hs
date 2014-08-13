@@ -30,7 +30,7 @@ authCheck = redirect "/auth/login"
 routes :: [(Text, AppHandler ())]
 routes = [ ("", ifTop indexH)
          , ("new", ifTop $ requireUser auth authCheck newH)
-         , (":id", requireUser auth authCheck tutorialHandler)
+         , (":id", tutorialHandler)
          ]
 
 tutorialHandler :: AppHandler ()
@@ -39,11 +39,12 @@ tutorialHandler = do
   tutorial <- require $ runPersist $ get tutorialKey
   let tentity = Entity tutorialKey tutorial
   route [("", ifTop $ showH tentity)
-        ,("edit", ifTop $ editH tentity)
-        ,("delete", ifTop $ deleteH tentity)
-        ,("move", ifTop $ moveH tentity)
-        ,("steps", route (Step.Handlers.routes tentity))
-        ]
+        ,("", requireUser auth authCheck $
+              route [("edit", ifTop $ editH tentity)
+                    ,("delete", ifTop $ deleteH tentity)
+                    ,("move", ifTop $ moveH tentity)
+                    ,("steps", route (Step.Handlers.routes tentity))
+                    ])]
 
 home :: AppHandler ()
 home = redirect "/"
@@ -52,7 +53,7 @@ indexH :: AppHandler ()
 indexH = writeJSON =<< (runPersist $ selectList [] [] :: AppHandler [Entity Tutorial])
 
 showH :: TutorialEntity -> AppHandler ()
-showH = undefined
+showH = renderWithSplices "tutorials/show" . Tutorial.Splices.entitySplice
 
 newH :: AppHandler ()
 newH = do
