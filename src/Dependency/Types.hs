@@ -22,7 +22,7 @@ Dependency
 type DependencyEntity = Entity Dependency
 
 dependencyPath :: DependencyEntity -> Text
-dependencyPath (Entity key _) = "/dependencys/" ++ showKey key
+dependencyPath (Entity key _) = "/dependencies/" ++ showKey key
 
 dependencyDeletePath :: DependencyEntity -> Text
 dependencyDeletePath entity = dependencyPath entity ++ "/delete"

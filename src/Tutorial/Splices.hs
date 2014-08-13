@@ -11,6 +11,7 @@ import Snap.Plus
 import Database.Persist.Types
 import qualified Snap.Snaplet.Persistent as P
 import qualified Step.Splices
+import qualified Dependency.Splices
 
 import Tutorial.Types
 import Tutorial.Queries
@@ -28,4 +29,5 @@ entitySplice entity@(Entity _id (Tutorial _x _y _title _iconPath)) = do
   "tutorialDeletePath" ## textSplice $ tutorialDeletePath entity
   "tutorialSteps" ## do steps <- lift $ lookupTutorialSteps entity
                         mapSplices (runChildrenWith . Step.Splices.entitySplice) steps
-
+  "tutorialDependencies" ## do dependencies <- lift $ lookupTutorialDependencies entity
+                               mapSplices (runChildrenWith . Dependency.Splices.splice entitySplice) dependencies
