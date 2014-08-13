@@ -19,6 +19,8 @@ import Text.Digestive.Heist
 
 import Dependency.Form
 import Dependency.Types
+import Tutorial.Types
+import Tutorial.Queries
 
 import Application
 
@@ -32,7 +34,13 @@ routes = [ ("", ifTop indexH)
          ]
 
 indexH :: AppHandler ()
-indexH = undefined
+indexH = do
+  dependencies <- map toLine <$> lookupAllDependencyPairs
+  writeJSON dependencies
+  where
+    toPoint (Tutorial x y _ _) = object ["x" .= x, "y" .= y]
+    toLine (Entity _ target, Entity _ source) =
+      object ["target" .= toPoint target, "source" .= toPoint source]
 
 newH :: AppHandler ()
 newH = do

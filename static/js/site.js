@@ -1,52 +1,64 @@
-var to_display = function(p) {
+function to_display(p) {
   return {x: p.x * 100 + 20,
 	  y: p.y * 50 + 20};
-};
+}
 
-var from_mouse = function(mouse) {
+function from_mouse(mouse) {
   return {x: Math.floor(mouse[0]/100),
 	  y: Math.floor((mouse[1] - 25)/50)};
 }
 
 $(function() {
-  d3.json("/tutorials", function(error, data) {
-    tutorials = data.tutorials;
-    var enter = d3.select("svg.grid").selectAll("g.tutorial").data(data.tutorials).enter();
-
-    lines = d3.select("svg.grid").selectAll("line.dependency").data(data.dependencies).enter()
-      .append("line")
-      .attr("x1", function(d) {return to_display(d.source).x;})
-      .attr("y1", function(d) {return to_display(d.source).y + 30;})
-      .attr("x2", function(d) {return to_display(d.target).x + 60;})
-      .attr("y2", function(d) {return to_display(d.target).y + 30;})
-      .attr("style", "stroke:#A2A1A1;stroke-width:2;stroke-dasharray:3;");
-    appendTutorial(enter);
-  });
-
-
+  var grid = d3.select("svg.grid");
   var moveTarget = null;
   var dependencySource = null;
   var bullseyes = null;
   var toolboxes = null;
-  var tutorials = null;
-  var appendTutorial = function(enter) {
-    group = enter.append("g")
-      .attr("class", "tutorial")
-      .attr("transform", function(d) {
-	var point = to_display(d);
-	return "translate(" + point.x + ", " + point.y + ")";
-      });
+  var tutorialData = null;
+  var dependencyData = null;
 
-    group.append("image")
+  function draw() {
+    if (tutorialData !== null && dependencyData !== null) {
+      grid.selectAll("line.dependency").data(dependencyData).enter()
+	.append("line")
+	.attr("x1", function(d) {return to_display(d.source).x;})
+	.attr("y1", function(d) {return to_display(d.source).y + 30;})
+	.attr("x2", function(d) {return to_display(d.target).x + 60;})
+	.attr("y2", function(d) {return to_display(d.target).y + 30;})
+	.attr("style", "stroke:#A2A1A1;stroke-width:2;stroke-dasharray:3;");
+
+      appendTutorial(grid.selectAll("g.tutorial").data(tutorialData).enter());
+    }
+  }
+
+  d3.json("/tutorials", function(error, data) {
+    tutorialData = data;
+    draw();
+  });
+
+  d3.json("/dependencies", function(error, data) {
+    dependencyData = data;
+    draw();
+  });
+
+  function appendTutorial(enter) {
+    var tutorials = enter.append("g")
+	.attr("class", "tutorial")
+	.attr("transform", function(d) {
+	  var point = to_display(d);
+	  return "translate(" + point.x + ", " + point.y + ")";
+	});
+
+    tutorials.append("image")
       .attr("xlink:href", function(d) {return d.iconPath || "/img/example.png";})
       .attr("width",60).attr("height",60);
 
-    group.append("text")
+    tutorials.append("text")
       .attr("dx", 5)
       .attr("dy", 72)
       .text(function(d) { return d.title });
 
-    toolboxes = group.append("g")
+    toolboxes = tutorials.append("g")
       .attr("transform", function(d) {
 	return "translate(-15, -2)";
       });
@@ -87,7 +99,7 @@ $(function() {
 	window.location.href = "/tutorials/" + d.id + "/edit";
       });
 
-    bullseyes = group.append("text")
+    bullseyes = tutorials.append("text")
       .attr("dx", 60).attr("dy", 38)
       .attr("style","font-size: 25px; font-weight: regular;")
       .style("opacity", 0)
@@ -105,7 +117,7 @@ $(function() {
       });
   }
 
-  d3.select("svg.grid")
+  grid
     .on("click", function() {
       var p = from_mouse(d3.mouse(this));
 
@@ -131,7 +143,7 @@ $(function() {
       var gridPos = from_mouse(d3.mouse(this));
       var p = to_display(gridPos);
 
-      var overlaps = tutorials.filter(function(t) {
+      var overlaps = tutorialData.filter(function(t) {
 	return (t.x == gridPos.x) &&
 	  ((t.y == gridPos.y - 1) || (t.y == gridPos.y) || (t.y == gridPos.y + 1));
       });
@@ -144,7 +156,7 @@ $(function() {
       }
     });
 
-  var feedback = d3.select("svg.grid")
+  var feedback = grid
       .append("image")
       .attr("class", "feedback")
       .attr("xlink:href", "/img/example.png")

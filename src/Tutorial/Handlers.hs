@@ -49,14 +49,7 @@ home :: AppHandler ()
 home = redirect "/"
 
 indexH :: AppHandler ()
-indexH = do
-  tutorials <- runPersist $ selectList [] [] :: AppHandler [Entity Tutorial]
-  dependencies <- lookupAllDependencyPairs
-  writeJSON $ object ["tutorials" .= tutorials, "dependencies" .= map toLine dependencies]
-  where
-    toPoint (Tutorial x y _ _) = object ["x" .= x, "y" .= y]
-    toLine (Entity _ target, Entity _ source) =
-      object ["target" .= toPoint target, "source" .= toPoint source]
+indexH = writeJSON =<< (runPersist $ selectList [] [] :: AppHandler [Entity Tutorial])
 
 showH :: TutorialEntity -> AppHandler ()
 showH = undefined
