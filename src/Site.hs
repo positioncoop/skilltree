@@ -6,12 +6,10 @@ module Site
 
 import           Prelude hiding ((++))
 import           Control.Monad.State
-import           Data.ByteString (ByteString)
 import           Data.Monoid
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import           Snap.Plus
-import           Snap.Snaplet
 import           Snap.Snaplet.Heist
 import           Snap.Snaplet.Session.Backends.CookieSession
 import           Snap.Snaplet.Auth
@@ -36,7 +34,7 @@ import qualified Tutorial.Handlers
 import qualified Step.Handlers
 import qualified Dependency.Handlers
 
-routes :: [(ByteString, AppHandler ())]
+routes :: [(Text, AppHandler ())]
 routes = [ ("tutorials",    route Tutorial.Handlers.routes)
          , ("steps",        route Step.Handlers.routeWithoutTutorial)
          , ("dependencies", route Dependency.Handlers.routes)
@@ -51,8 +49,8 @@ app :: SnapletInit App App
 app = makeSnaplet "app" "" Nothing $ do
     h <- nestSnaplet "" heist $ heistInit' "templates"
          mempty { hcLoadTimeSplices = defaultLoadTimeSplices,
-                  hcInterpretedSplices = (do "currentPath" ## pathSplice
-                                             siteSplices) }
+                  hcInterpretedSplices = do "currentPath" ## pathSplice
+                                            siteSplices }
     conf <- getSnapletUserConfig
     url <- liftIO (C.require conf "siteUrl")
     absPath <- liftIO (C.lookupDefault "" conf "absolutePath")

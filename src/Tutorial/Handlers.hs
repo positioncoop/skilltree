@@ -21,7 +21,6 @@ import Tutorial.Types
 import Tutorial.Splices
 import qualified Step.Handlers
 import Tutorial.Queries
-import qualified Dependency.Types as D
 
 import Application
 
@@ -57,7 +56,7 @@ indexH = do
   where
     toPoint (Tutorial x y _ _) = object ["x" .= x, "y" .= y]
     toLine (Entity _ target, Entity _ source) =
-      object ["target" .= toPoint(target), "source" .= toPoint(source)]
+      object ["target" .= toPoint target, "source" .= toPoint source]
 
 showH :: TutorialEntity -> AppHandler ()
 showH = undefined

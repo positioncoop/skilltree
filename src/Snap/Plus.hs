@@ -17,10 +17,12 @@ module Snap.Plus ( module Snap
                  , fromMaybe
                  , redirect
                  , route
+                 , addRoutes
                  ) where
 
 import Prelude hiding ((++))
-import Snap hiding (redirect, route, get)
+import Snap hiding (redirect, route, get, addRoutes)
+import qualified Snap
 import qualified Snap.Core
 import Control.Applicative ((<$>), (<*>))
 import Control.Arrow (first)
@@ -66,7 +68,7 @@ instance Paramable Int where
   parseParamable = readSafe
 instance (Persistent.PersistEntityBackend record) ~ backend =>
          Paramable (Persistent.KeyBackend backend record) where
-  parseParamable param = fmap Persistent.mkKey $ readSafe param
+  parseParamable param = Persistent.mkKey <$> readSafe param
 
 getParam' :: (MonadSnap m, Paramable t) => Text -> m t
 getParam' name = do param <- require $ getParam $ T.encodeUtf8 name
@@ -90,3 +92,7 @@ redirect = Snap.Core.redirect . T.encodeUtf8
 
 route :: MonadSnap m => [(Text, m a)] -> m a
 route = Snap.Core.route . map (first T.encodeUtf8)
+
+addRoutes :: [(Text, Handler b v ())] -> Initializer b v ()
+addRoutes = Snap.addRoutes . map (first T.encodeUtf8)
+

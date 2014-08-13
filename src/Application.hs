@@ -1,13 +1,11 @@
-{-# LANGUAGE TemplateHaskell, GADTs, QuasiQuotes, FlexibleInstances,
-             DeriveDataTypeable, PackageImports, FlexibleInstances,
-             TypeFamilies, MultiParamTypeClasses #-}
+{-# LANGUAGE TemplateHaskell, GADTs, QuasiQuotes,
+    FlexibleInstances, DeriveDataTypeable, PackageImports,
+    TypeFamilies, MultiParamTypeClasses #-}
 
 module Application where
 
-import Data.Monoid (Monoid, mappend)
 import Control.Lens
 import "mtl" Control.Monad.State (get)
-import Control.Monad.Trans (liftIO)
 import Data.Text (Text)
 import Snap.Snaplet
 import Snap.Snaplet.Heist
@@ -17,9 +15,6 @@ import Snap.Snaplet.Persistent
 import Snap.Snaplet.RedisDB
 import Snap.Snaplet.Auth
 import Database.Redis (Redis)
-import Control.Monad.Logger
-import Data.Pool
-import Database.PostgreSQL.Simple (Connection)
 import FileStore
 
 data App = App

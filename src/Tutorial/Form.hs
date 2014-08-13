@@ -1,4 +1,6 @@
-{-# Language OverloadedStrings, GADTs, TemplateHaskell, QuasiQuotes, FlexibleInstances, TypeFamilies, NoMonomorphismRestriction, ScopedTypeVariables, FlexibleContexts #-}
+{-# LANGUAGE OverloadedStrings, GADTs, FlexibleInstances,
+    TypeFamilies, NoMonomorphismRestriction, ScopedTypeVariables,
+    FlexibleContexts #-}
 
 module Tutorial.Form where
 
@@ -15,7 +17,6 @@ import qualified Data.Conduit as C
 import qualified Data.Conduit.Binary as CB
 import qualified System.IO as IO
 import qualified Control.Monad.Trans.Resource as R
-import Control.Monad.Trans.Either (runEitherT, left, right)
 import Data.Conduit.ImageSize
 
 import Tutorial.Types
@@ -28,10 +29,10 @@ newForm :: Form Text AppHandler Tutorial
 newForm = checkM "Tutorial overlaps" overlapping $
   untitledTutorial <$> "x" .: stringRead "Must be a number" Nothing
                    <*> "y" .: stringRead "Must be a number" Nothing
-  where overlapping (Tutorial x y _ _) = do result <- runPersist (selectList [TutorialX ==. x,
-                                                                              TutorialY <-. [y-1..y+1]]
-                                                                  [LimitTo 1])
-                                            return (result == [])
+  where overlapping (Tutorial x y _ _) =
+          do result <- runPersist (selectList [TutorialX ==. x, TutorialY <-. [y-1..y+1]]
+                                              [LimitTo 1])
+             return (null result)
 
 moveForm :: TutorialEntity -> Form Text AppHandler Tutorial
 moveForm (Entity key (Tutorial _ _ title iconPath)) = checkM "Tutorial overlaps" overlapping $
@@ -40,7 +41,7 @@ moveForm (Entity key (Tutorial _ _ title iconPath)) = checkM "Tutorial overlaps"
            <*> pure title <*> pure iconPath
   where overlapping (Tutorial x y _ _) = do
           result <- runPersist (selectList [TutorialX ==. x, TutorialY <-. [y-1..y+1], TutorialId !=. key] [LimitTo 1])
-          return (result == [])
+          return (null result)
 
 editForm :: Tutorial -> Form Text AppHandler Tutorial
 editForm (Tutorial x y title mIconPath) = Tutorial x y <$> "title" .: nonEmpty (text (Just title))
@@ -52,7 +53,7 @@ moveFile def = validateM mkMedia
          mkMedia Nothing = return $ Success def
          mkMedia (Just _path) =
             do store <- use filestore
-               url <- storeFile store _path Nothing
+               url <- storeFile store _path
                return $ Success (Just $ unpack url)
 
 enforceImageSize :: Form Text AppHandler (Maybe FilePath) -> Form Text AppHandler (Maybe FilePath)
