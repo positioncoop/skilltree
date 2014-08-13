@@ -23,7 +23,7 @@ import Application
 
 routeWithoutTutorial :: [(Text, AppHandler ())]
 routeWithoutTutorial = [(":id", requireUser auth pass handler)]
-  where handler = do key <- getParam' "id" :: AppHandler (Key Step)
+  where handler = do key <- getParam "id" :: AppHandler (Key Step)
                      step <- require $ runPersist $ get key
                      let tkey = Persistent.mkKey $ stepTutorialId step
                      tut <- require $ runPersist $ get tkey

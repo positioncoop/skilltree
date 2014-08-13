@@ -35,7 +35,7 @@ routes = [ ("", ifTop indexH)
 
 tutorialHandler :: AppHandler ()
 tutorialHandler = do
-  tutorialKey <- getParam' "id"
+  tutorialKey <- getParam "id"
   tutorial <- require $ runPersist $ get tutorialKey
   let tentity = Entity tutorialKey tutorial
   route [("", ifTop $ showH tentity)

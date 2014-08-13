@@ -8,7 +8,7 @@ module Snap.Plus ( module Snap
                  , tshow
                  , tNotNull
                  , readSafe
-                 , getParam'
+                 , getParam
                  , require
                  , require'
                  , getCurrentPath
@@ -21,7 +21,7 @@ module Snap.Plus ( module Snap
                  ) where
 
 import Prelude hiding ((++))
-import Snap hiding (redirect, route, get, addRoutes)
+import Snap hiding (redirect, route, get, addRoutes, getParam)
 import qualified Snap
 import qualified Snap.Core
 import Control.Applicative ((<$>), (<*>))
@@ -70,9 +70,9 @@ instance (Persistent.PersistEntityBackend record) ~ backend =>
          Paramable (Persistent.KeyBackend backend record) where
   parseParamable param = Persistent.mkKey <$> readSafe param
 
-getParam' :: (MonadSnap m, Paramable t) => Text -> m t
-getParam' name = do param <- require $ getParam $ T.encodeUtf8 name
-                    require' $ parseParamable $ T.decodeUtf8 param
+getParam :: (MonadSnap m, Paramable t) => Text -> m t
+getParam name = do param <- require $ Snap.getParam $ T.encodeUtf8 name
+                   require' $ parseParamable $ T.decodeUtf8 param
 
 require :: MonadPlus m => m (Maybe a) -> m a
 require ma = do a' <- ma
