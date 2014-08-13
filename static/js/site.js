@@ -10,6 +10,7 @@ var from_mouse = function(mouse) {
 
 $(function() {
   d3.json("/tutorials", function(error, data) {
+    tutorials = data.tutorials;
     var enter = d3.select("svg.grid").selectAll("g.tutorial").data(data.tutorials).enter();
 
     lines = d3.select("svg.grid").selectAll("line.dependency").data(data.dependencies).enter()
@@ -26,6 +27,8 @@ $(function() {
   var moveTarget = null;
   var dependencySource = null;
   var bullseyes = null;
+  var toolboxes = null;
+  var tutorials = null;
   var appendTutorial = function(enter) {
     group = enter.append("g")
       .attr("class", "tutorial")
@@ -43,8 +46,13 @@ $(function() {
       .attr("dy", 72)
       .text(function(d) { return d.title });
 
-    group.append("text")
-      .attr("dx", -15).attr("dy", -2)
+    toolboxes = group.append("g")
+      .attr("transform", function(d) {
+	return "translate(-15, -2)";
+      });
+
+    toolboxes.append("text")
+      .attr("dx", 0)
       .attr("style","font-size: 25px; font-weight: regular")
       .text("")
       .attr("data-json", function(d) {return JSON.stringify(d);})
@@ -53,7 +61,30 @@ $(function() {
 	dependencySource = $(this).data("json");
 	feedback.attr("xlink:href", "");
 	bullseyes.style("opacity", 1);
+	toolboxes.style("opacity", 0);
 	d3.event.stopPropagation();
+      });
+
+    toolboxes.append("text")
+      .attr("dx", 30)
+      .attr("data-json", function(d) {return JSON.stringify(d);})
+      .attr("style","font-size: 25px; font-weight: regular")
+      .text("")
+      .attr("class", "fa move-icon")
+      .on("click", function () {
+	moveTarget = $(this).data("json");
+	feedback.attr("xlink:href", moveTarget.iconPath || "/img/example.png");
+	d3.event.stopPropagation();
+      });
+
+    toolboxes.append("text")
+      .attr("dx", 60)
+      .attr("style","font-size: 25px; font-weight: regular")
+      .text("")
+      .attr("class", "fa fa-pencil")
+      .on("click", function(d) {
+	d3.event.stopPropagation();
+	window.location.href = "/tutorials/" + d.id + "/edit";
       });
 
     bullseyes = group.append("text")
@@ -72,28 +103,6 @@ $(function() {
 	}
 	d3.event.stopPropagation();
       });
-
-    group.append("text")
-      .attr("dx", 40).attr("dy", -2)
-      .attr("data-json", function(d) {return JSON.stringify(d);})
-      .attr("style","font-size: 25px; font-weight: regular")
-      .text("")
-      .attr("class", "fa move-icon")
-      .on("click", function () {
-	moveTarget = $(this).data("json");
-	feedback.attr("xlink:href", moveTarget.iconPath || "/img/example.png");
-	d3.event.stopPropagation();
-      });
-
-    group.append("text")
-      .on("click", function(d) {
-	d3.event.stopPropagation();
-	window.location.href = "/tutorials/" + d.id + "/edit";
-      })
-      .attr("dx", 15).attr("dy", -2)
-      .attr("style","font-size: 25px; font-weight: regular")
-      .text("")
-      .attr("class", "fa fa-pencil");
   }
 
   d3.select("svg.grid")
@@ -107,6 +116,7 @@ $(function() {
       } else if (dependencySource !== null) {
 	dependencySource = null;
 	bullseyes.style("opacity", 0);
+	toolboxes.style("opacity", 1);
 	feedback.attr("xlink:href", "/img/example.png");
       } else if (moveTarget !== null) {
 	d3.event.stopPropagation();
@@ -118,9 +128,20 @@ $(function() {
       }
     })
     .on("mousemove", function() {
-      var p = to_display(from_mouse(d3.mouse(this)));
+      var gridPos = from_mouse(d3.mouse(this));
+      var p = to_display(gridPos);
 
-      feedback.attr("x", p.x) .attr("y", p.y);
+      var overlaps = tutorials.filter(function(t) {
+	return (t.x == gridPos.x) &&
+	  ((t.y == gridPos.y - 1) || (t.y == gridPos.y) || (t.y == gridPos.y + 1));
+      });
+
+      if (overlaps.length !== 0) {
+	feedback.attr("opacity", 0);
+      } else {
+	feedback.attr("opacity", 0.5);
+	feedback.attr("x", p.x) .attr("y", p.y);
+      }
     });
 
   var feedback = d3.select("svg.grid")
