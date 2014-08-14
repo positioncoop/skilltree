@@ -38,7 +38,7 @@ indexH = do
   dependencies <- map toLine <$> lookupAllDependencyPairs
   writeJSON dependencies
   where
-    toPoint (Tutorial x y _ _) = object ["x" .= x, "y" .= y]
+    toPoint (Tutorial x y _ _ _) = object ["x" .= x, "y" .= y]
     toLine (Entity _ target, Entity _ source) =
       object ["target" .= toPoint target, "source" .= toPoint source]
 

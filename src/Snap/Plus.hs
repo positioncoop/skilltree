@@ -28,7 +28,7 @@ import Control.Applicative ((<$>), (<*>))
 import Control.Arrow (first)
 import Data.Monoid (Monoid, mappend)
 import Data.Maybe
-import Data.Text (Text, pack, unpack)
+import Data.Text (Text, pack, unpack, toLower)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Snap.Snaplet.Persistent as Persistent

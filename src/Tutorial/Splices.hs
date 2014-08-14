@@ -19,12 +19,13 @@ import Tutorial.Queries
 import Application
 
 entitySplice :: TutorialEntity -> Splices (Splice AppHandler)
-entitySplice entity@(Entity _id (Tutorial _x _y _title _iconPath)) = do
-  "tutorialId" ## textSplice $ P.showKey _id
-  "tutorialX" ## textSplice $ tshow _x
-  "tutorialY" ## textSplice $ tshow _y
-  "tutorialTitle" ## textSplice _title
-  "tutorialIconPath" ## textSplice $ maybe "" pack _iconPath
+entitySplice entity@(Entity key (Tutorial x' y' title' iconPath' publish')) = do
+  "tutorialId" ## textSplice $ P.showKey key
+  "tutorialX" ## textSplice $ tshow x'
+  "tutorialY" ## textSplice $ tshow y'
+  "tutorialTitle" ## textSplice title'
+  "tutorialPublish" ## textSplice $ tshow publish'
+  "tutorialIconPath" ## textSplice $ maybe "" pack iconPath'
   "tutorialStepNewPath" ## textSplice $ tutorialStepNewPath entity
   "tutorialDeletePath" ## textSplice $ tutorialDeletePath entity
   "tutorialSteps" ## do steps <- lift $ lookupTutorialSteps entity

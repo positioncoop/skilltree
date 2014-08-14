@@ -20,32 +20,34 @@ import qualified Control.Monad.Trans.Resource as R
 import Data.Conduit.ImageSize
 
 import Tutorial.Types
+import Tutorial.Publish
 import Application
 
 untitledTutorial :: Int -> Int -> Tutorial
-untitledTutorial a b = Tutorial a b "Untitled" Nothing
+untitledTutorial a b = Tutorial a b "Untitled" Nothing Draft
 
 newForm :: Form Text AppHandler Tutorial
 newForm = checkM "Tutorial overlaps" overlapping $
   untitledTutorial <$> "x" .: stringRead "Must be a number" Nothing
                    <*> "y" .: stringRead "Must be a number" Nothing
-  where overlapping (Tutorial x y _ _) =
+  where overlapping (Tutorial x y _ _ _) =
           do result <- runPersist (selectList [TutorialX ==. x, TutorialY <-. [y-1..y+1]]
                                               [LimitTo 1])
              return (null result)
 
 moveForm :: TutorialEntity -> Form Text AppHandler Tutorial
-moveForm (Entity key (Tutorial _ _ title iconPath)) = checkM "Tutorial overlaps" overlapping $
+moveForm (Entity key (Tutorial _ _ title iconPath publish)) = checkM "Tutorial overlaps" overlapping $
   Tutorial <$> "x" .: stringRead "Must be a number" Nothing
            <*> "y" .: stringRead "Must be a number" Nothing
-           <*> pure title <*> pure iconPath
-  where overlapping (Tutorial x y _ _) = do
+           <*> pure title <*> pure iconPath <*> pure publish
+  where overlapping (Tutorial x y _ _ _) = do
           result <- runPersist (selectList [TutorialX ==. x, TutorialY <-. [y-1..y+1], TutorialId !=. key] [LimitTo 1])
           return (null result)
 
 editForm :: Tutorial -> Form Text AppHandler Tutorial
-editForm (Tutorial x y title mIconPath) = Tutorial x y <$> "title" .: nonEmpty (text (Just title))
-                                          <*> "iconPath" .: moveFile mIconPath (enforceImageSize file)
+editForm (Tutorial x y title mIconPath publish) =
+  Tutorial x y <$> "title" .: nonEmpty (text (Just title))
+               <*> "iconPath" .: moveFile mIconPath (enforceImageSize file) <*> pure publish
 
 moveFile :: Maybe FilePath -> Form Text AppHandler (Maybe FilePath) -> Form Text AppHandler (Maybe FilePath)
 moveFile def = validateM mkMedia

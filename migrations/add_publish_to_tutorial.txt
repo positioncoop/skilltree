@@ -1,0 +1,8 @@
+Description: (Description here.)
+Created: 2014-08-13 21:30:36.33415 UTC
+Depends: tutorial
+Apply:
+  ALTER TABLE tutorial ADD COLUMN publish text NOT NULL DEFAULT 'Draft';
+
+Revert:
+  ALTER TABLE tutorial DROP COLUMN IF EXISTS publish;
