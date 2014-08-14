@@ -15,6 +15,7 @@ import Data.Aeson
 import Database.Persist
 import Text.Digestive.Snap (runForm)
 import Text.Digestive.Heist
+import Text.Digestive.View
 
 import Tutorial.Form
 import Tutorial.Types
@@ -57,35 +58,19 @@ showH :: TutorialEntity -> AppHandler ()
 showH = renderWithSplices "tutorials/show" . Tutorial.Splices.entitySplice
 
 newH :: AppHandler ()
-newH = do
-  response <- runForm "new" Tutorial.Form.newForm
-  case response of
-    (_, Nothing) -> return ()
-    (_, Just tutorial) -> do
-      void $ runPersist $ insert tutorial
-      return ()
+newH = handleTutorialAjax (runForm "new" Tutorial.Form.newForm) (runPersist . insert)
 
 moveH :: TutorialEntity -> AppHandler ()
-moveH entity@(Entity tutorialKey _) = do
-  response <- runForm "move" (Tutorial.Form.moveForm entity)
-  case response of
-    (_, Nothing) -> return ()
-    (_, Just _tutorial) -> do
-      runPersist $ replace tutorialKey _tutorial
-      return ()
+moveH entity@(Entity tutorialKey _) =
+  handleTutorialAjax (runForm "move" $ Tutorial.Form.moveForm entity) (runPersist . replace tutorialKey)
 
 publishH :: TutorialEntity -> AppHandler ()
-publishH entity@(Entity tutorialKey _) = do
-  response <- runForm "publish" (Tutorial.Form.publishForm entity)
-  case response of
-    (_, Nothing) -> return ()
-    (_, Just _tutorial) -> do
-      runPersist $ replace tutorialKey _tutorial
-      return ()
+publishH entity@(Entity tutorialKey _) =
+  handleTutorialAjax (runForm "publish" $ Tutorial.Form.publishForm entity) (runPersist . replace tutorialKey)
 
 editH :: TutorialEntity -> AppHandler ()
 editH entity@(Entity tutorialKey tutorial) = do
-  response <- runMultipartForm "edit" (Tutorial.Form.editForm tutorial)
+  response <- runMultipartForm "edit" $ Tutorial.Form.editForm tutorial
   case response of
     (v, Nothing) -> renderWithSplices "tutorials/form" $ do Tutorial.Splices.entitySplice entity
                                                             digestiveSplices v
@@ -101,3 +86,11 @@ deleteH entity@(Entity tutorialKey _) = do
             home
     else redirect $ tutorialEditPath entity
 
+handleTutorialAjax :: AppHandler (View Text, Maybe Tutorial) -> (Tutorial -> AppHandler a) -> AppHandler ()
+handleTutorialAjax form doWithResult =  do
+  response <- form
+  case response of
+    (_, Nothing) -> return ()
+    (_, Just tutorial') -> do
+      void $ doWithResult tutorial'
+      return ()
