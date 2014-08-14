@@ -3,10 +3,20 @@ module Tutorial.Queries where
 import qualified Snap.Snaplet.Persistent as P
 import Database.Esqueleto
 import Tutorial.Types
+import Tutorial.Publish
 import Dependency.Types
 import Step.Types
 
 import Application
+
+lookupAllTutorials :: AppHandler [TutorialEntity]
+lookupAllTutorials = P.runPersist $ select $ from return
+
+lookupPublishedTutorials :: AppHandler [TutorialEntity]
+lookupPublishedTutorials =
+  P.runPersist $ select $ from $ \tutorial -> do
+    where_ (tutorial ^. TutorialPublish ==. val Published)
+    return tutorial
 
 lookupTutorialSteps :: TutorialEntity -> AppHandler [StepEntity]
 lookupTutorialSteps (Entity key _) =
@@ -27,4 +37,13 @@ lookupAllDependencyPairs =
   P.runPersist $ select $ from $ \(target `InnerJoin` djoin `InnerJoin` source) -> do
     on (source ^. TutorialId ==. djoin ^. DependencyTutorialId)
     on (target ^. TutorialId ==. djoin ^. DependencyDependencyId)
+    return (target, source)
+
+lookupPublishedDependencyPairs  :: AppHandler [(TutorialEntity, TutorialEntity)]
+lookupPublishedDependencyPairs =
+  P.runPersist $ select $ from $ \(target `InnerJoin` djoin `InnerJoin` source) -> do
+    on (source ^. TutorialId ==. djoin ^. DependencyTutorialId)
+    on (target ^. TutorialId ==. djoin ^. DependencyDependencyId)
+    where_ (val Published ==. source ^. TutorialPublish)
+    where_ (val Published ==. target ^. TutorialPublish)
     return (target, source)

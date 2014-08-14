@@ -19,6 +19,7 @@ import Text.Digestive.View
 
 import Tutorial.Form
 import Tutorial.Types
+import Tutorial.Publish
 import Tutorial.Splices
 import qualified Step.Handlers
 import Tutorial.Queries
@@ -52,7 +53,11 @@ home :: AppHandler ()
 home = redirect "/"
 
 indexH :: AppHandler ()
-indexH = writeJSON =<< (runPersist $ selectList [] [] :: AppHandler [Entity Tutorial])
+indexH = do loggedIn <- with auth isLoggedIn
+            tutorials <- if loggedIn
+                         then lookupAllTutorials
+                         else lookupPublishedTutorials
+            writeJSON tutorials
 
 showH :: TutorialEntity -> AppHandler ()
 showH = renderWithSplices "tutorials/show" . Tutorial.Splices.entitySplice

@@ -35,7 +35,10 @@ routes = [ ("", ifTop indexH)
 
 indexH :: AppHandler ()
 indexH = do
-  dependencies <- map toLine <$> lookupAllDependencyPairs
+  loggedIn <- with auth isLoggedIn
+  dependencies <- map toLine <$> if loggedIn
+                         then lookupAllDependencyPairs
+                         else lookupPublishedDependencyPairs
   writeJSON dependencies
   where
     toPoint (Tutorial x y _ _ _) = object ["x" .= x, "y" .= y]
