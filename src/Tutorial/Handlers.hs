@@ -11,7 +11,6 @@ import Snap.Snaplet.Heist
 import Snap.Snaplet.Auth
 import Snap.Snaplet.Persistent
 import Snap.Extras.JSON
-import Data.Aeson
 import Database.Persist
 import Text.Digestive.Snap (runForm)
 import Text.Digestive.Heist
@@ -19,7 +18,6 @@ import Text.Digestive.View
 
 import Tutorial.Form
 import Tutorial.Types
-import Tutorial.Publish
 import Tutorial.Splices
 import qualified Step.Handlers
 import Tutorial.Queries

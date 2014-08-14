@@ -13,6 +13,6 @@ import Tutorial.Types
 
 import Application
 
-splice :: (TutorialEntity -> Splices (Splice AppHandler)) -> (DependencyEntity, TutorialEntity) -> Splices (Splice AppHandler)
-splice tutorialSplice (dependencyEntity, tutorial) = do "dependencyDeletePath" ## textSplice $ dependencyDeletePath dependencyEntity
+splice :: (TutorialEntity -> Splices (Splice AppHandler)) -> (TutorialEntity, DependencyEntity) -> Splices (Splice AppHandler)
+splice tutorialSplice (tutorial, dependencyEntity) = do "dependencyDeletePath" ## textSplice $ dependencyDeletePath dependencyEntity
                                                         "dependencyTutorial" ## runChildrenWith $ tutorialSplice tutorial

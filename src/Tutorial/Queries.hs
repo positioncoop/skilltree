@@ -25,25 +25,9 @@ lookupTutorialSteps (Entity key _) =
     orderBy [asc (step ^. StepOrdinal)]
     return step
 
-lookupTutorialDependencies :: TutorialEntity -> AppHandler [(DependencyEntity, TutorialEntity)]
+lookupTutorialDependencies :: TutorialEntity -> AppHandler [(TutorialEntity, DependencyEntity)]
 lookupTutorialDependencies (Entity tutorialKey _) =
   P.runPersist $ select $ from $ \(target `InnerJoin` djoin) -> do
     on (target ^. TutorialId ==. djoin ^. DependencyDependencyId)
     where_ (val tutorialKey ==. djoin ^. DependencyTutorialId)
-    return (djoin, target)
-
-lookupAllDependencyPairs :: AppHandler [(TutorialEntity, TutorialEntity)]
-lookupAllDependencyPairs =
-  P.runPersist $ select $ from $ \(target `InnerJoin` djoin `InnerJoin` source) -> do
-    on (source ^. TutorialId ==. djoin ^. DependencyTutorialId)
-    on (target ^. TutorialId ==. djoin ^. DependencyDependencyId)
-    return (target, source)
-
-lookupPublishedDependencyPairs  :: AppHandler [(TutorialEntity, TutorialEntity)]
-lookupPublishedDependencyPairs =
-  P.runPersist $ select $ from $ \(target `InnerJoin` djoin `InnerJoin` source) -> do
-    on (source ^. TutorialId ==. djoin ^. DependencyTutorialId)
-    on (target ^. TutorialId ==. djoin ^. DependencyDependencyId)
-    where_ (val Published ==. source ^. TutorialPublish)
-    where_ (val Published ==. target ^. TutorialPublish)
-    return (target, source)
+    return (target, djoin)

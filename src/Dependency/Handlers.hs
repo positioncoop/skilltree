@@ -6,8 +6,6 @@ module Dependency.Handlers where
 
 import Prelude hiding ((++))
 import Snap.Plus
-import Snap.Plus.Forms
-import Snap.Snaplet.Heist
 import Snap.Snaplet.Auth
 import Snap.Snaplet.Persistent
 import Snap.Extras.CoreUtils
@@ -15,12 +13,11 @@ import Snap.Extras.JSON
 import Data.Aeson
 import Database.Persist
 import Text.Digestive.Snap (runForm)
-import Text.Digestive.Heist
 
 import Dependency.Form
 import Dependency.Types
 import Tutorial.Types
-import Tutorial.Queries
+import Dependency.Queries
 
 import Application
 
