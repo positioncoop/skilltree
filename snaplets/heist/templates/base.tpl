@@ -6,7 +6,7 @@
     <link rel="stylesheet" media="print" href="/css/print.css"/>
     <link rel="stylesheet" media="screen" href="/css/bootstrap.min.css"/>
     <link rel="stylesheet" media="screen" href="/css/bootstrap-theme.min.css"/>
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <script type="text/javascript" src="/js/jquery-2.1.0.min.js"></script>
     <script type="text/javascript" src="/js/d3.v3.min.js"></script>
     <script type="text/javascript" src="/js/bootstrap.min.js"></script>
