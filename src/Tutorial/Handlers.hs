@@ -43,6 +43,7 @@ tutorialHandler = do
               route [("edit", ifTop $ editH tentity)
                     ,("delete", ifTop $ deleteH tentity)
                     ,("move", ifTop $ moveH tentity)
+                    ,("publish", ifTop $ publishH tentity)
                     ,("steps", route (Step.Handlers.routes tentity))
                     ])]
 
@@ -67,6 +68,15 @@ newH = do
 moveH :: TutorialEntity -> AppHandler ()
 moveH entity@(Entity tutorialKey _) = do
   response <- runForm "move" (Tutorial.Form.moveForm entity)
+  case response of
+    (_, Nothing) -> return ()
+    (_, Just _tutorial) -> do
+      runPersist $ replace tutorialKey _tutorial
+      return ()
+
+publishH :: TutorialEntity -> AppHandler ()
+publishH entity@(Entity tutorialKey _) = do
+  response <- runForm "publish" (Tutorial.Form.publishForm entity)
   case response of
     (_, Nothing) -> return ()
     (_, Just _tutorial) -> do

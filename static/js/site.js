@@ -83,6 +83,19 @@ $(function() {
       });
 
     toolboxes.append("text")
+      .attr("dx", -10).attr("dy", 80)
+      .attr("style","font-size: 25px; font-weight: regular")
+      .text(function(d) {return d.publish === "Published" ? "" : "";})
+      .attr("class", "fa fa-eye")
+      .on("click", function(d) {
+	var newPublish = d.publish === "Published" ? "Draft" : "Published";
+	$.post("/tutorials/"+ d.id + "/publish", {"publish.publish": newPublish}, function() {
+	  window.location.reload();
+	});
+	d3.event.stopPropagation();
+      });
+
+    toolboxes.append("text")
       .attr("dx", 30)
       .attr("data-json", function(d) {return JSON.stringify(d);})
       .attr("style","font-size: 25px; font-weight: regular")
@@ -103,6 +116,7 @@ $(function() {
 	d3.event.stopPropagation();
 	window.location.href = "/tutorials/" + d.id + "/edit";
       });
+
 
     bullseyes = tutorials.append("text")
       .attr("dx", 60).attr("dy", 38)

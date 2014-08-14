@@ -44,6 +44,10 @@ moveForm (Entity key (Tutorial _ _ title iconPath publish)) = checkM "Tutorial o
           result <- runPersist (selectList [TutorialX ==. x, TutorialY <-. [y-1..y+1], TutorialId !=. key] [LimitTo 1])
           return (null result)
 
+publishForm :: TutorialEntity -> Form Text AppHandler Tutorial
+publishForm (Entity _ (Tutorial x y title iconPath publish)) =
+  Tutorial x y title iconPath <$> "publish" .: stringRead "Must be a valid publish state" (Just publish)
+
 editForm :: Tutorial -> Form Text AppHandler Tutorial
 editForm (Tutorial x y title mIconPath publish) =
   Tutorial x y <$> "title" .: nonEmpty (text (Just title))
