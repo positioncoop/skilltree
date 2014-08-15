@@ -1,6 +1,5 @@
 <apply template="base">
-  <svg class='grid' width=600 height=1000>
-  </svg>
+  <svg class='tree' width=600 height=1000></svg>
 
   <div style='float:right'>
     <p>

@@ -9,7 +9,7 @@ function from_mouse(mouse) {
 }
 
 $(function() {
-  var grid = d3.select("svg.grid");
+  var grid = d3.select("svg.tree");
   var bullseyes = null;
   var toolboxes = null;
   var feedback = null;

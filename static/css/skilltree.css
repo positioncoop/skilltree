@@ -1,4 +1,9 @@
-svg.grid {
+html, body {
+  margin: 0px;
+  padding: 0px;
+}
+
+svg.tree {
   font: 10px sans-serif;
   background-color: #EAEAEA;
   margin: 0;
@@ -19,3 +24,31 @@ svg.grid {
 .fa:hover {
   cursor: pointer;
 }
+
+.tutorial.Draft {
+  opacity: 0.5;
+  fill: black;
+  height: 150px !important;
+  border: 10px solid cyan;
+}
+
+image {
+
+
+  border: 4px solid cyan;
+fill: cyan;
+background-color: cyan;
+stroke-width: 4;
+stroke: cyan;
+display: block;
+}
+
+.tree {
+position: relative;
+}
+.tutorial {
+display: block;
+position: absolute;
+}
+
+
