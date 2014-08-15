@@ -27,14 +27,16 @@ authCheck = redirect "/auth/login"
 routes :: C.CourseEntity -> [(Text, AppHandler ())]
 routes centity = [ ("new", ifTop $ requireUser auth authCheck $ newH centity)
                  , ("delete", requireUser auth authCheck $ deleteH centity)
-                 , (":id", ifTop showH)
-                 , (":id/toggle_tutorial", requireUser auth authCheck $ addTutorialH centity)
+                 , (":week_id", ifTop showH)
+                 , (":week_id/toggle_tutorial", requireUser auth authCheck $ toggleTutorialH centity)
                  ]
 
 showH :: AppHandler ()
 showH = do
-  i <- getParam "id"
-  ts <- lookupTutorialsByWeek i
+  i <- getParam "week_id"
+  loggedIn <- with auth isLoggedIn
+  ts <- if loggedIn then lookupTutorialsByWeek i
+                    else lookupPublishedTutorialsByWeek i
   writeJSON ts
 
 newH :: C.CourseEntity -> AppHandler ()
@@ -51,9 +53,9 @@ deleteH (Entity ckey _) = do
     _ -> return ()
   redirectReferer
 
-addTutorialH :: C.CourseEntity -> AppHandler ()
-addTutorialH (Entity ckey _) = do
-  wkey <- getParam "id"
+toggleTutorialH :: C.CourseEntity -> AppHandler ()
+toggleTutorialH (Entity ckey _) = do
+  wkey <- getParam "week_id"
   tkey <- getParam "tutorial_id"
   let fil = [TutorialWeekTutorialId ==. tkey, TutorialWeekWeekId ==. wkey]
   c <- runPersist $ count fil

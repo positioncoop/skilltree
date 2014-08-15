@@ -208,7 +208,9 @@ $(function() {
         c.weeks.forEach(function(w) {
           var weekLink = $("<a href='#'>").text(w.number);
           function turnOn() {
-             if (isLoggedIn) {
+            $(".add-week-button").remove();
+            $("g.tutorial").attr("stroke-width", 0).attr("stroke", "")
+            if (isLoggedIn) {
               $("g.tutorial").each(function (_,_e) {
                 var e = $(_e);
                 var data = e.data("json");

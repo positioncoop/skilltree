@@ -14,6 +14,15 @@ lookupTutorialsByWeek k =
   P.runPersist $ select $ from $
       \(tutorial `InnerJoin` tw) ->
           do on (tutorial ^. TutorialId ==. tw ^. TutorialWeekTutorialId)
+             where_ (val k ==. tw ^. TutorialWeekWeekId)
+             return tutorial
+
+
+lookupPublishedTutorialsByWeek :: Key Week -> AppHandler [TutorialEntity]
+lookupPublishedTutorialsByWeek k =
+  P.runPersist $ select $ from $
+      \(tutorial `InnerJoin` tw) ->
+          do on (tutorial ^. TutorialId ==. tw ^. TutorialWeekTutorialId)
              where_ (val Published ==. tutorial ^. TutorialPublish)
              where_ (val k ==. tw ^. TutorialWeekWeekId)
              return tutorial
