@@ -33,11 +33,13 @@ import qualified Auth.Handlers
 import qualified Tutorial.Handlers
 import qualified Step.Handlers
 import qualified Dependency.Handlers
+import qualified Course.Handlers
 
 routes :: [(Text, AppHandler ())]
 routes = [ ("tutorials",    route Tutorial.Handlers.routes)
          , ("steps",        route Step.Handlers.routeWithoutTutorial)
          , ("dependencies", route Dependency.Handlers.routes)
+         , ("courses",      route Course.Handlers.routes)
          , ("auth",         route Auth.Handlers.routes)
          , ("",             heistServe)
          , ("",             serveDirectory "static")

@@ -196,4 +196,31 @@ $(function() {
       .attr("y", -100)
       .attr("opacity", 0.5);
   }
+
+  $.ajax("/courses", {
+    success: function (data, status, xhr) {
+      var container = $(".courses");
+      container.append("<h3>Courses</h3>");
+      container.css({"position": "absolute",
+                     "top": "0px",
+                     "left": "10px"
+                    });
+
+      data.forEach(function(c) {
+        var course = $("<div class='course'>");
+        course.append(c.title + " ");
+        course.append($("<a onclick=\"return confirm('Are you sure you want to delete this?')\" href='/courses/" + c.id + "/delete'>del</a>"));
+        container.append(course);
+      });
+
+      if (isLoggedIn) {
+        var form = $("<form method='post' action='/courses/new'>");
+        form.append($("<input type='text' name='new.title'>"));
+        form.append($("<input type='submit' value='+'>"));
+        container.append(form);
+
+      }
+      $("body").append(container);
+    }
+  });
 });

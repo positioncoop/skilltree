@@ -14,4 +14,6 @@
     </p>
     <apply-content/>
   </div>
+
+  <div class='courses'></div>
 </apply>
