@@ -65,7 +65,7 @@ $(function() {
   function drawToolboxes(tutorials) {
     toolboxes = tutorials.append("g")
       .attr("transform", function(d) {
-	return "translate(-15, -2)";
+	return "translate(-20, -2)";
       });
 
     toolboxes.append("text")
@@ -83,7 +83,7 @@ $(function() {
       });
 
     toolboxes.append("text")
-      .attr("dx", -10).attr("dy", 80)
+      .attr("dx", 85)
       .attr("style","font-size: 25px; font-weight: regular")
       .text(function(d) {return d.publish === "Published" ? "" : "";})
       .attr("class", "fa fa-eye")
