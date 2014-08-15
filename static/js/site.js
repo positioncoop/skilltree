@@ -45,7 +45,9 @@ $(function() {
     var tutorials = enter.append("g")
         .attr("data-tutorial-id", function(d) { return d.id; })
         .attr("data-json", function(d) {return JSON.stringify(d);})
-        .attr("class", "tutorial")
+        .attr("class", function(d) {
+          return "tutorial " + d.publish;
+        })
         .attr("transform", function(d) {
           var point = to_display(d);
           return "translate(" + point.x + ", " + point.y + ")";
