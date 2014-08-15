@@ -216,7 +216,23 @@ $(function() {
 
         course.append(": Week ");
         c.weeks.forEach(function(w) {
-          course.append($("<a href='#'>").text(w.number)).append(" ");
+          var weekLink = $("<a href='#'>").text(w.number);
+          weekLink.on("click", function () {
+            $("g.tutorial").each(function (_,_e) {
+              var e = $(_e);
+              var data = e.find("[data-json]").data("json");
+              var add = $("<a href='/courses/" + c.id + "/weeks/" + w.id + "/toggle_tutorial?tutorial_id=" + data.id + "'>+</button>").on("click", function () {
+              });
+              add.css({"position": "absolute"
+                      ,"display": "block"
+                      ,"background-color": "blue"
+                      ,"padding": "5px"
+                      ,"top": e.position().top
+                      ,"left": e.position().left});
+              $("body").append(add);
+            });
+          });
+          course.append(weekLink).append(" ");
         });
 
         if (isLoggedIn) {
