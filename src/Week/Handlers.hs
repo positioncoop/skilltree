@@ -15,6 +15,7 @@ import Database.Persist
 import Text.Digestive.Snap (runForm)
 
 import Week.Types
+import Week.Queries
 import TutorialWeek.Types
 import qualified Course.Types as C
 
@@ -26,8 +27,15 @@ authCheck = redirect "/auth/login"
 routes :: C.CourseEntity -> [(Text, AppHandler ())]
 routes centity = [ ("new", ifTop $ requireUser auth authCheck $ newH centity)
                  , ("delete", requireUser auth authCheck $ deleteH centity)
+                 , (":id", ifTop showH)
                  , (":id/toggle_tutorial", requireUser auth authCheck $ addTutorialH centity)
                  ]
+
+showH :: AppHandler ()
+showH = do
+  i <- getParam "id"
+  ts <- lookupTutorialsByWeek i
+  writeJSON ts
 
 newH :: C.CourseEntity -> AppHandler ()
 newH (Entity ckey _) = do

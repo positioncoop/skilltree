@@ -43,6 +43,8 @@ $(function() {
   function drawTutorials(tutorialData) {
     var enter = grid.selectAll("g.tutorial").data(tutorialData).enter();
     var tutorials = enter.append("g")
+        .attr("data-tutorial-id", function(d) { return d.id; })
+        .attr("data-json", function(d) {return JSON.stringify(d);})
         .attr("class", "tutorial")
         .attr("transform", function(d) {
           var point = to_display(d);
@@ -205,21 +207,44 @@ $(function() {
         course.append(": Week ");
         c.weeks.forEach(function(w) {
           var weekLink = $("<a href='#'>").text(w.number);
-          weekLink.on("click", function () {
-            $("g.tutorial").each(function (_,_e) {
-              var e = $(_e);
-              var data = e.find("[data-json]").data("json");
-              var add = $("<a href='/courses/" + c.id + "/weeks/" + w.id + "/toggle_tutorial?tutorial_id=" + data.id + "'>+</button>").on("click", function () {
+          function turnOn() {
+             if (isLoggedIn) {
+              $("g.tutorial").each(function (_,_e) {
+                var e = $(_e);
+                var data = e.data("json");
+                var add = $("<a class='add-week-button' data-add-week-id='" + data.id + "' href='/courses/" + c.id + "/weeks/" + w.id + "/toggle_tutorial?tutorial_id=" + data.id + "'>add</button>").on("click", function () {
+                });
+                add.css({"position": "absolute"
+                         ,"display": "block"
+                         ,"background-color": "white"
+                         ,"border": "2px solid #ccc"
+                         ,"padding": "5px"
+                         ,"top": e.position().top
+                         ,"left": e.position().left});
+                $("body").append(add);
               });
-              add.css({"position": "absolute"
-                      ,"display": "block"
-                      ,"background-color": "blue"
-                      ,"padding": "5px"
-                      ,"top": e.position().top
-                      ,"left": e.position().left});
-              $("body").append(add);
+            }
+
+            $.ajax("/courses/" + c.id + "/weeks/" + w.id, {
+              success: function (data, status, xhr) {
+                data.forEach(function(t) {
+                  $("a[data-add-week-id=" + t.id + "]").text("remove");
+                  $("g[data-tutorial-id=" + t.id + "]").attr("stroke", "red").attr("stroke-width", "5");
+                });
+              }
             });
-          });
+
+            weekLink.off("click.turn-on");
+
+            weekLink.on("click.turn-off", function () {
+              $(".add-week-button").remove();
+              $("g.tutorial").attr("stroke-width", 0).attr("stroke", "");
+              weekLink.on("click.turn-on", turnOn);
+            });
+          }
+
+          weekLink.on("click.turn-on", turnOn);
+
           course.append(weekLink).append(" ");
         });
 
