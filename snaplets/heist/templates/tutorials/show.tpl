@@ -1,13 +1,16 @@
 <apply template="graph">
   <div style="border:1px #efefef solid; padding: 10px; margin: 10px; width: 580px;">
-    <h2><tutorialTitle /></h2>
+    <div class="header">
+      <img class="icon" src="${tutorialIconPath}" />
+      <div class="title"><tutorialTitle /></div>
+    </div>
     <tutorialSteps>
       <div class="tutorial-step">
-	<stepContent/>
-	<hr/>
-	<stepVideo>
-	  <iframe src="${url}" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-	</stepVideo>
+        <stepContent/>
+        <hr/>
+        <stepVideo>
+          <iframe src="${url}" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+        </stepVideo>
       </div>
     </tutorialSteps>
   </div>

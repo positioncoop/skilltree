@@ -1,7 +1,10 @@
 <apply template="graph">
   <dfForm class="form-tutorial">
-    <dfInputText ref="title" size="40" placeholder="Title"/>
-    <dfChildErrorList ref="title" />
+    <div class="header">
+      <img class="icon" src="${tutorialIconPath}" />
+      <dfInputText class="title" ref="title" size="40" placeholder="Title"/>
+      <dfChildErrorList ref="title" />
+    </div>
     <br />
     <dfInputFile ref="iconPath" onchange="$(this).parents('form').submit()"/>
     <dfChildErrorList ref="iconPath" />
