@@ -208,8 +208,23 @@ $(function() {
 
       data.forEach(function(c) {
         var course = $("<div class='course'>");
-        course.append(c.title + " ");
-        course.append($("<a onclick=\"return confirm('Are you sure you want to delete this?')\" href='/courses/" + c.id + "/delete'>del</a>"));
+        course.append(c.title);
+        if (isLoggedIn) {
+          course.append(" ");
+          course.append($("<a onclick=\"return confirm('Are you sure you want to delete this?')\" href='/courses/" + c.id + "/delete'>del</a>"));
+        }
+
+        course.append(": Week ");
+        c.weeks.forEach(function(w) {
+          course.append($("<a href='#'>").text(w.number)).append(" ");
+        });
+
+        if (isLoggedIn) {
+          course.append($("<a href='/courses/" + c.id + "/weeks/new'>").text("+"));
+          course.append(" ");
+          course.append($("<a href='/courses/" + c.id + "/weeks/delete'>").text("-"));
+        }
+
         container.append(course);
       });
 

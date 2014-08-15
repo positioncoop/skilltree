@@ -21,10 +21,6 @@ Course
 
 type CourseEntity = Entity Course
 
-instance ToJSON (Entity Course) where
-  toJSON (Entity key (Course title)) =
-    object ["id" .= showKey key, "title" .= title]
-
 coursePath :: CourseEntity -> Text
 coursePath (Entity key _) = "/courses/" ++ showKey key
 
