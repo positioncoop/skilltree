@@ -4,6 +4,7 @@
 
 module Tutorial.Splices where
 
+import Control.Lens
 import Prelude hiding ((++))
 import Heist
 import Heist.Interpreted
@@ -12,6 +13,7 @@ import Database.Persist.Types
 import qualified Snap.Snaplet.Persistent as P
 import qualified Step.Splices
 import qualified Dependency.Splices
+import qualified Data.Configurator as C
 
 import Tutorial.Types
 import Tutorial.Queries
@@ -25,7 +27,10 @@ entitySplice entity@(Entity key (Tutorial x' y' title' iconPath' publish')) = do
   "tutorialY" ## textSplice $ tshow y'
   "tutorialTitle" ## textSplice title'
   "tutorialPublish" ## textSplice $ tshow publish'
-  "tutorialIconPath" ## textSplice $ maybe "" pack iconPath'
+  "tutorialIconPath" ## do
+    conf' <- use conf
+    defaultIconPath' <- liftIO (C.require conf' "default-icon-path")
+    textSplice $ maybe defaultIconPath' pack iconPath'
   "tutorialStepNewPath" ## textSplice $ tutorialStepNewPath entity
   "tutorialDeletePath" ## textSplice $ tutorialDeletePath entity
   "tutorialSteps" ## do steps <- lift $ lookupTutorialSteps entity

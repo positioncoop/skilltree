@@ -9,12 +9,15 @@
     <dfInputFile ref="iconPath" onchange="$(this).parents('form').submit()"/>
     <dfChildErrorList ref="iconPath" />
     <br />
-    <dfInputSubmit value="Enter" class="btn btn-lg btn-primary btn-block" />
+    <dfInputSelect ref="publish" />
+    <dfChildErrorList ref="publish" />
+    <br />
+    <dfInputSubmit value="Save" class="btn btn-lg btn-primary btn-block" />
   </dfForm>
   <tutorialDependencies>
     <div class="tutorial-dependency">
       <dependencyTutorial>
-	<tutorialTitle /> <a href="${dependencyDeletePath}">delete</a>
+        <tutorialTitle /> <a href="${dependencyDeletePath}">delete</a>
       </dependencyTutorial>
     </div>
   </tutorialDependencies>

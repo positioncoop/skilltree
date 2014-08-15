@@ -43,7 +43,6 @@ tutorialHandler = do
               route [("edit", ifTop $ editH tentity)
                     ,("delete", ifTop $ deleteH tentity)
                     ,("move", ifTop $ moveH tentity)
-                    ,("publish", ifTop $ publishH tentity)
                     ,("steps", route (Step.Handlers.routes tentity))
                     ])]
 
@@ -66,10 +65,6 @@ newH = handleTutorialAjax (runForm "new" Tutorial.Form.newForm) (runPersist . in
 moveH :: TutorialEntity -> AppHandler ()
 moveH entity@(Entity tutorialKey _) =
   handleTutorialAjax (runForm "move" $ Tutorial.Form.moveForm entity) (runPersist . replace tutorialKey)
-
-publishH :: TutorialEntity -> AppHandler ()
-publishH entity@(Entity tutorialKey _) =
-  handleTutorialAjax (runForm "publish" $ Tutorial.Form.publishForm entity) (runPersist . replace tutorialKey)
 
 editH :: TutorialEntity -> AppHandler ()
 editH entity@(Entity tutorialKey tutorial) = do

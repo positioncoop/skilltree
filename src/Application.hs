@@ -16,6 +16,7 @@ import Snap.Snaplet.RedisDB
 import Snap.Snaplet.Auth
 import Database.Redis (Redis)
 import FileStore
+import Data.Configurator.Types
 
 data App = App
      { _heist :: Snaplet (Heist App)
@@ -25,6 +26,7 @@ data App = App
      , _db :: Snaplet Postgres
      , _redis :: Snaplet RedisDB
      , _siteUrl :: Text
+     , _conf :: Config
      , _env :: Text
      , _filestore :: FileStore
      }

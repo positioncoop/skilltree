@@ -65,7 +65,7 @@ app = makeSnaplet "app" "" Nothing $ do
     e <- getEnvironment
     addAuthSplices h auth
     addRoutes routes
-    return $ App h s a p d r url (pack e) (Directory (absPath ++ "store"))
+    return $ App h s a p d r url conf (pack e) (Directory (absPath ++ "store"))
 
 prefixUrlSplice :: I.Splice AppHandler
 prefixUrlSplice = do node <- getParamNode
