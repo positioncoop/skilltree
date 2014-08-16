@@ -14,7 +14,7 @@ DEPDIR=deps
 SHELL=/bin/bash
 
 .PHONY: all install clean superclean test init deps sandbox tags confirm \
-	dbup dbtest dbnew dbrevert
+	dbsetup dbup dbtest dbnew dbrevert
 
 all: init install test tags
 
@@ -45,7 +45,7 @@ init: sandbox deps
 deps: $(patsubst %, $(DEPDIR)/%.d, $(DEPS)) $(DEPDIR)/digestive-functors
 
 $(DEPDIR)/digestive-functors:
-	git clone -b snap-upload-fix git@github.com:positioncoop/digestive-functors.git $@
+	git clone -b snap-upload-fix https://github.com/positioncoop/digestive-functors.git $@
 	cabal sandbox add-source $(DEPDIR)/digestive-functors/digestive-functors-snap
 
 
@@ -66,8 +66,15 @@ TAGS: $(SOURCES)
 	$(EXEC) haskdogs -e
 
 
+dbsetup:
+	psql template1 -Upostgres -hdb_1 -c "CREATE DATABASE skilltree_devel"
+	psql template1 -Upostgres -hdb_1 -c "CREATE DATABASE skilltree_test"
+	psql template1 -Upostgres -hdb_1 -c "CREATE USER skilltree_user WITH PASSWORD '111'"
+	psql template1 -Upostgres -hdb_1 -c "GRANT ALL ON DATABASE skilltree_devel TO skilltree_user"
+	psql template1 -Upostgres -hdb_1 -c "GRANT ALL ON DATABASE skilltree_test TO skilltree_user"
+
 db:
-	PGPASSWORD=111 psql skilltree_devel -Uskilltree_user -hlocalhost
+	PGPASSWORD=111 psql skilltree_devel -Uskilltree_user -hdb_1
 
 dbup:
 	moo upgrade $(MOODEVEL)

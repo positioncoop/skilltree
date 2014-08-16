@@ -1,0 +1,11 @@
+web:
+  build: .
+  command: make run
+  links:
+   - db
+  ports:
+   - "8000:8000"
+  volumes:
+   - .:/srv
+db:
+  image: postgres
