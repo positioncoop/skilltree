@@ -89,19 +89,42 @@ TAGS: $(SOURCES)
 
 
 db:
+ifeq ($(VAGRANT),1)
+	$(call VAGRANT_CMD, PGPASSWORD=111 psql skilltree_devel -Uskilltree_user -hlocalhost)
+else
 	PGPASSWORD=111 psql skilltree_devel -Uskilltree_user -hlocalhost
+endif
 
 dbup:
+ifeq ($(VAGRANT),1)
+	$(call VAGRANT_CMD, moo upgrade $(MOODEVEL))
+	$(call VAGRANT_CMD, moo upgrade $(MOOTEST))
+else
 	moo upgrade $(MOODEVEL)
 	moo upgrade $(MOOTEST)
+endif
 
 dbtest:
+ifeq ($(VAGRANT),1)
+	$(call VAGRANT_CMD, moo test $(MOODEVEL) $(MIGRATION))
+	$(call VAGRANT_CMD, moo test $(MOOTEST) $(MIGRATION))
+else
 	moo test $(MOODEVEL) $(MIGRATION)
 	moo test $(MOOTEST) $(MIGRATION)
+endif
 
 dbnew:
+ifeq ($(VAGRANT),1)
+	$(call VAGRANT_CMD, moo new $(MOODEVEL) $(MIGRATION))
+else
 	moo new $(MOODEVEL) $(MIGRATION)
+endif
 
 dbrevert:
+ifeq ($(VAGRANT),1)
+	$(call VAGRANT_CMD, moo revert $(MOODEVEL) $(MIGRATION))
+	$(call VAGRANT_CMD, moo revert $(MOOTEST) $(MIGRATION))
+else
 	moo revert $(MOODEVEL) $(MIGRATION)
 	moo revert $(MOOTEST) $(MIGRATION)
+endif
