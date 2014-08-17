@@ -3,7 +3,6 @@ module Tutorial.Queries where
 import qualified Snap.Snaplet.Persistent as P
 import Database.Esqueleto
 import Tutorial.Types
-import Tutorial.Publish
 import Dependency.Types
 import Step.Types
 

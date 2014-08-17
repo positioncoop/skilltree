@@ -3,7 +3,6 @@ module Week.Queries where
 import qualified Snap.Snaplet.Persistent as P
 import Database.Esqueleto
 import Tutorial.Types
-import Tutorial.Publish
 import Week.Types
 import TutorialWeek.Types
 

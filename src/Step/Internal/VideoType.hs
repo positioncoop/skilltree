@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Step.VideoType where
+module Step.Internal.VideoType where
 
 import Database.Persist.TH
 

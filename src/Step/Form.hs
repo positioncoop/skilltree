@@ -13,7 +13,6 @@ import Snap.Snaplet.Persistent
 import Database.Persist
 import FileStore
 
-import Step.VideoType
 import Step.Types
 import Application
 

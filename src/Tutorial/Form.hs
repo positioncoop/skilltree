@@ -20,7 +20,6 @@ import qualified Control.Monad.Trans.Resource as R
 import Data.Conduit.ImageSize
 
 import Tutorial.Types
-import Tutorial.Publish
 import Application
 
 untitledTutorial :: Int -> Int -> Tutorial

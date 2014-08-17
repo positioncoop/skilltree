@@ -14,7 +14,6 @@ import Snap.Plus
 import Database.Persist.Types
 import qualified Snap.Snaplet.Persistent as P
 
-import Step.VideoType
 import Step.Types
 import Application
 
