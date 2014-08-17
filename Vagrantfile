@@ -7,6 +7,7 @@ Vagrant.configure("2") do |config|
 
   # Enable host-only access to the machine using a specific IP.
   config.vm.network :private_network, ip: "192.168.33.33"
+  config.vm.network "forwarded_port", guest: 8000, host: 8000
 
   config.vm.synced_folder ".", "/vagrant", :owner => "vagrant", :group => "www-data"
 
@@ -16,7 +17,7 @@ Vagrant.configure("2") do |config|
     v.customize ["modifyvm", :id, "--name", "skilltree"]
     v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
     v.customize ["modifyvm", :id, "--memory", 2048]
-    v.customize ["modifyvm", :id, "--cpus", 2]
+    v.customize ["modifyvm", :id, "--cpus", 4]
     v.customize ["modifyvm", :id, "--ioapic", "on"]
   end
 

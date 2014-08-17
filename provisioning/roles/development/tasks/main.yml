@@ -4,7 +4,7 @@
   authorized_key: user=vagrant key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
 - name: look for cabal database
-  shell: ls {{ cabal_prefix_dir }}/packages
+  shell: (ls {{ cabal_prefix_dir }}/packages ; true)
   register: cabal_packages_dir
 
 - name: download cabal update
@@ -42,10 +42,10 @@
 
 - name: install happy
   sudo: no
-  shell: "PATH=$PATH:{{ cabal_prefix_dir }}/bin:{{ ghc_prefix_dir}}/bin cabal install happy creates={{ cabal_prefix_dir }}/bin/happy"
+  shell: "export PATH=$PATH:{{ cabal_prefix_dir }}/bin:{{ ghc_prefix_dir}}/bin; cabal install happy creates={{ cabal_prefix_dir }}/bin/happy"
   ignore_errors: yes
 
 - name: install alex
   sudo: no
-  shell: "PATH=$PATH:{{ cabal_prefix_dir }}/bin:{{ ghc_prefix_dir}}/bin cabal install alex creates={{ cabal_prefix_dir }}/bin/happy"
+  shell: "export PATH=$PATH:{{ cabal_prefix_dir }}/bin:{{ ghc_prefix_dir}}/bin; cabal install alex creates={{ cabal_prefix_dir }}/bin/alex"
   ignore_errors: yes

@@ -4,3 +4,7 @@
   sudo: yes
   apt:  "pkg={{ item }} update_cache=yes"
   with_items: postgresql_packages
+
+- name: ensure postgresql server is started
+  service: name=postgresql state=restarted enabled=yes
+  sudo: true

@@ -7,4 +7,4 @@
   command: "./configure {{ ghc_configure_options }} chdir={{ ghc_extract_dir }} creates={{ ghc_extract_dir}}/mk/install.mk"
 
 - name: install ghc
-  command: "make install chdir={{ ghc_extract_dir }} creates={{ ghc_prefix_dir }}"
+  command: "make install chdir={{ ghc_extract_dir }} creates={{ ghc_prefix_dir }}/bin"
