@@ -48,8 +48,8 @@ by some means, put it in the provisioning folder, and open up the vault with
     ansible-vault edit --vault-password-file=provisioning/password.txt provisioning/secrets.yml
 
 Take the database password and use it to create the prod.cfg file in
-snaplets/persist and snaplets/postgresql-simple, changing the database
-name to `skilltree_prod` as well.
+snaplets/persist and snaplets/postgresql-simple, modeling off of the
+prod-sample.cfg files.
 
 If this is a new production server, run `make production-init`. It'll
 prompt you for the root password on the server (a few times). If the server
