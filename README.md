@@ -51,9 +51,11 @@ Take the database password and use it to create the prod.cfg file in
 snaplets/persist and snaplets/postgresql-simple, changing the database
 name to `skilltree_prod` as well.
 
-Then run `make production-init`. It'll prompt you for the root
-password on the server (a few times). Once that's done, you can run
-the database migrations with `make dbup PRODUCTION=1`, and deploy the
+If this is a new production server, run `make production-init`. It'll
+prompt you for the root password on the server (a few times). If the server
+has already been set up, this step isn't needed.
+
+Run database migrations with `make dbup PRODUCTION=1`, and deploy the
 application with `make deploy`. Whenever you want to deploy a new
 version, just run `make deploy`. If there is an error on startup, the
 new version will not be switched to, and you can debug it by looking
