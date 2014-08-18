@@ -24,27 +24,27 @@ import Tutorial.Queries
 
 import Application
 
-authCheck :: AppHandler ()
-authCheck = redirect "/auth/login"
 
 routes :: [(Text, AppHandler ())]
-routes = [ ("", ifTop indexH)
-         , ("new", ifTop $ requireUser auth authCheck newH)
-         , (":id", tutorialHandler)
-         ]
+routes = [("", ifTop indexH)
+         ,("new", ifTop $ authorize newH)
+         ,(":id", do
+              tentity <- requestedTutorial
+              route [("", ifTop $ showH tentity)
+                    ,("", authorize $ route [("edit", ifTop $ editH tentity)
+                                            ,("delete", ifTop $ deleteH tentity)
+                                            ,("move", ifTop $ moveH tentity)
+                                            ,("steps", route (Step.Handlers.routes tentity))
+                                            ])])]
 
-tutorialHandler :: AppHandler ()
-tutorialHandler = do
+requestedTutorial :: AppHandler TutorialEntity
+requestedTutorial = do
   tutorialKey <- getParam "id"
   tutorial <- require $ runPersist $ get tutorialKey
-  let tentity = Entity tutorialKey tutorial
-  route [("", ifTop $ showH tentity)
-        ,("", requireUser auth authCheck $
-              route [("edit", ifTop $ editH tentity)
-                    ,("delete", ifTop $ deleteH tentity)
-                    ,("move", ifTop $ moveH tentity)
-                    ,("steps", route (Step.Handlers.routes tentity))
-                    ])]
+  return $ Entity tutorialKey tutorial
+
+authorize :: AppHandler () -> AppHandler ()
+authorize = requireUser auth (redirect "/auth/login")
 
 home :: AppHandler ()
 home = redirect "/"
