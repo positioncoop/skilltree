@@ -2,13 +2,5 @@ exec: ../skilltree
 args:
     - -e
     - prod
-host: 
-static-hosts:
-    - host: static.
-      root: ../static
+host: skilltree.dbpapp.com
 postgres: false
-redirects:
-    - from: beta.
-      to: 
-    - from: www.
-      to: 

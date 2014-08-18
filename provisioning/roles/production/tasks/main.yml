@@ -25,4 +25,22 @@
   sudo_user: postgres
   postgresql_user: name=skilltree_user role_attr_flags=NOSUPERUSER,NOCREATEDB
 
-# TODO(dbp 2014-08-17): add keter, set up service to keep it running, add moo, add backups, add vault with production_db_password, tarsnap key.
+- name: make bin directory for keter
+  file: "dest=/opt/keter/bin mode=755 state=directory"
+
+- name: make etc directory for keter
+  file: "dest=/opt/keter/etc mode=755 state=directory"
+
+- name: make incoming directory
+  file: "dest=/opt/keter/incoming mode=755 state=directory owner=host"
+
+- name: copy keter config
+  copy: src=keter-config.yaml dest=/opt/keter/etc/keter-config.yaml
+
+- name: install keter service
+  copy: src=keter-init dest=/etc/init.d/keter mode=0751
+
+
+# NOTE(dbp 2014-08-18): We build keter binary inside development VM,
+# so we can't actually start the service yet (as the binary isn't
+# there yet).

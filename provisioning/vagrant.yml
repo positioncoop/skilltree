@@ -1,5 +1,5 @@
 ---
-- hosts: skilltree_devel
+- hosts: devel
   gather_facts: yes
 
   sudo: no

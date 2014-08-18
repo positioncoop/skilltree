@@ -59,3 +59,8 @@
   sudo: no
   shell: "export PATH=$PATH:{{ cabal_prefix_dir }}/bin:{{ ghc_prefix_dir}}/bin; cabal install dbmigrations creates={{ cabal_prefix_dir }}/bin/moo"
   ignore_errors: yes
+
+- name: install keter
+  sudo: no
+  shell: "export PATH=$PATH:{{ cabal_prefix_dir }}/bin:{{ ghc_prefix_dir}}/bin; cabal install keter creates={{ cabal_prefix_dir }}/bin/keter"
+  ignore_errors: yes

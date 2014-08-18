@@ -27,6 +27,7 @@ Vagrant.configure("2") do |config|
     ansible.inventory_path = "provisioning/inventory"
     # Run commands as root.
     ansible.sudo = true
+    ansible.limit = "devel"
     # ansible.raw_arguments = ['-v']
   end
 

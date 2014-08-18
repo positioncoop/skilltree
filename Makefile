@@ -16,8 +16,11 @@ SHELL=/bin/bash
 VAGRANT=0
 VAGRANT_CMD=vagrant ssh -c "export PATH=$$PATH:/home/vagrant/.cabal/bin:/home/vagrant/ghc/bin:/vagrant/.cabal-sandbox/bin; export LANG=C.UTF-8; cd /vagrant; $(1)"
 
+PRODUCTION=69.164.222.149
+
 .PHONY: all install clean superclean test init deps sandbox tags confirm \
-	dbup dbtest dbnew dbrevert production-init
+	dbup dbtest dbnew dbrevert production-init production-provision production-keter
+	deploy
 
 all: init install test tags
 
@@ -129,7 +132,29 @@ else
 	moo revert $(MOOTEST) $(MIGRATION)
 endif
 
+keter-build:
+	$(call VAGRANT_CMD, cabal install -j)
+	cp .cabal-sandbox/bin/skilltree skilltree
 
-# NOTE(dbp 2014-08-17): This isn't finished yet, just a draft.
-production-init:
-	ansible-playbook -i provisioning/inventory --vault-password-file=password.txt provisioning/web.yml
+keter-tar:
+	tar czfv skilltree.keter skilltree config prod.cfg static snaplets log/.gitkeep tmp/.gitkeep
+	rm skilltree
+
+keter-deploy: keter-tar
+	scp skilltree.keter host@$(PRODUCTION):/opt/keter/incoming
+
+deploy: keter-build keter-deploy
+
+production-init: production-provision production-keter
+
+production-provision:
+	ansible-playbook -i provisioning/inventory --vault-password-file=provisioning/password.txt provisioning/web.yml --ask-pass
+
+production-keter:
+	vagrant ssh-config > .vagrant-ssh-config
+	scp -F .vagrant-ssh-config skilltree:/home/vagrant/.cabal/bin/keter keter
+	rm .vagrant-ssh-config
+	scp keter root@$(PRODUCTION):/opt/keter/bin/
+	rm keter
+	ssh root@$(PRODUCTION) update-rc.d keter defaults
+	ssh root@$(PRODUCTION) service keter start

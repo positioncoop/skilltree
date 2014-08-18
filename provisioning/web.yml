@@ -1,12 +1,14 @@
 ---
-- hosts: skilltree_prod
+- hosts: web
   gather_facts: yes
 
   sudo: no
 
+  vars_files:
+    - secrets.yml
+
   roles:
-    - ghc
-    - cabal
     - postgresql
     - redis
+    - tarsnap
     - production

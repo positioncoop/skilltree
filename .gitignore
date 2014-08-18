@@ -11,3 +11,6 @@ TAGS
 .vagrant
 store/
 deps/
+password.txt
+skilltree.key
+skilltree.keter
