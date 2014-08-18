@@ -31,6 +31,9 @@ deleteEntity :: (PersistEntity record, PersistEntityBackend record ~ SqlBackend)
              => Key record -> AppHandler ()
 deleteEntity = runPersist . delete
 
+routeResource :: Resource record -> AppHandler ()
+routeResource = route . resourceRoutes
+
 resourceRoutes :: Resource record -> [(Text, AppHandler ())]
 resourceRoutes (Resource indexHandler newHandler showHandler editHandler deleteHandler) =
   [("", ifTop indexHandler)

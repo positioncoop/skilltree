@@ -1,24 +1,26 @@
 {-# LANGUAGE QuasiQuotes, TypeFamilies, GeneralizedNewtypeDeriving, TemplateHaskell,
-             OverloadedStrings, GADTs, FlexibleContexts, FlexibleInstances, EmptyDataDecls #-}
+             OverloadedStrings, GADTs, FlexibleContexts, FlexibleInstances, EmptyDataDecls,
+             MultiParamTypeClasses #-}
 
 module Snap.Plus.Paths where
 
 import Database.Persist.Types
+import Database.Persist.Sql
 import Snap.Snaplet.Persistent (showKey)
 import Prelude hiding ((++))
 import Snap.Plus
 
-class Paths p where
-  indexPath :: Entity p -> Text
+class KeyBackend (PersistEntityBackend record) record ~ k => Paths k record where
+  indexPath :: k -> Text
 
-showPath :: Paths p => Entity p -> Text
-showPath e@(Entity key _) = (indexPath e) ++ showKey key
+showPath :: Paths k e => k -> Text
+showPath k = (indexPath k) ++ showKey k
 
-editPath :: Paths p => Entity p -> Text
-editPath p = showPath p ++ "/edit"
+editPath :: Paths k e => k -> Text
+editPath k = showPath k ++ "/edit"
 
-deletePath :: Paths p => Entity p -> Text
-deletePath p = showPath p ++ "/delete"
+deletePath :: Paths k e => k -> Text
+deletePath k = showPath k ++ "/delete"
 
-newPath :: Paths p => Entity p -> Text
-newPath p = indexPath p ++ "/new"
+newPath :: Paths k e => k -> Text
+newPath k = indexPath k ++ "/new"

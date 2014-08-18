@@ -3,6 +3,7 @@
 module Snap.Plus ( module Snap
                  , module Control.Applicative
                  , module Data.Text
+                 , module Snap.Extras.CoreUtils
                  , (++)
                  , io
                  , tshow
@@ -24,6 +25,7 @@ import Prelude hiding ((++))
 import Snap hiding (redirect, route, get, addRoutes, getParam)
 import qualified Snap
 import qualified Snap.Core
+import Snap.Extras.CoreUtils
 import Control.Applicative ((<$>), (<*>))
 import Control.Arrow (first)
 import Data.Monoid (Monoid, mappend)

@@ -20,7 +20,7 @@ lookupPublishedTutorials =
 lookupTutorialSteps :: TutorialEntity -> AppHandler [StepEntity]
 lookupTutorialSteps (Entity key _) =
   P.runPersist $ select $ from $ \step -> do
-    where_ (step ^. StepTutorialId ==. val (P.mkInt key))
+    where_ (step ^. StepTutorialId ==. val key)
     orderBy [asc (step ^. StepOrdinal)]
     return step
 

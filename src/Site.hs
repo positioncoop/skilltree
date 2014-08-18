@@ -10,6 +10,7 @@ import           Data.Monoid
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import           Snap.Plus
+import           Snap.Plus.Handlers
 import           Snap.Snaplet.Heist
 import           Snap.Snaplet.Session.Backends.CookieSession
 import           Snap.Snaplet.Auth
@@ -37,7 +38,7 @@ import qualified Course.Handlers
 
 routes :: [(Text, AppHandler ())]
 routes = [ ("tutorials",    route Tutorial.Handlers.routes)
-         , ("steps",        route Step.Handlers.routeWithoutTutorial)
+         , ("steps",        routeResource Step.Handlers.stepResource)
          , ("dependencies", route Dependency.Handlers.routes)
          , ("courses",      route Course.Handlers.routes)
          , ("auth",         route Auth.Handlers.routes)

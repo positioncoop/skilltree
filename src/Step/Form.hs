@@ -5,18 +5,14 @@
 module Step.Form where
 
 import Prelude hiding ((++))
-import Control.Lens
 import Text.Digestive
 import Snap.Plus
-import Snap.Plus.Forms
-import Snap.Snaplet.Persistent
-import Database.Persist
-import FileStore
 
+import Tutorial.Types
 import Step.Types
 import Application
 
-newForm :: Int -> Form Text AppHandler Step
+newForm :: TutorialId -> Form Text AppHandler Step
 newForm _tutorialId = Step _tutorialId <$> "content" .: text Nothing
                                        <*> "ordinal" .: stringRead "Must be a number" Nothing
                                        <*> "video-code" .: optionalText Nothing

@@ -9,10 +9,11 @@ import Database.Persist.Types
 import Database.Persist.TH
 import Snap.Snaplet.Persistent (showKey)
 import Step.Internal.VideoType
+import Tutorial.Types
 
 share [mkPersist sqlSettings] [persistLowerCase|
 Step
-  tutorialId Int
+  tutorialId TutorialId
   content Text
   ordinal Int
   videoCode Text Maybe
@@ -22,7 +23,6 @@ Step
 |]
 
 type StepEntity = Entity Step
-
 
 stepPath :: StepEntity -> Text
 stepPath (Entity key _) = "/steps/" ++ showKey key

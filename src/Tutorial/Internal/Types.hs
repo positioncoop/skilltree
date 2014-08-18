@@ -1,5 +1,6 @@
 {-# LANGUAGE QuasiQuotes, TypeFamilies, GeneralizedNewtypeDeriving, TemplateHaskell,
-             OverloadedStrings, GADTs, FlexibleContexts, FlexibleInstances, EmptyDataDecls #-}
+             OverloadedStrings, GADTs, FlexibleContexts, FlexibleInstances, EmptyDataDecls,
+             MultiParamTypeClasses #-}
 
 module Tutorial.Internal.Types where
 
@@ -32,16 +33,16 @@ instance ToJSON (Entity Tutorial) where
 
 -- TODO(mjr 2014-08-18): -- fixme inline these
 tutorialPath :: TutorialEntity -> Text
-tutorialPath = showPath
+tutorialPath (Entity key _) = showPath key
 
 tutorialEditPath :: TutorialEntity -> Text
-tutorialEditPath = editPath
+tutorialEditPath (Entity key _) = editPath key
 
 tutorialDeletePath :: TutorialEntity -> Text
-tutorialDeletePath = deletePath
+tutorialDeletePath (Entity key _) = deletePath key
 
 tutorialStepNewPath :: TutorialEntity -> Text
-tutorialStepNewPath = (++ "/steps/new") . showPath
+tutorialStepNewPath (Entity key _) = showPath key ++ "/steps/new"
 
-instance Paths Tutorial where
+instance Paths TutorialId Tutorial where
   indexPath _ = "/tutorials/"

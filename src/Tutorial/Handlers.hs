@@ -27,15 +27,13 @@ import Application
 
 tutorialResource = Resource indexH (authorize newH) showH (authorize . editH) (authorize . deleteH)
 
-routeResource = route . resourceRoutes
-
 routes :: [(Text, AppHandler ())]
 routes = [("", routeResource tutorialResource)
          ,(":id",
            do
              tentity <- requestedEntity
              route [("move", authorize $ moveH tentity)
-                   ,("steps", authorize $ route $ Step.Handlers.routes tentity)
+                   ,("steps", authorize $ routeResource $ Step.Handlers.nestedStepResource tentity)
                    ])]
 
 indexH :: AppHandler ()
