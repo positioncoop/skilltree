@@ -25,7 +25,7 @@ import Tutorial.Queries
 
 import Application
 
-tutorialResource = R indexH (authorize newH) showH (authorize . editH) (authorize . deleteH)
+tutorialResource = Resource indexH (authorize newH) showH (authorize . editH) (authorize . deleteH)
 
 routeResource = route . resourceRoutes
 
@@ -33,7 +33,7 @@ routes :: [(Text, AppHandler ())]
 routes = [("", routeResource tutorialResource)
          ,(":id",
            do
-             tentity <- requestedTutorial
+             tentity <- requestedEntity
              route [("move", authorize $ moveH tentity)
                    ,("steps", authorize $ route $ Step.Handlers.routes tentity)
                    ])]

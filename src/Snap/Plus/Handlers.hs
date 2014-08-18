@@ -8,38 +8,46 @@ import Prelude hiding ((++))
 import Snap.Plus
 import Snap.Snaplet.Auth
 import Database.Persist
+import Database.Persist.Sql
 import Snap.Snaplet.Persistent
 
--- TODO(mjr 2014-08-18): fixme don't depend on Skilltree types
-import Tutorial.Types
 import Application
 
 authorize :: AppHandler t -> AppHandler t
 authorize = requireUser auth (redirect "/auth/login")
 
--- TODO(mjr 2014-08-18): fixme index should take a list of tutorials(?)
-data R = R {indexHandlerField :: AppHandler ()
+data Resource record = (PersistEntity record, PersistEntityBackend record ~ SqlBackend) =>
+  Resource {indexHandlerField :: AppHandler ()
            ,newHandlerField :: AppHandler ()
-           ,showHandlerField :: Entity Tutorial -> AppHandler ()
-           ,editHandlerField :: Entity Tutorial -> AppHandler ()
-           ,deleteHandlerField :: Entity Tutorial -> AppHandler ()}
+           ,showHandlerField :: Entity record -> AppHandler ()
+           ,editHandlerField :: Entity record -> AppHandler ()
+           ,deleteHandlerField :: Entity record -> AppHandler ()}
 
-resourceRoutes :: R -> [(Text, AppHandler ())]
-resourceRoutes (R indexHandler newHandler showHandler editHandler deleteHandler) =
+replaceEntity :: (PersistEntity record, PersistEntityBackend record ~ SqlBackend)
+              => Key record -> record -> AppHandler ()
+replaceEntity key = runPersist . (replace key)
+
+deleteEntity :: (PersistEntity record, PersistEntityBackend record ~ SqlBackend)
+             => Key record -> AppHandler ()
+deleteEntity = runPersist . delete
+
+resourceRoutes :: Resource record -> [(Text, AppHandler ())]
+resourceRoutes (Resource indexHandler newHandler showHandler editHandler deleteHandler) =
   [("", ifTop indexHandler)
   ,("new", newHandler)
   ,(":id", do
-       tentity <- requestedTutorial
-       route [("", ifTop $ showHandler tentity)
-             ,("edit", editHandler tentity)
-             ,("delete", deleteHandler tentity)
+       entity <- requestedEntity
+       route [("", ifTop $ showHandler entity)
+             ,("edit", editHandler entity)
+             ,("delete", deleteHandler entity)
              ])]
 
-requestedTutorial :: AppHandler TutorialEntity
-requestedTutorial = do
-  tutorialKey <- getParam "id"
-  tutorial <- require $ runPersist $ get tutorialKey
-  return $ Entity tutorialKey tutorial
+requestedEntity :: (PersistEntity record, PersistEntityBackend record ~ SqlBackend) =>
+                   AppHandler (Entity record)
+requestedEntity = do
+  key <- getParam "id"
+  entity <- require $ runPersist $ get key
+  return $ Entity key entity
 
 home :: AppHandler ()
 home = redirect "/"
