@@ -26,6 +26,7 @@ import qualified Text.XmlHtml as X
 import           Heist.Splices.BindStrict
 import           Heist.Splices.Ignore
 import qualified Data.Configurator as C
+import           System.Directory (createDirectoryIfMissing)
 
 import           Application
 import           FileStore
@@ -66,7 +67,9 @@ app = makeSnaplet "app" "" Nothing $ do
     e <- getEnvironment
     addAuthSplices h auth
     addRoutes routes
-    return $ App h s a p d r url conf (pack e) (Directory (absPath ++ "store"))
+    let storePath = absPath ++ "store"
+    liftIO $ createDirectoryIfMissing True storePath
+    return $ App h s a p d r url conf (pack e) (Directory storePath)
 
 prefixUrlSplice :: I.Splice AppHandler
 prefixUrlSplice = do node <- getParamNode
