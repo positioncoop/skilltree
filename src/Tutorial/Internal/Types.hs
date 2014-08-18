@@ -5,6 +5,7 @@ module Tutorial.Internal.Types where
 
 import Prelude hiding ((++))
 import Snap.Plus
+import Snap.Plus.Paths
 import Database.Persist.Types
 import Database.Persist.TH
 import Data.Aeson.Types
@@ -22,7 +23,6 @@ Tutorial
   deriving Eq
 |]
 
-
 type TutorialEntity = Entity Tutorial
 
 instance ToJSON (Entity Tutorial) where
@@ -30,14 +30,18 @@ instance ToJSON (Entity Tutorial) where
     object ["id" .= showKey key, "x" .= x, "y" .= y,
             "title" .= title, "iconPath" .= iconPath, "publish" .= tshow publish]
 
+-- TODO(mjr 2014-08-18): -- fixme inline these
 tutorialPath :: TutorialEntity -> Text
-tutorialPath (Entity key _) = "/tutorials/" ++ showKey key
+tutorialPath = showPath
 
 tutorialEditPath :: TutorialEntity -> Text
-tutorialEditPath entity = tutorialPath entity ++ "/edit"
+tutorialEditPath = editPath
 
 tutorialDeletePath :: TutorialEntity -> Text
-tutorialDeletePath entity = tutorialPath entity ++ "/delete"
+tutorialDeletePath = deletePath
 
 tutorialStepNewPath :: TutorialEntity -> Text
-tutorialStepNewPath entity = tutorialPath entity ++ "/steps/new"
+tutorialStepNewPath = (++ "/steps/new") . showPath
+
+instance Paths Tutorial where
+  indexPath _ = "/tutorials/"

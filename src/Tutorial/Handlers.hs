@@ -6,6 +6,7 @@ module Tutorial.Handlers where
 
 import Prelude hiding ((++))
 import Snap.Plus
+import Snap.Plus.Handlers
 import Snap.Plus.Forms
 import Snap.Snaplet.Heist
 import Snap.Snaplet.Auth
@@ -24,36 +25,22 @@ import Tutorial.Queries
 
 import Application
 
+tutorialResource = R indexH (authorize newH) showH (authorize . editH) (authorize . deleteH)
+
+routeResource = route . resourceRoutes
 
 routes :: [(Text, AppHandler ())]
-routes = [("", ifTop indexH)
-         ,("new", ifTop $ authorize newH)
-         ,(":id", do
-              tentity <- requestedTutorial
-              route [("", ifTop $ showH tentity)
-                    ,("", authorize $ route [("edit", ifTop $ editH tentity)
-                                            ,("delete", ifTop $ deleteH tentity)
-                                            ,("move", ifTop $ moveH tentity)
-                                            ,("steps", route (Step.Handlers.routes tentity))
-                                            ])])]
-
-requestedTutorial :: AppHandler TutorialEntity
-requestedTutorial = do
-  tutorialKey <- getParam "id"
-  tutorial <- require $ runPersist $ get tutorialKey
-  return $ Entity tutorialKey tutorial
-
-authorize :: AppHandler () -> AppHandler ()
-authorize = requireUser auth (redirect "/auth/login")
-
-home :: AppHandler ()
-home = redirect "/"
+routes = [("", routeResource tutorialResource)
+         ,(":id",
+           do
+             tentity <- requestedTutorial
+             route [("move", authorize $ moveH tentity)
+                   ,("steps", authorize $ route $ Step.Handlers.routes tentity)
+                   ])]
 
 indexH :: AppHandler ()
 indexH = do loggedIn <- with auth isLoggedIn
-            tutorials <- if loggedIn
-                         then lookupAllTutorials
-                         else lookupPublishedTutorials
+            tutorials <- if loggedIn then lookupAllTutorials else lookupPublishedTutorials
             writeJSON tutorials
 
 showH :: TutorialEntity -> AppHandler ()
