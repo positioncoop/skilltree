@@ -38,9 +38,8 @@ indexH = do
                          else lookupPublishedDependencyPairs
   writeJSON dependencies
   where
-    toPoint (Tutorial x y _ _ _) = object ["x" .= x, "y" .= y]
-    toLine (Entity _ target, Entity _ source) =
-      object ["target" .= toPoint target, "source" .= toPoint source]
+    toLine (target, Entity key _, source) =
+      object ["id" .= showKey key, "target" .= target, "source" .= source]
 
 newH :: AppHandler ()
 newH = do

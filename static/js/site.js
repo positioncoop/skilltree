@@ -118,12 +118,24 @@ $(function() {
       .attr("class", "fa fa-bullseye")
       .on("click", function (d) {
         if (dependencySource !== null) {
-          $.post("/dependencies/new", {"new.tutorialId": dependencySource.id, "new.dependencyId": d.id}, function() {
-            dependencySource = null;
+	  var existing = dependencyData.filter(function (dep) {
+	    return (dep.source.id === d.id && dep.target.id === dependencySource.id)
+                || (dep.target.id === d.id && dep.source.id === dependencySource.id);
+	  });
+
+	  function afterPost() {
+	    dependencySource = null;
             feedback.attr("xlink:href", "/img/example.png");
             window.location.reload();
-          });
-        }
+          }
+
+          if (existing.length !== 0) {
+            var dep = existing[0];
+            $.post("/dependencies/" + dep.id + "/delete", {}, afterPost);
+          } else {
+            $.post("/dependencies/new", {"new.tutorialId": dependencySource.id, "new.dependencyId": d.id}, afterPost);
+          }
+	}
         d3.event.stopPropagation();
       });
     return toolboxes;

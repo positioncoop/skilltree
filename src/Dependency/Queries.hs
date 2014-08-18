@@ -8,21 +8,24 @@ import Dependency.Types
 
 import Application
 
-reorder :: (TutorialEntity, TutorialEntity) -> (TutorialEntity, TutorialEntity)
-reorder (target, source) = if tutorialX (entityVal target) <= tutorialX (entityVal source) then (target, source) else (source, target)
+reorder :: (TutorialEntity, DependencyEntity, TutorialEntity) -> (TutorialEntity, DependencyEntity, TutorialEntity)
+reorder (target, dep, source) =
+  if tutorialX (entityVal target) <= tutorialX (entityVal source)
+  then (target, dep, source)
+  else (source, dep, target)
 
-lookupAllDependencyPairs :: AppHandler [(TutorialEntity, TutorialEntity)]
+lookupAllDependencyPairs :: AppHandler [(TutorialEntity, DependencyEntity, TutorialEntity)]
 lookupAllDependencyPairs = map reorder <$>
   (P.runPersist $ select $ from $ \(target `InnerJoin` djoin `InnerJoin` source) -> do
     on (source ^. TutorialId ==. djoin ^. DependencyTutorialId)
     on (target ^. TutorialId ==. djoin ^. DependencyDependencyId)
-    return (target, source))
+    return (target, djoin, source))
 
-lookupPublishedDependencyPairs  :: AppHandler [(TutorialEntity, TutorialEntity)]
+lookupPublishedDependencyPairs  :: AppHandler [(TutorialEntity, DependencyEntity, TutorialEntity)]
 lookupPublishedDependencyPairs = map reorder <$>
   (P.runPersist $ select $ from $ \(target `InnerJoin` djoin `InnerJoin` source) -> do
     on (source ^. TutorialId ==. djoin ^. DependencyTutorialId)
     on (target ^. TutorialId ==. djoin ^. DependencyDependencyId)
     where_ (val Published ==. source ^. TutorialPublish)
     where_ (val Published ==. target ^. TutorialPublish)
-    return (target, source))
+    return (target, djoin, source))
