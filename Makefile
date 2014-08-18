@@ -28,7 +28,7 @@ install: $(EXECUTABLE)
 
 $(EXECUTABLE): $(SOURCES)
 ifeq ($(VAGRANT),1)
-	$(call VAGRANT_CMD, cd /vagrant && cabal install $(INSTALLFLAGS))
+	$(call VAGRANT_CMD, cabal install $(INSTALLFLAGS))
 else
 	cabal install $(INSTALLFLAGS)
 endif
