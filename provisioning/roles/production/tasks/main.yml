@@ -1,0 +1,28 @@
+---
+
+- name: create host deploy user
+  user: name=host shell=/bin/bash home=/srv
+
+- name: add local key to the authorized_keys for deployment
+  authorized_key: user=host key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+- name: install database creation library
+  sudo: yes
+  apt: pkg=python-psycopg2 update_cache=yes
+
+- name: create production database
+  sudo: yes
+  sudo_user: postgres
+  postgresql_db: name=skilltree_prod
+
+- name: ensure user has access to production database
+  sudo: yes
+  sudo_user: postgres
+  postgresql_user: db=skilltree_prod name=skilltree_user password={{ production_db_password }} priv=ALL
+
+- name: ensure user does not have unnecessary privilege
+  sudo: yes
+  sudo_user: postgres
+  postgresql_user: name=skilltree_user role_attr_flags=NOSUPERUSER,NOCREATEDB
+
+# TODO(dbp 2014-08-17): add keter, set up service to keep it running, add moo, add backups, add vault with production_db_password, tarsnap key.

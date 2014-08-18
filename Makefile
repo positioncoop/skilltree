@@ -17,7 +17,7 @@ VAGRANT=0
 VAGRANT_CMD=vagrant ssh -c "export PATH=$$PATH:/home/vagrant/.cabal/bin:/home/vagrant/ghc/bin:/vagrant/.cabal-sandbox/bin; export LANG=C.UTF-8; cd /vagrant; $(1)"
 
 .PHONY: all install clean superclean test init deps sandbox tags confirm \
-	dbup dbtest dbnew dbrevert
+	dbup dbtest dbnew dbrevert production-init
 
 all: init install test tags
 
@@ -128,3 +128,8 @@ else
 	moo revert $(MOODEVEL) $(MIGRATION)
 	moo revert $(MOOTEST) $(MIGRATION)
 endif
+
+
+# NOTE(dbp 2014-08-17): This isn't finished yet, just a draft.
+production-init:
+	ansible-playbook -i provisioning/inventory --vault-password-file=password.txt provisioning/web.yml

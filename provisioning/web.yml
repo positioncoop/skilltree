@@ -1,5 +1,5 @@
 ---
-- hosts: skilltree
+- hosts: skilltree_prod
   gather_facts: yes
 
   sudo: no
@@ -9,4 +9,4 @@
     - cabal
     - postgresql
     - redis
-    - development
+    - production

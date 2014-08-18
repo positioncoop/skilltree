@@ -6,9 +6,9 @@ Windows, but should be possible.
 
 First, install the following three packages, via whatever mechanism you have:
 
-- virtualbox
-- vagrant
-- ansible
+- virtualbox (tested on 4.3.12)
+- vagrant (tested on 1.6.3)
+- ansible (tested on 1.6.6)
 
 Next, move into the directory of the SkillTree source and run the following command:
 
