@@ -14,13 +14,6 @@
     <br />
     <dfInputSubmit value="Save" class="btn btn-lg btn-primary btn-block" />
   </dfForm>
-  <tutorialDependencies>
-    <div class="tutorial-dependency">
-      <dependencyTutorial>
-        <tutorialTitle /> <a href="${dependencyDeletePath}">delete</a>
-      </dependencyTutorial>
-    </div>
-  </tutorialDependencies>
   <a onclick="return confirm('Are you sure you want to delete this?')" href="${tutorialDeletePath}">Delete this tutorial!</a>
   <hr/>
 

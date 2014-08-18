@@ -64,10 +64,11 @@ editH entity@(Entity tutorialKey tutorial) = do
 deleteH :: TutorialEntity -> AppHandler ()
 deleteH entity@(Entity tutorialKey _) = do
   steps <- lookupTutorialSteps entity
-  if null steps
+  dependencies <- lookupTutorialDependencies entity
+  if null steps && null dependencies
     then do runPersist $ delete tutorialKey
             home
-    else redirect $ tutorialEditPath entity
+    else redirectReferer
 
 handleTutorialAjax :: AppHandler (View Text, Maybe Tutorial) -> (Tutorial -> AppHandler a) -> AppHandler ()
 handleTutorialAjax form doWithResult =  do
