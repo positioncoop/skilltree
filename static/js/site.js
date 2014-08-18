@@ -8,6 +8,10 @@ function from_mouse(mouse) {
           y: Math.floor((mouse[1] - 25)/50)};
 }
 
+function redirectTutorialEdit(tutorial) {
+  window.location.href = "/tutorials/" + tutorial.id + "/edit";
+}
+
 $(function() {
   var grid = d3.select("svg.tree");
   var bullseyes = null;
@@ -91,7 +95,7 @@ $(function() {
       .attr("class", "fa fa-pencil")
       .on("click", function(d) {
         d3.event.stopPropagation();
-        window.location.href = "/tutorials/" + d.id + "/edit";
+	redirectTutorialEdit(d);
       });
 
     toolboxes.append("text")
@@ -124,9 +128,10 @@ $(function() {
 	  });
 
 	  function afterPost() {
+	    var dep = dependencySource;
 	    dependencySource = null;
             feedback.attr("xlink:href", "/img/example.png");
-            window.location.reload();
+	    redirectTutorialEdit(dep);
           }
 
           if (existing.length !== 0) {
@@ -157,8 +162,8 @@ $(function() {
         var p = from_mouse(d3.mouse(this));
 
         if(moveTarget === null && dependencySource === null) {
-          $.post("/tutorials/new", {"new.x": p.x , "new.y": p.y}, function() {
-            window.location.reload();
+          $.post("/tutorials/new", {"new.x": p.x , "new.y": p.y}, function(d) {
+	    redirectTutorialEdit(d);
           });
         } else if (dependencySource !== null) {
           dependencySource = null;
@@ -168,9 +173,10 @@ $(function() {
         } else if (moveTarget !== null) {
           d3.event.stopPropagation();
           $.post("/tutorials/" + moveTarget.id + "/move", {"move.x": p.x , "move.y": p.y}, function() {
+	    var target = moveTarget;
             moveTarget = null;
             feedback.attr("xlink:href", "/img/example.png");
-            window.location.reload();
+	    redirectTutorialEdit(target)
           });
         }
       })

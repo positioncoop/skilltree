@@ -12,6 +12,7 @@ import Snap.Snaplet.Heist
 import Snap.Snaplet.Auth
 import Snap.Snaplet.Persistent
 import Snap.Extras.JSON
+import Data.Aeson
 import Database.Persist
 import Text.Digestive.Snap (runForm)
 import Text.Digestive.Heist
@@ -45,7 +46,9 @@ showH :: TutorialEntity -> AppHandler ()
 showH = renderWithSplices "tutorials/show" . Tutorial.Splices.entitySplice
 
 newH :: AppHandler ()
-newH = handleTutorialAjax (runForm "new" Tutorial.Form.newForm) (runPersist . insert)
+newH = handleTutorialAjax (runForm "new" Tutorial.Form.newForm) (insertTutorial)
+  where insertTutorial record = do k <- runPersist $ insert record
+                                   return $ Entity k record
 
 moveH :: TutorialEntity -> AppHandler ()
 moveH entity@(Entity tutorialKey _) =
@@ -70,11 +73,10 @@ deleteH entity@(Entity tutorialKey _) = do
             home
     else redirectReferer
 
-handleTutorialAjax :: AppHandler (View Text, Maybe Tutorial) -> (Tutorial -> AppHandler a) -> AppHandler ()
+handleTutorialAjax :: ToJSON a => AppHandler (View Text, Maybe Tutorial) -> (Tutorial -> AppHandler a) -> AppHandler ()
 handleTutorialAjax form doWithResult =  do
   response <- form
   case response of
     (_, Nothing) -> return ()
     (_, Just tutorial') -> do
-      void $ doWithResult tutorial'
-      return ()
+      writeJSON =<< doWithResult tutorial'
