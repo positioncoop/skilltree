@@ -69,26 +69,11 @@ $(function() {
   function drawToolboxes(tutorials) {
     toolboxes = tutorials.append("g")
       .attr("transform", function(d) {
-        return "translate(-20, -2)";
+        return "translate(-10, -2)";
       });
 
     toolboxes.append("text")
       .attr("dx", 0)
-      .attr("style","font-size: 25px; font-weight: regular")
-      .text("")
-      .attr("data-json", function(d) {return JSON.stringify(d);})
-      .attr("class", "fa fa-long-arrow-left")
-      .on("click", function () {
-        dependencySource = $(this).data("json");
-        feedback.attr("xlink:href", "");
-        bullseyes.style("opacity", 1);
-        toolboxes.style("opacity", 0);
-        d3.event.stopPropagation();
-      });
-
-
-    toolboxes.append("text")
-      .attr("dx", 30)
       .attr("data-json", function(d) {return JSON.stringify(d);})
       .attr("style","font-size: 25px; font-weight: regular")
       .text("")
@@ -100,7 +85,7 @@ $(function() {
       });
 
     toolboxes.append("text")
-      .attr("dx", 60)
+      .attr("dx", 30)
       .attr("style","font-size: 25px; font-weight: regular")
       .text("")
       .attr("class", "fa fa-pencil")
@@ -109,9 +94,24 @@ $(function() {
         window.location.href = "/tutorials/" + d.id + "/edit";
       });
 
+    toolboxes.append("text")
+      .attr("dx", 60)
+      .attr("style","font-size: 25px; font-weight: regular")
+      .text("")
+      .attr("data-json", function(d) {return JSON.stringify(d);})
+      .attr("class", "fa fa-long-arrow-right")
+      .on("click", function () {
+        dependencySource = $(this).data("json");
+        feedback.attr("xlink:href", "");
+        bullseyes.style("opacity", 1);
+        toolboxes.style("opacity", 0);
+        d3.event.stopPropagation();
+      });
+
+
 
     bullseyes = tutorials.append("text")
-      .attr("dx", 60).attr("dy", 38)
+      .attr("dx", -22).attr("dy", 38)
       .attr("style","font-size: 25px; font-weight: regular;")
       .style("opacity", 0)
       .text("")
