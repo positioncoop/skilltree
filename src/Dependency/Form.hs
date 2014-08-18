@@ -20,7 +20,9 @@ newForm = checkM "Dependency invalid" validateDep $
   where
     validateDep (Dependency tutorialKey dependencyKey) | tutorialKey == dependencyKey = return False
     validateDep (Dependency tutorialKey dependencyKey) =
-      do result <- runPersist (selectList [DependencyTutorialId ==. tutorialKey, DependencyDependencyId ==. dependencyKey]
+      do result <- (++) <$> runPersist (selectList [DependencyTutorialId ==. tutorialKey, DependencyDependencyId ==. dependencyKey]
+                                          [LimitTo 1])
+                        <*> runPersist (selectList [DependencyTutorialId ==. dependencyKey, DependencyDependencyId ==. tutorialKey]
                                           [LimitTo 1])
          return (null result)
     keyForm def = validate (\s -> case readSafe s of
