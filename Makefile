@@ -170,3 +170,9 @@ production-moo:
 	rm .vagrant-ssh-config
 	scp moo root@$(PRODUCTION_HOST):/usr/bin/
 	rm moo
+
+production-log:
+	ssh host@$(PRODUCTION_HOST) tail -F /opt/keter/log/app-skilltree/current.log
+
+production-keter-log:
+	ssh host@$(PRODUCTION_HOST) tail -F /opt/keter/log/keter/current.log
