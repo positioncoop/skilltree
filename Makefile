@@ -16,7 +16,7 @@ SHELL=/bin/bash
 VAGRANT=0
 VAGRANT_CMD=vagrant ssh -c "export PATH=$$PATH:/home/vagrant/.cabal/bin:/home/vagrant/ghc/bin:/vagrant/.cabal-sandbox/bin; export LANG=C.UTF-8; cd /vagrant; $(1)"
 
-PRODUCTION=69.164.222.149
+PRODUCTION_HOST=69.164.222.149
 
 .PHONY: all install clean superclean test init deps sandbox tags confirm \
 	dbup dbtest dbnew dbrevert production-init production-provision production-keter
@@ -99,12 +99,17 @@ else
 endif
 
 dbup:
+ifeq ($(PRODUCTION),1)
+	rsync --checksum -ave 'ssh '  migrations/* host@$(PRODUCTION_HOST):/srv/migrations
+	ssh host@$(PRODUCTION_HOST) "moo upgrade -c moo.cfg"
+else
 ifeq ($(VAGRANT),1)
 	$(call VAGRANT_CMD, moo upgrade $(MOODEVEL))
 	$(call VAGRANT_CMD, moo upgrade $(MOOTEST))
 else
 	moo upgrade $(MOODEVEL)
 	moo upgrade $(MOOTEST)
+endif
 endif
 
 dbtest:
@@ -141,11 +146,11 @@ keter-tar:
 	rm skilltree
 
 keter-deploy: keter-tar
-	scp skilltree.keter host@$(PRODUCTION):/opt/keter/incoming
+	scp skilltree.keter host@$(PRODUCTION_HOST):/opt/keter/incoming
 
 deploy: keter-build keter-deploy
 
-production-init: production-provision production-keter
+production-init: production-provision production-keter production-moo
 
 production-provision:
 	ansible-playbook -i provisioning/inventory --vault-password-file=provisioning/password.txt provisioning/web.yml --ask-pass
@@ -154,7 +159,14 @@ production-keter:
 	vagrant ssh-config > .vagrant-ssh-config
 	scp -F .vagrant-ssh-config skilltree:/home/vagrant/.cabal/bin/keter keter
 	rm .vagrant-ssh-config
-	scp keter root@$(PRODUCTION):/opt/keter/bin/
+	scp keter root@$(PRODUCTION_HOST):/opt/keter/bin/
 	rm keter
-	ssh root@$(PRODUCTION) update-rc.d keter defaults
-	ssh root@$(PRODUCTION) service keter start
+	ssh root@$(PRODUCTION_HOST) update-rc.d keter defaults
+	ssh root@$(PRODUCTION_HOST) service keter start
+
+production-moo:
+	vagrant ssh-config > .vagrant-ssh-config
+	scp -F .vagrant-ssh-config skilltree:/home/vagrant/.cabal/bin/moo moo
+	rm .vagrant-ssh-config
+	scp moo root@$(PRODUCTION_HOST):/usr/bin/
+	rm moo

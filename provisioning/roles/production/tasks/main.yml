@@ -3,6 +3,9 @@
 - name: create host deploy user
   user: name=host shell=/bin/bash home=/srv
 
+- name: make sure host owns /srv
+  file: "dest=/srv mode=755 state=directory owner=host"
+
 - name: add local key to the authorized_keys for deployment
   authorized_key: user=host key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
@@ -40,6 +43,8 @@
 - name: install keter service
   copy: src=keter-init dest=/etc/init.d/keter mode=0751
 
+- name: copy moo config
+  template: src=moo.cfg dest=/srv/moo.cfg owner=host
 
 # NOTE(dbp 2014-08-18): We build keter binary inside development VM,
 # so we can't actually start the service yet (as the binary isn't

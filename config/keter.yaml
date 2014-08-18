@@ -1,6 +1,9 @@
-exec: ../skilltree
-args:
-    - -e
-    - prod
-host: skilltree.dbpapp.com
+stanzas:
+  - type: webapp
+    exec: ../skilltree
+    args:
+      - -e
+      - prod
+    hosts:
+      - skilltree.dbpapp.com
 postgres: false
