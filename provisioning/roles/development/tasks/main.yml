@@ -64,3 +64,7 @@
   sudo: no
   shell: "export PATH=$PATH:{{ cabal_prefix_dir }}/bin:{{ ghc_prefix_dir}}/bin; cabal install keter creates={{ cabal_prefix_dir }}/bin/keter"
   ignore_errors: yes
+
+- name: install git
+  sudo: yes
+  apt: pkg=git-core update_cache=yes

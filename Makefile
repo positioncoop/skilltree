@@ -60,7 +60,7 @@ deps: $(patsubst %, $(DEPDIR)/%.d, $(DEPS)) $(DEPDIR)/digestive-functors
 
 $(DEPDIR)/digestive-functors:
 ifeq ($(VAGRANT),1)
-	$(call VAGRANT_CMD, git clone -b snap-upload-fix git@github.com:positioncoop/digestive-functors.git $@)
+	$(call VAGRANT_CMD, git clone -b snap-upload-fix https://github.com/positioncoop/digestive-functors.git $@)
 	$(call VAGRANT_CMD, cabal sandbox add-source $(DEPDIR)/digestive-functors/digestive-functors-snap)
 else
 	git clone -b snap-upload-fix git@github.com:positioncoop/digestive-functors.git $@
@@ -69,7 +69,7 @@ endif
 
 $(DEPDIR)/%.d:
 ifeq ($(VAGRANT),1)
-	$(call VAGRANT_CMD, git clone git@github.com:$*.git $@)
+	$(call VAGRANT_CMD, git clone https://github.com/$*.git $@)
 	$(call VAGRANT_CMD, cabal sandbox add-source $@)
 else
 	git clone git@github.com:$*.git $@
@@ -138,7 +138,7 @@ else
 endif
 
 keter-build:
-	$(call VAGRANT_CMD, cabal install -j)
+	$(call VAGRANT_CMD, cabal install -j --reorder-goals)
 	cp .cabal-sandbox/bin/skilltree skilltree
 
 keter-tar:
