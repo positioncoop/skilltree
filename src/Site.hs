@@ -45,7 +45,6 @@ routes = [ ("tutorials",    route Tutorial.Handlers.routes)
          , ("auth",         route Auth.Handlers.routes)
          , ("",             heistServe)
          , ("",             serveDirectory "static")
-         , ("store",        serveDirectory "store")
          , ("",             render "notfound")
          ]
 
@@ -68,6 +67,7 @@ app = makeSnaplet "app" "" Nothing $ do
     addAuthSplices h auth
     addRoutes routes
     let storePath = absPath ++ "store"
+    addRoutes [("store", serveDirectory storePath)]
     liftIO $ createDirectoryIfMissing True storePath
     return $ App h s a p d r url conf (pack e) (Directory storePath)
 
