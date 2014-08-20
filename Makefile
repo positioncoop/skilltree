@@ -13,7 +13,7 @@ SOURCES=$(shell find src -type f -iname '*.hs')
 DEPDIR=deps
 SHELL=/bin/bash
 
-VAGRANT=0
+VAGRANT=1
 VAGRANT_CMD=vagrant ssh -c "export PATH=$$PATH:/home/vagrant/.cabal/bin:/home/vagrant/ghc/bin:/vagrant/.cabal-sandbox/bin; export LANG=C.UTF-8; cd /vagrant; $(1)"
 
 PRODUCTION_HOST=69.164.222.149
