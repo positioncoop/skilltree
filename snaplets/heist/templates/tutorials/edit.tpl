@@ -1,4 +1,5 @@
 <apply template="graph">
+  <div class="section-tutorial-inner edit">
   <dfForm class="form-tutorial">
     <div class="header">
       <img class="icon" src="${tutorialIconPath}" />
@@ -20,16 +21,7 @@
 
   <a href="${tutorialStepNewPath}">Add a step!</a>
 
-  <tutorialSteps>
-    <div class="tutorial-step">
-      <stepContent/>
-      <a href="${stepEditPath}">Edit</a>
-      <a onclick="return confirm('Are you sure you want to delete this?')" href="${stepDeletePath}">Delete</a>
-      <hr/>
-      <stepVideo>
-	<iframe src="${url}" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-      </stepVideo>
-    </div>
-  </tutorialSteps>
+  <apply template="tutorial-steps"></apply>
 
+  </div>
 </apply>
