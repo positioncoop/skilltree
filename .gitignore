@@ -14,3 +14,4 @@ deps/
 password.txt
 skilltree.key
 skilltree.keter
+*.swp
