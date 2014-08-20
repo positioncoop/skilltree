@@ -185,8 +185,12 @@ $(function() {
         var p = to_display(gridPos);
 
         var overlaps = tutorialData.filter(function(t) {
-          return (t.x == gridPos.x) &&
-            ((t.y == gridPos.y - 1) || (t.y == gridPos.y) || (t.y == gridPos.y + 1));
+          if (moveTarget !== null) {
+            return (t.x == gridPos.x) && (t.y == gridPos.y);
+          } else {
+            return (t.x == gridPos.x) &&
+              ((t.y == gridPos.y - 1) || (t.y == gridPos.y) || (t.y == gridPos.y + 1));
+          }
         });
 
         if (overlaps.length !== 0) {
