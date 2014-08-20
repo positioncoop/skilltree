@@ -9,6 +9,7 @@ import Prelude hiding ((++))
 import Heist
 import Heist.Interpreted
 import Snap.Plus
+import Snap.Plus.Paths
 import Database.Persist.Types
 import qualified Snap.Snaplet.Persistent as P
 import qualified Step.Splices
@@ -32,5 +33,7 @@ entitySplice entity@(Entity key (Tutorial x' y' title' iconPath' publish')) = do
     textSplice $ maybe defaultIconPath' pack iconPath'
   "tutorialStepNewPath" ## textSplice $ tutorialStepNewPath entity
   "tutorialDeletePath" ## textSplice $ tutorialDeletePath entity
+  "tutorialEditPath" ## textSplice $ editPath key
+  "tutorialShowPath" ## textSplice $ showPath key
   "tutorialSteps" ## do steps <- lift $ lookupTutorialSteps entity
                         mapSplices (runChildrenWith . Step.Splices.entitySplice) steps

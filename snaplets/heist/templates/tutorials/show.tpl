@@ -3,6 +3,7 @@
     <div class="header">
       <img class="icon" src="${tutorialIconPath}" />
       <div class="title"><tutorialTitle /></div>
+      <ifLoggedIn><a href="${tutorialEditPath}">Edit</a></ifLoggedIn>
     </div>
     <tutorialSteps>
       <div class="tutorial-step">

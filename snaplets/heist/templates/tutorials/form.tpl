@@ -4,6 +4,7 @@
       <img class="icon" src="${tutorialIconPath}" />
       <dfInputText class="title" ref="title" size="40" placeholder="Title"/>
       <dfChildErrorList ref="title" />
+      <a href="${tutorialShowPath}">Preview</a>
     </div>
     <br />
     <dfInputFile ref="iconPath" onchange="$(this).parents('form').submit()"/>
