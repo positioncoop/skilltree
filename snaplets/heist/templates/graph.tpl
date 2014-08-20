@@ -1,7 +1,9 @@
 <apply template="base">
-  <svg class='tree' width=600 height=1000></svg>
+  <div class="section-tree">
+    <svg class='tree' width=600 height=1000></svg>
+  </div>
 
-  <div style='float:right'>
+  <div class="section-tutorial">
     <p>
       <ifLoggedIn>
 	Hi, <loggedInUser><userLogin /></loggedInUser>

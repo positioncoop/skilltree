@@ -58,7 +58,7 @@ editH :: TutorialEntity -> AppHandler ()
 editH entity@(Entity tutorialKey tutorial) = do
   response <- runMultipartForm "edit" $ Tutorial.Form.editForm tutorial
   case response of
-    (v, Nothing) -> renderWithSplices "tutorials/form" $ do Tutorial.Splices.entitySplice entity
+    (v, Nothing) -> renderWithSplices "tutorials/edit" $ do Tutorial.Splices.entitySplice entity
                                                             digestiveSplices v
     (_, Just _tutorial) -> do
       runPersist $ replace tutorialKey _tutorial
