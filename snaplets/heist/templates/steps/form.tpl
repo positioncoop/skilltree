@@ -6,11 +6,8 @@
     <dfInputText ref="ordinal" />
     <dfChildErrorList ref="ordinal" />
     <br />
-    <dfInputText ref="video-code" />
-    <dfChildErrorList ref="video-code" />
-    <br />
-    <dfInputSelect ref="video-provider" />
-    <dfChildErrorList ref="video-provider" />
+    <dfInputText ref="video" />
+    <dfChildErrorList ref="video" />
     <br />
 
     <dfInputSubmit value="Enter" class="btn btn-lg btn-primary btn-block" />

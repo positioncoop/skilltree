@@ -64,7 +64,8 @@ Executable skilltree
     either,
     transformers,
     unordered-containers,
-    esqueleto
+    esqueleto,
+    attoparsec >= 0.11 && < 0.13
 
   if flag(development)
     build-depends:
