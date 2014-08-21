@@ -34,8 +34,8 @@ else
 endif
 
 test: $(EXECUTABLE)
-	java -jar $(DEPDIR)/webdriver-bin/selenium-server-standalone-2.42.2.jar &
-	$(EXECUTABLE) -p 8001 -e test &
+	java -jar $(DEPDIR)/webdriver-bin/selenium-server-standalone-2.42.2.jar &> /dev/null &
+	$(EXECUTABLE) -p 8001 -e test &> /dev/null &
 	sleep 1
 	$(RUN) $(TESTMAIN)
 	killall .cabal-sandbox/bin/skilltree
