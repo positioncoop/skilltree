@@ -1,11 +1,10 @@
 ---
-- hosts: devel
-  gather_facts: yes
-
-  sudo: no
+- hosts: native
+  connection: local
 
   vars:
-    user: vagrant
+    user: "{{ lookup('env','USER') }}"
+
 
   roles:
     - ghc

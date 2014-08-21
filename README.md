@@ -61,3 +61,16 @@ version, just run `make deploy`. If there is an error on startup, the
 new version will not be switched to, and you can debug it by looking
 at either the application logs (run `make production-log`) or the
 logs for the managing process (run `make production-keter-log`).
+
+
+# Haskell on your host machine
+
+If you want to also have haskell on your development machine (in
+addition to the VM), or set up development (not done yet), you can
+also use ansible to do the same installs (right now only ghc and
+cabal). Run
+
+    ansible-playbook -i provisioning/inventory provisioning/native.yml
+
+From the project directory (or from anywhere else, changing the paths
+to inventory and native.yml to be correct).

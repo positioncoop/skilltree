@@ -7,6 +7,9 @@
   vars_files:
     - secrets.yml
 
+  vars:
+    user: host
+
   roles:
     - postgresql
     - redis

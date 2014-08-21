@@ -20,7 +20,7 @@ PRODUCTION_HOST=69.164.222.149
 
 .PHONY: all install clean superclean test init deps sandbox tags confirm \
 	dbup dbtest dbnew dbrevert production-init production-provision production-keter
-	deploy
+	deploy repl
 
 all: init install test tags
 
@@ -91,6 +91,14 @@ tags: TAGS
 
 TAGS: $(SOURCES)
 	$(EXEC) haskdogs -e
+
+
+repl:
+ifeq ($(VAGRANT),1)
+	$(call VAGRANT_CMD, cabal exec ghci -- -isrc src/Site.hs)
+else
+	cabal exec ghci -- -isrc src/Site.hs
+endif
 
 db:
 ifeq ($(VAGRANT),1)
