@@ -1,8 +1,4 @@
 ---
-
-- name: add local key to the authorized_keys of vagrant
-  authorized_key: user=vagrant key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-
 - name: look for cabal database
   shell: (ls {{ cabal_prefix_dir }}/packages ; true)
   register: cabal_packages_dir

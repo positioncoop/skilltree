@@ -34,9 +34,12 @@ else
 endif
 
 test: $(EXECUTABLE)
+	java -jar $(DEPDIR)/webdriver-bin/selenium-server-standalone-2.42.2.jar &
 	$(EXECUTABLE) -p 8001 -e test &
+	sleep 1
 	$(RUN) $(TESTMAIN)
 	killall .cabal-sandbox/bin/skilltree
+	killall java
 
 run: $(EXECUTABLE)
 ifeq ($(VAGRANT),1)
@@ -58,7 +61,7 @@ confirm:
 init: sandbox deps
 
 
-deps: $(patsubst %, $(DEPDIR)/%.d, $(DEPS)) $(DEPDIR)/digestive-functors
+deps: $(patsubst %, $(DEPDIR)/%.d, $(DEPS)) $(DEPDIR)/digestive-functors $(DEPDIR)/webdriver-bin
 
 $(DEPDIR)/digestive-functors:
 ifeq ($(VAGRANT),1)
@@ -68,6 +71,10 @@ else
 	git clone -b snap-upload-fix git@github.com:positioncoop/digestive-functors.git $@
 	cabal sandbox add-source $(DEPDIR)/digestive-functors/digestive-functors-snap
 endif
+
+$(DEPDIR)/webdriver-bin:
+	git clone https://github.com/positioncoop/webdriver-bin $@
+	ln -s $@/chromedriver .cabal-sandbox/bin/chromedriver
 
 $(DEPDIR)/%.d:
 ifeq ($(VAGRANT),1)

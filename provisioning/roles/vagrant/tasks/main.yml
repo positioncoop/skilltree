@@ -1,0 +1,3 @@
+---
+- name: add local key to the authorized_keys of vagrant
+  authorized_key: user=vagrant key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"

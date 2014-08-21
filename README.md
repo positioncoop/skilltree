@@ -74,3 +74,11 @@ cabal). Run
 
 From the project directory (or from anywhere else, changing the paths
 to inventory and native.yml to be correct).
+
+
+# Running tests
+
+When you set up the project, it'll download selenium and the chrome
+driver. Provided you have PROJDIR/.cabal-sandbox/bin in your PATH,
+`make test` should set up and run the selenium tests, including
+starting the server.
