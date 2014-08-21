@@ -13,7 +13,7 @@ SOURCES=$(shell find src -type f -iname '*.hs') skilltree.cabal
 DEPDIR=deps
 SHELL=/bin/bash
 
-VAGRANT=1
+VAGRANT=0
 VAGRANT_CMD=vagrant ssh -c "export PATH=$$PATH:/home/vagrant/.cabal/bin:/home/vagrant/ghc/bin:/vagrant/.cabal-sandbox/bin; export LANG=C.UTF-8; cd /vagrant; $(1)"
 
 PRODUCTION_HOST=69.164.222.149
@@ -37,7 +37,6 @@ test: $(EXECUTABLE)
 	$(EXECUTABLE) -p 8001 -e test &
 	$(RUN) $(TESTMAIN)
 	killall .cabal-sandbox/bin/skilltree
-	
 
 run: $(EXECUTABLE)
 ifeq ($(VAGRANT),1)
