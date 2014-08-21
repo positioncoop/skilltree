@@ -1,6 +1,6 @@
 EXECUTABLE=$(BINDIR)/skilltree
 DEPS=
-TESTMAIN=src/Test.hs
+TESTMAIN=test/Main.hs
 INSTALLFLAGS=-j -fdevelopment --reorder-goals
 MOODEVEL=-c devel.cfg
 MOOTEST=-c test.cfg
@@ -9,7 +9,7 @@ EXEC=cabal exec --
 RUN=$(EXEC) runghc -isrc
 BINDIR=.cabal-sandbox/bin
 BUILDDIR=dist
-SOURCES=$(shell find src -type f -iname '*.hs')
+SOURCES=$(shell find src -type f -iname '*.hs') skilltree.cabal
 DEPDIR=deps
 SHELL=/bin/bash
 
@@ -33,8 +33,11 @@ else
 	cabal install $(INSTALLFLAGS)
 endif
 
-test:
+test: $(EXECUTABLE)
+	$(EXECUTABLE) -p 8001 -e test &
 	$(RUN) $(TESTMAIN)
+	killall .cabal-sandbox/bin/skilltree
+	
 
 run: $(EXECUTABLE)
 ifeq ($(VAGRANT),1)
@@ -89,7 +92,6 @@ tags: TAGS
 
 TAGS: $(SOURCES)
 	$(EXEC) haskdogs -e
-
 
 db:
 ifeq ($(VAGRANT),1)
