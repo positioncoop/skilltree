@@ -35,42 +35,48 @@ signup = do openPage "http://localhost:8001/auth/signup"
             e <- findElem $ ByCSS "p"
             e `shouldHaveText` "Hi, a@boodle.com Logout"
 
-createTutorial = do svg <- findElem (ByCSS "svg")
-                    moveToCenter svg
-                    clickWith LeftButton
-                    e <- findElem (ByCSS "g.tutorial")
-                    e `shouldBeTag` "g"
+assertElem selector = do elems <- findElems selector
+                         shouldBe False (null elems)
 
-moveTutorial = do m <- findElem (ByCSS "g.tutorial .move-icon")
-                  moveToCenter m
-                  clickWith LeftButton
-                  t <- findElem (ByCSS "g.tutorial")
-                  (x, y) <- elemPos t
+assertNoElem selector = do elems <- findElems selector
+                           shouldBe True (null elems)
+
+elemPosition selector = elemPos =<< findElem selector
+
+assertChanges action value by = do val <- value
+                                   _ <- action
+                                   val' <- value
+                                   shouldBe True $ val' == by val
+
+createTutorial = do
+  assertChanges
+    (do click =<< findElem (ByCSS "svg")
+        refresh)
+    (length <$> findElems (ByCSS "g.tutorial"))
+    (+1)
+
+moveTutorial = do click =<< findElem (ByCSS "g.tutorial .move-icon")
+                  (x, y) <- elemPosition (ByCSS "g.tutorial")
                   moveTo (100, 100)
                   clickWith LeftButton
                   -- NOTE(dbp 2014-08-21): I'm not sure how to delay, so refresh to force it.
                   refresh
-                  t2 <- findElem (ByCSS ".tutorial")
-                  (x', y') <- elemPos t2
+                  (x', y') <- elemPosition (ByCSS "g.tutorial")
                   shouldBe True (x /= x' && y /= y')
 
-createDep = do
-  click =<< findElem (ByCSS "svg")
-  refresh
-  [tutorial1, tutorial2] <- findElems (ByCSS "g.tutorial")
-  click =<< findElemFrom tutorial1 (ByCSS $ ".fa-long-arrow-right")
-  click =<< findElemFrom tutorial2 (ByCSS $ ".fa-bullseye")
-  refresh
-  deps <- findElems (ByCSS "line")
-  shouldBe 1 (length deps)
+dependencyBetween tutorial1 tutorial2 =
+  do click =<< findElemFrom tutorial1 (ByCSS $ ".fa-long-arrow-right")
+     click =<< findElemFrom tutorial2 (ByCSS $ ".fa-bullseye")
+     refresh
 
-deleteDep = do
-  [tutorial1, tutorial2] <- findElems (ByCSS "g.tutorial")
-  click =<< findElemFrom tutorial1 (ByCSS $ ".fa-long-arrow-right")
-  click =<< findElemFrom tutorial2 (ByCSS $ ".fa-bullseye")
-  refresh
-  deps <- findElems (ByCSS "line")
-  shouldBe 0 (length deps)
+createDep = do createTutorial
+               [tutorial1, tutorial2] <- findElems (ByCSS "g.tutorial")
+               dependencyBetween tutorial1 tutorial2
+               assertElem (ByCSS "line")
+
+deleteDep = do [tutorial1, tutorial2] <- findElems (ByCSS "g.tutorial")
+               dependencyBetween tutorial1 tutorial2
+               assertNoElem (ByCSS "line")
 
 -- Structured Haskell Mode hates using... don't know why.
 use = using
