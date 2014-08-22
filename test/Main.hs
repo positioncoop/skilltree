@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
+import Prelude hiding ((++))
+import Snap.Plus
 import Test.Hspec.WebDriver
 import Snap.Snaplet.Test
 import qualified Data.Map as M
@@ -8,8 +10,6 @@ import Snap.Test (get)
 import Snap.Snaplet.PostgresqlSimple
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as LB
-import Control.Applicative ((<$>))
-import Control.Concurrent
 
 import Site
 import Application
@@ -47,14 +47,30 @@ moveTutorial = do m <- findElem (ByCSS "g.tutorial .move-icon")
                   t <- findElem (ByCSS "g.tutorial")
                   (x, y) <- elemPos t
                   moveTo (100, 100)
-                  mkSS "/tmp/ss1.png"
                   clickWith LeftButton
                   -- NOTE(dbp 2014-08-21): I'm not sure how to delay, so refresh to force it.
                   refresh
                   t2 <- findElem (ByCSS ".tutorial")
                   (x', y') <- elemPos t2
-                  mkSS "/tmp/ss2.png"
                   shouldBe True (x /= x' && y /= y')
+
+createDep = do
+  click =<< findElem (ByCSS "svg")
+  refresh
+  [tutorial1, tutorial2] <- findElems (ByCSS "g.tutorial")
+  click =<< findElemFrom tutorial1 (ByCSS $ ".fa-long-arrow-right")
+  click =<< findElemFrom tutorial2 (ByCSS $ ".fa-bullseye")
+  refresh
+  deps <- findElems (ByCSS "line")
+  shouldBe 1 (length deps)
+
+deleteDep = do
+  [tutorial1, tutorial2] <- findElems (ByCSS "g.tutorial")
+  click =<< findElemFrom tutorial1 (ByCSS $ ".fa-long-arrow-right")
+  click =<< findElemFrom tutorial2 (ByCSS $ ".fa-bullseye")
+  refresh
+  deps <- findElems (ByCSS "line")
+  shouldBe 0 (length deps)
 
 -- Structured Haskell Mode hates using... don't know why.
 use = using
@@ -64,5 +80,7 @@ main = hspec $ describe "Skilltree Selenium" $ session "Main page" $ use Chrome 
         do runIO $ runAppFn $ execute_ "TRUNCATE tutorial, snap_auth_user CASCADE"
            it "setup" $ runWD $ setImplicitWait 1000
            it "signs up and logs in" $ runWD signup
-           it "create a tutorial" $ runWD createTutorial
-           it "move a tutorial" $ runWD moveTutorial
+           it "creates a tutorial" $ runWD createTutorial
+           it "moves a tutorial" $ runWD moveTutorial
+           it "creates a dependency" $ runWD createDep
+           it "deletes a dependency" $ runWD deleteDep

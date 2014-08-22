@@ -34,9 +34,9 @@ else
 endif
 
 test: $(EXECUTABLE)
-	java -jar $(DEPDIR)/webdriver-bin/selenium-server-standalone-2.42.2.jar &> /dev/null &
-	$(EXECUTABLE) -p 8001 -e test &> /dev/null &
-	sleep 1
+	java -jar $(DEPDIR)/webdriver-bin/selenium-server-standalone-2.42.2.jar &> log/selenium.log &
+	$(EXECUTABLE) -p 8001 -e test &> log/test.log &
+	@sleep 1
 	$(RUN) $(TESTMAIN)
 	killall .cabal-sandbox/bin/skilltree
 	killall java
@@ -74,7 +74,7 @@ endif
 
 $(DEPDIR)/webdriver-bin:
 	git clone https://github.com/positioncoop/webdriver-bin $@
-	ln -s $@/chromedriver .cabal-sandbox/bin/chromedriver
+	ln -s `pwd`/$@/chromedriver $(HOME)/bin/chromedriver
 
 $(DEPDIR)/%.d:
 ifeq ($(VAGRANT),1)
