@@ -196,7 +196,7 @@ $(function() {
         if (overlaps.length !== 0) {
           feedback.attr("opacity", 0);
         } else {
-          feedback.attr("opacity", 0.5);
+          feedback.attr("opacity", 0.2);
           feedback.attr("x", p.x) .attr("y", p.y);
         }
       });
@@ -208,7 +208,7 @@ $(function() {
       .attr("width", 60).attr("height", 60)
       .attr("x", -100)
       .attr("y", -100)
-      .attr("opacity", 0.5);
+      .attr("opacity", 0.2);
   }
 
   $.ajax("/courses", {
