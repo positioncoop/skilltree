@@ -31,7 +31,7 @@ routes = [ ("", ifTop indexH)
          ]
 
 indexH :: AppHandler ()
-indexH = do
+indexH = format JSON $ do
   loggedIn <- with auth isLoggedIn
   dependencies <- map toLine <$> if loggedIn
                          then lookupAllDependencyPairs

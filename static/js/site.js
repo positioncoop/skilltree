@@ -34,12 +34,12 @@ $(function() {
     }
   }
 
-  d3.json("/tutorials", function(error, data) {
+  d3.json("/tutorials?format=json", function(error, data) {
     tutorialData = data;
     draw();
   });
 
-  d3.json("/dependencies", function(error, data) {
+  d3.json("/dependencies?format=json", function(error, data) {
     dependencyData = data;
     draw();
   });

@@ -19,6 +19,8 @@ module Snap.Plus ( module Snap
                  , redirect
                  , route
                  , addRoutes
+                 , format
+                 , Format (..)
                  ) where
 
 import Prelude hiding ((++))
@@ -98,3 +100,12 @@ route = Snap.Core.route . map (first T.encodeUtf8)
 addRoutes :: [(Text, Handler b v ())] -> Initializer b v ()
 addRoutes = Snap.addRoutes . map (first T.encodeUtf8)
 
+data Format = HTML | JSON | JS | Other Text | NotSpecified deriving (Eq,Show,Read,Ord)
+instance Paramable Format where
+  parseParamable = Just . fromMaybe NotSpecified . readSafe . T.toUpper
+
+format :: MonadSnap m => Format -> m a -> m a
+format providedFormat action = do
+  requestedFormat <- getParam "format"
+  unless (requestedFormat == providedFormat) pass
+  action

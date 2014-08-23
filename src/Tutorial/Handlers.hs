@@ -26,6 +26,7 @@ import Tutorial.Queries
 
 import Application
 
+tutorialResource :: Resource Tutorial
 tutorialResource = Resource indexH (authorize newH) showH (authorize . editH) (authorize . deleteH)
 
 routes :: [(Text, AppHandler ())]
@@ -38,9 +39,16 @@ routes = [("", routeResource tutorialResource)
                    ])]
 
 indexH :: AppHandler ()
-indexH = do loggedIn <- with auth isLoggedIn
-            tutorials <- if loggedIn then lookupAllTutorials else lookupPublishedTutorials
-            writeJSON tutorials
+indexH = route [("", format JSON indexJsonH)
+               ,("", indexHtmlH)]
+
+indexJsonH :: AppHandler ()
+indexJsonH = do loggedIn <- with auth isLoggedIn
+                tutorials <- if loggedIn then lookupAllTutorials else lookupPublishedTutorials
+                writeJSON tutorials
+
+indexHtmlH :: AppHandler ()
+indexHtmlH = render "tutorials/index"
 
 showH :: TutorialEntity -> AppHandler ()
 showH = renderWithSplices "tutorials/show" . Tutorial.Splices.entitySplice
