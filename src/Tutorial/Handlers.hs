@@ -27,16 +27,15 @@ import Tutorial.Queries
 import Application
 
 tutorialResource :: Resource Tutorial
-tutorialResource = Resource indexH (authorize newH) showH (authorize . editH) (authorize . deleteH)
+tutorialResource = CompoundResource
+                   (SimpleResource indexH (authorize newH) showH (authorize . editH) (authorize . deleteH))
+                   [("move", authorize . moveH)
+                   ,("steps", authorize . routeResource . Step.Handlers.nestedStepResource)]
+
+
 
 routes :: [(Text, AppHandler ())]
-routes = [("", routeResource tutorialResource)
-         ,(":id",
-           do
-             tentity <- requestedEntity
-             route [("move", authorize $ moveH tentity)
-                   ,("steps", authorize $ routeResource $ Step.Handlers.nestedStepResource tentity)
-                   ])]
+routes = resourceRoutes tutorialResource
 
 indexH :: AppHandler ()
 indexH = routeFormats [([JSON], indexJsonH)
