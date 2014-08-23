@@ -10,6 +10,8 @@ module Snap.Plus ( module Snap
                  , tNotNull
                  , readSafe
                  , getParam
+                 , requireParam
+                 , getParamOr
                  , require
                  , require'
                  , getCurrentPath
@@ -20,6 +22,7 @@ module Snap.Plus ( module Snap
                  , route
                  , addRoutes
                  , format
+                 , routeFormats
                  , Format (..)
                  ) where
 
@@ -27,7 +30,7 @@ import Prelude hiding ((++))
 import Snap hiding (redirect, route, get, addRoutes, getParam)
 import qualified Snap
 import qualified Snap.Core
-import Snap.Extras.CoreUtils
+import Snap.Extras.CoreUtils hiding (getParam')
 import Control.Applicative ((<$>), (<*>))
 import Control.Arrow (first)
 import Data.Monoid (Monoid, mappend)
@@ -74,9 +77,23 @@ instance (Persistent.PersistEntityBackend record) ~ backend =>
          Paramable (Persistent.KeyBackend backend record) where
   parseParamable param = Persistent.mkKey <$> readSafe param
 
-getParam :: (MonadSnap m, Paramable t) => Text -> m t
-getParam name = do param <- require $ Snap.getParam $ T.encodeUtf8 name
-                   require' $ parseParamable $ T.decodeUtf8 param
+requireParam :: (MonadSnap m, Paramable t) => Text -> m t
+requireParam name = do param <- require $ Snap.getParam $ T.encodeUtf8 name
+                       require' $ parseParamable $ T.decodeUtf8 param
+
+getParam' :: MonadSnap m => Text -> m (Maybe Text)
+getParam' name = do param <- Snap.getParam $ T.encodeUtf8 name
+                    return (T.decodeUtf8 <$> param)
+
+getParam :: (MonadSnap m, Paramable t) => Text -> m (Maybe t)
+getParam name = do param <- getParam' name
+                   case param of
+                     Nothing -> return Nothing
+                     Just p -> return $ parseParamable p
+
+getParamOr :: (MonadSnap m, Paramable t) => t -> Text -> m t
+getParamOr def name = do mVal <- getParam' name
+                         return $ fromMaybe def $ join $ fmap (parseParamable) mVal
 
 require :: MonadPlus m => m (Maybe a) -> m a
 require ma = do a' <- ma
@@ -104,8 +121,12 @@ data Format = HTML | JSON | JS | Other Text | NotSpecified deriving (Eq,Show,Rea
 instance Paramable Format where
   parseParamable = Just . fromMaybe NotSpecified . readSafe . T.toUpper
 
-format :: MonadSnap m => Format -> m a -> m a
-format providedFormat action = do
-  requestedFormat <- getParam "format"
-  unless (requestedFormat == providedFormat) pass
+format :: MonadSnap m => [Format] -> m a -> m a
+format providedFormats action = do
+  requestedFormat <- getParamOr NotSpecified "format"
+  unless (requestedFormat `elem` providedFormats) pass
   action
+
+routeFormats :: MonadSnap m => [([Format], m a)] -> m a
+routeFormats = route . map r
+  where r (f, action) = ("", format f action)

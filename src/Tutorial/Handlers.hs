@@ -39,8 +39,8 @@ routes = [("", routeResource tutorialResource)
                    ])]
 
 indexH :: AppHandler ()
-indexH = route [("", format JSON indexJsonH)
-               ,("", indexHtmlH)]
+indexH = routeFormats [([JSON], indexJsonH)
+                      ,([HTML, NotSpecified], indexHtmlH)]
 
 indexJsonH :: AppHandler ()
 indexJsonH = do loggedIn <- with auth isLoggedIn

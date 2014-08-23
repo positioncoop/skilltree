@@ -33,7 +33,7 @@ routes centity = [ ("new", ifTop $ requireUser auth authCheck $ newH centity)
 
 showH :: AppHandler ()
 showH = do
-  i <- getParam "week_id"
+  i <- requireParam "week_id"
   loggedIn <- with auth isLoggedIn
   ts <- if loggedIn then lookupTutorialsByWeek i
                     else lookupPublishedTutorialsByWeek i
@@ -55,8 +55,8 @@ deleteH (Entity ckey _) = do
 
 toggleTutorialH :: C.CourseEntity -> AppHandler ()
 toggleTutorialH (Entity ckey _) = do
-  wkey <- getParam "week_id"
-  tkey <- getParam "tutorial_id"
+  wkey <- requireParam "week_id"
+  tkey <- requireParam "tutorial_id"
   let fil = [TutorialWeekTutorialId ==. tkey, TutorialWeekWeekId ==. wkey]
   c <- runPersist $ count fil
   runPersist $ if c == 0

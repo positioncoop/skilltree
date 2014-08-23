@@ -28,7 +28,7 @@ routes :: [(Text, AppHandler ())]
 routes = [ ("", ifTop indexH)
          , ("new", ifTop $ requireUser auth authCheck newH)
          , (":id/delete", requireUser auth authCheck deleteH)
-         , (":id/weeks", do i <- getParam "id"
+         , (":id/weeks", do i <- requireParam "id"
                             course <- require $ runPersist $ get i
                             route $ Week.Handlers.routes $ Entity i course)
          ]
@@ -58,6 +58,6 @@ newH = do
 
 deleteH :: AppHandler ()
 deleteH = do
-  courseKey <- getParam "id"
+  courseKey <- requireParam "id"
   runPersist $ delete (courseKey :: Key Course)
   redirectReferer

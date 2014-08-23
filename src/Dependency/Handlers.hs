@@ -31,7 +31,7 @@ routes = [ ("", ifTop indexH)
          ]
 
 indexH :: AppHandler ()
-indexH = format JSON $ do
+indexH = format [JSON] $ do
   loggedIn <- with auth isLoggedIn
   dependencies <- map toLine <$> if loggedIn
                          then lookupAllDependencyPairs
@@ -52,6 +52,6 @@ newH = do
 
 deleteH :: AppHandler ()
 deleteH = do
-  dependencyKey <- getParam "id"
+  dependencyKey <- requireParam "id"
   runPersist $ delete (dependencyKey :: Key Dependency)
   redirectReferer

@@ -48,7 +48,7 @@ resourceRoutes (Resource indexHandler newHandler showHandler editHandler deleteH
 requestedEntity :: (PersistEntity record, PersistEntityBackend record ~ SqlBackend) =>
                    AppHandler (Entity record)
 requestedEntity = do
-  key <- getParam "id"
+  key <- requireParam "id"
   entity <- require $ runPersist $ get key
   return $ Entity key entity
 
