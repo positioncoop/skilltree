@@ -22,10 +22,10 @@ import Snap.Plus.Forms
 import Application
 
 nestedStepResource :: TutorialEntity -> Resource Step
-nestedStepResource t = SimpleResource pass (authorize $ newH t) (const pass) (const pass) (const pass)
+nestedStepResource t = Resource pass (authorize $ newH t) (const pass) (const pass) (const pass) [] []
 
 stepResource :: Resource Step
-stepResource = SimpleResource pass pass (const pass) (authorize . editH) (authorize . deleteH)
+stepResource = Resource pass pass (const pass) (authorize . editH) (authorize . deleteH) [] []
 
 newH :: TutorialEntity -> AppHandler ()
 newH tutorial@(Entity key _) = do

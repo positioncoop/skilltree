@@ -27,12 +27,10 @@ import Tutorial.Queries
 import Application
 
 tutorialResource :: Resource Tutorial
-tutorialResource = CompoundResource
-                   (SimpleResource indexH (authorize newH) showH (authorize . editH) (authorize . deleteH))
+tutorialResource = Resource indexH (authorize newH) showH (authorize . editH) (authorize . deleteH)
                    [("move", authorize . moveH)
                    ,("steps", authorize . routeResource . Step.Handlers.nestedStepResource)]
-
-
+                   [("admin", authorize $ render "tutorials/admin")]
 
 routes :: [(Text, AppHandler ())]
 routes = resourceRoutes tutorialResource
@@ -53,8 +51,10 @@ showH :: TutorialEntity -> AppHandler ()
 showH = renderWithSplices "tutorials/show" . Tutorial.Splices.entitySplice
 
 newH :: AppHandler ()
-newH = handleTutorialAjax (runForm "new" Tutorial.Form.newForm) (insertTutorial)
-  where insertTutorial record = do k <- runPersist $ insert record
+newH = route [("", method POST newPost), ("", method GET newGet)]
+  where newGet = render "tutorials/new"
+        newPost = handleTutorialAjax (runForm "new" Tutorial.Form.newForm) (insertTutorial)
+        insertTutorial record = do k <- runPersist $ insert record
                                    return $ Entity k record
 
 moveH :: TutorialEntity -> AppHandler ()

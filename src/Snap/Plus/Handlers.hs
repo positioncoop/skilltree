@@ -6,7 +6,6 @@ module Snap.Plus.Handlers where
 
 import Prelude hiding ((++))
 import Snap.Plus
-import Control.Arrow
 import Snap.Snaplet.Auth
 import Database.Persist
 import Database.Persist.Sql
@@ -17,16 +16,14 @@ import Application
 authorize :: AppHandler t -> AppHandler t
 authorize = requireUser auth (redirect "/auth/login")
 
-data Resource record = (PersistEntity record, PersistEntityBackend record ~ SqlBackend) =>
-  SimpleResource {indexHandlerField :: AppHandler ()
-                 ,newHandlerField :: AppHandler ()
-                 ,showHandlerField :: Entity record -> AppHandler ()
-                 ,editHandlerField :: Entity record -> AppHandler ()
-                 ,deleteHandlerField :: Entity record -> AppHandler ()} |
-  CompoundResource {basicRoutes :: Resource record
-                   ,moreMemberRoutes :: [(Text, Entity record -> AppHandler ())]
-                                        {-nested, member, new, collection-}
-                   }
+data Resource record = (PersistEntity record, PersistEntityBackend record ~ SqlBackend)
+                     => Resource {indexHandlerField :: AppHandler ()
+                                 ,newHandlerField :: AppHandler ()
+                                 ,showHandlerField :: Entity record -> AppHandler ()
+                                 ,editHandlerField :: Entity record -> AppHandler ()
+                                 ,deleteHandlerField :: Entity record -> AppHandler ()
+                                 ,moreMemberRoutes :: [(Text, Entity record -> AppHandler ())]
+                                 ,moreCollectionRoutes :: [(Text, AppHandler ())]}
 
 replaceEntity :: (PersistEntity record, PersistEntityBackend record ~ SqlBackend)
               => Key record -> record -> AppHandler ()
@@ -40,27 +37,18 @@ routeResource :: Resource record -> AppHandler ()
 routeResource = route . resourceRoutes
 
 resourceRoutes :: Resource record -> [(Text, AppHandler ())]
-resourceRoutes (SimpleResource indexHandler newHandler showHandler editHandler deleteHandler) =
-  [("", ifTop indexHandler)
-  ,("new", newHandler)
-  ,(":id", do
-       entity <- requestedEntity
-       route [("", ifTop $ showHandler entity)
-             ,("edit", editHandler entity)
-             ,("delete", deleteHandler entity)
-             ])]
-resourceRoutes (CompoundResource
-                 (SimpleResource indexHandler newHandler showHandler editHandler deleteHandler)
-                 members) =
-  [("", ifTop indexHandler)
-  ,("new", newHandler)
-  ,(":id", routeWithEntity memberRoutes =<< requestedEntity)]
-  where routeWithEntity partialRoutes entity = route $ map (withEntity entity) partialRoutes
-        withEntity entity (pathPart, handler) = (pathPart, handler entity)
-        memberRoutes = [("", ifTop . showHandler)
-                       ,("edit", editHandler)
-                       ,("delete", deleteHandler)
-                       ] ++ members
+resourceRoutes (Resource indexHandler newHandler showHandler editHandler deleteHandler member collection) =
+   (("", ifTop indexHandler) : collection)
+   ++ [("new", newHandler)]
+   ++ [(":id", do entity <- requestedEntity
+                  routeWithEntity entity $
+                    [("", ifTop . showHandler)
+                    ,("edit", editHandler)
+                    ,("delete", deleteHandler)]
+                    ++ member)]
+  where
+    routeWithEntity entity = route . map (withEntity entity)
+    withEntity entity (pathPart, handler) = (pathPart, handler entity)
 
 requestedEntity :: (PersistEntity record, PersistEntityBackend record ~ SqlBackend) =>
                    AppHandler (Entity record)
