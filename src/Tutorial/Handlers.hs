@@ -53,7 +53,7 @@ showH = renderWithSplices "tutorials/show" . Tutorial.Splices.entitySplice
 newH :: AppHandler ()
 newH = route [("", method POST newPost), ("", method GET newGet)]
   where newGet = render "tutorials/new"
-        newPost = handleTutorialAjax (runForm "new" Tutorial.Form.newForm) (insertTutorial)
+        newPost = handleTutorialAjax (runForm "new" Tutorial.Form.newForm) insertTutorial
         insertTutorial record = do k <- runPersist $ insert record
                                    return $ Entity k record
 
@@ -85,5 +85,4 @@ handleTutorialAjax form doWithResult =  do
   response <- form
   case response of
     (_, Nothing) -> return ()
-    (_, Just tutorial') -> do
-      writeJSON =<< doWithResult tutorial'
+    (_, Just tutorial') -> writeJSON =<< doWithResult tutorial'

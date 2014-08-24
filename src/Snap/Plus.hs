@@ -93,7 +93,7 @@ getParam name = do param <- getParam' name
 
 getParamOr :: (MonadSnap m, Paramable t) => t -> Text -> m t
 getParamOr def name = do mVal <- getParam' name
-                         return $ fromMaybe def $ join $ fmap (parseParamable) mVal
+                         return $ fromMaybe def $ join $ fmap parseParamable mVal
 
 require :: MonadPlus m => m (Maybe a) -> m a
 require ma = do a' <- ma
