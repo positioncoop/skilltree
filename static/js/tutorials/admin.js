@@ -8,6 +8,7 @@ function drawTools(tutorialData) {
   }));
 
   if (window.isLoggedIn && ("#tools" === window.location.hash || "" === window.location.hash)) {
+    $(".modeTray .toolsButton").addClass("active");
     var grid = d3.select("svg.tree");
     drawToolboxes(grid.selectAll("g.tutorial"));
     addEditHandlers(grid);

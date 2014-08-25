@@ -43,3 +43,11 @@ svg.tree {
 .tutorial.Draft {
   opacity: 0.6;
 }
+
+.modeTray button {
+  background-color: lightblue;
+}
+
+.modeTray button.active {
+  background-color: lightgray;
+}

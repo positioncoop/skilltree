@@ -5,6 +5,7 @@ function drawCreate(tutorialData) {
   }));
 
   if (window.isLoggedIn && "#create" === window.location.hash) {
+    $(".modeTray .createModeButton").addClass("active");
     var grid = d3.select("svg.tree");
     tutorialCreator.init(grid, tutorialData);
 
