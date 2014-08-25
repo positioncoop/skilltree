@@ -19,73 +19,97 @@ function drawAdmin() {
   }
 }
 
+function drawTool(toolboxes, tool) {
+  return toolboxes.append("text")
+    .attr("dx", tool.dx)
+    .attr("dy", tool.dy || 0)
+    .attr("style","font-size: 25px; font-weight: regular")
+    .attr("data-json", function(d) {return JSON.stringify(d);})
+    .text(tool.text)
+    .attr("class", tool.classes);
+}
+
 function drawToolboxes(tutorials) {
   toolboxes = tutorials.append("g")
-    .attr("transform", function(d) {
-      return "translate(-10, -2)";
+    .attr("transform", function() {return "translate(-10, -2)";});
+
+  drawTool(toolboxes, {dx: 0, text: "", classes: "fa move-icon",})
+    .on("click", function(d){
+      d3.event.stopPropagation();
+      tutorialMover.clickMove(d);
     });
 
-  toolboxes.append("text")
-    .attr("dx", 0)
-    .attr("data-json", function(d) {return JSON.stringify(d);})
-    .attr("style","font-size: 25px; font-weight: regular")
-    .text("")
-    .attr("class", "fa move-icon")
-    .on("click", function(){tutorialMover.clickMove(this);});
-
-  toolboxes.append("text")
-    .attr("dx", 30)
-    .attr("style","font-size: 25px; font-weight: regular")
-    .text("")
-    .attr("class", "fa fa-pencil")
+  drawTool(toolboxes, {dx: 30, text: "", classes: "fa fa-pencil",})
     .on("click", function(d) {
       d3.event.stopPropagation();
       redirectTutorialEdit(d);
     });
 
-  toolboxes.append("text")
-    .attr("dx", 60)
-    .attr("style","font-size: 25px; font-weight: regular")
-    .text("")
-    .attr("data-json", function(d) {return JSON.stringify(d);})
-    .attr("class", "fa fa-long-arrow-right")
-    .on("click", function () {
-      dependencySource = $(this).data("json");
-      bullseyes.style("opacity", 1);
-      toolboxes.style("opacity", 0);
-      d3.event.stopPropagation();
-    });
-
-  bullseyes = tutorials.append("text")
-    .attr("dx", -22).attr("dy", 38)
-    .attr("style","font-size: 25px; font-weight: regular;")
+  bullseyes = drawTool(tutorials, {dx: -22, dy: 38, text:"", classes: "fa fa-bullseye",})
     .style("opacity", 0)
-    .text("")
-    .attr("class", "fa fa-bullseye")
-    .on("click", function (d) {
-      if (dependencySource !== null) {
-	var existing = dependencyData.filter(function (dep) {
-	  return (dep.source.id === d.id && dep.target.id === dependencySource.id)
-            || (dep.target.id === d.id && dep.source.id === dependencySource.id);
-	});
-
-	function afterPost() {
-	  var dep = dependencySource;
-	  dependencySource = null;
-	  redirectTutorialEdit(dep);
-        }
-
-        if (existing.length !== 0) {
-          var dep = existing[0];
-          $.post("/dependencies/" + dep.id + "/delete", {}, afterPost);
-        } else {
-          $.post("/dependencies/new", {"new.tutorialId": dependencySource.id, "new.dependencyId": d.id}, afterPost);
-        }
-      }
+    .on("click", function(d) {
       d3.event.stopPropagation();
+      tutorialDepender.clickBullseye(d);
     });
+
+  drawTool(toolboxes, {dx: 60, text:"", classes: "fa fa-long-arrow-right",})
+    .on("click", function (d) {
+      d3.event.stopPropagation();
+      tutorialDepender.clickArrow(d);
+    });
+
   return toolboxes;
 }
+
+function addEditHandlers(grid) {
+  grid
+    .on("click", function() {
+      d3.event.stopPropagation();
+      tutorialMover.clickGrid(this);
+      tutorialDepender.reset();
+    })
+    .on("mousemove", function() {
+      tutorialMover.moveOnGrid(this);
+    });
+}
+
+var tutorialDepender = {
+  reset: function() {
+    if (dependencySource !== null) {
+      dependencySource = null;
+      bullseyes.style("opacity", 0);
+      toolboxes.style("opacity", 1);
+    }
+  },
+
+  clickArrow: function(d) {
+    dependencySource = d;
+    toolboxes.style("opacity", 0);
+    bullseyes.style("opacity", 1);
+  },
+
+  clickBullseye: function (d) {
+    if (dependencySource !== null) {
+      var existing = dependencyData.filter(function (dep) {
+	return (dep.source.id === d.id && dep.target.id === dependencySource.id)
+          || (dep.target.id === d.id && dep.source.id === dependencySource.id);
+      });
+
+      function afterPost() {
+	var dep = dependencySource;
+	dependencySource = null;
+	redirectTutorialEdit(dep);
+      }
+
+      if (existing.length !== 0) {
+        var dep = existing[0];
+        $.post("/dependencies/" + dep.id + "/delete", {}, afterPost);
+      } else {
+        $.post("/dependencies/new", {"new.tutorialId": dependencySource.id, "new.dependencyId": d.id}, afterPost);
+      }
+    }
+  },
+};
 
 var tutorialMover = {
   moveTarget: null,
@@ -108,23 +132,18 @@ var tutorialMover = {
       .attr("opacity", 0);
   },
 
-  clickMove: function (target) {
-    this.moveTarget = $(target).data("json");
+  clickMove: function (d) {
+    this.moveTarget = d
     this.feedback.attr("xlink:href", this.moveTarget.iconPath || "/img/example.png");
-    d3.event.stopPropagation();
   },
 
   clickGrid: function(target) {
-    if (dependencySource !== null) {
-      dependencySource = null;
-      bullseyes.style("opacity", 0);
-      toolboxes.style("opacity", 1);
-      this.feedback.attr("xlink:href", "/img/example.png");
-    } else if (this.moveTarget !== null) {
+    if (this.moveTarget !== null) {
       var p = from_mouse(d3.mouse(target));
-      d3.event.stopPropagation();
       $.post("/tutorials/" + this.moveTarget.id + "/move", {"move.x": p.x , "move.y": p.y},
-             function() {redirectTutorialEdit(tutorialMover.reset());});
+             function() {
+               redirectTutorialEdit(tutorialMover.reset());
+             });
     }
   },
 
@@ -146,9 +165,3 @@ var tutorialMover = {
     }
   },
 };
-
-function addEditHandlers(grid) {
-  grid
-    .on("click", function() {tutorialMover.clickGrid(this);})
-    .on("mousemove", function() {tutorialMover.moveOnGrid(this);});
-}
