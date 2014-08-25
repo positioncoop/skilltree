@@ -5,7 +5,6 @@ function redirectTutorialEdit(tutorial) {
 var grid = null;
 var bullseyes = null;
 var toolboxes = null;
-var feedback = null;
 
 var dependencySource = null;
 var tutorialData = null;
@@ -16,18 +15,8 @@ function drawAdmin() {
     grid = d3.select("svg.tree");
     drawToolboxes(grid.selectAll("g.tutorial"));
     addEditHandlers(grid);
-    drawMoveFeedback(grid);
+    tutorialMover.drawMoveFeedback(grid);
   }
-}
-
-function drawMoveFeedback(grid) {
-  feedback = grid.append("image")
-    .attr("class", "feedback")
-    .attr("xlink:href", "/img/example.png")
-    .attr("width", 60).attr("height", 60)
-    .attr("x", -100)
-    .attr("y", -100)
-    .attr("opacity", 0);
 }
 
 function drawToolboxes(tutorials) {
@@ -62,7 +51,6 @@ function drawToolboxes(tutorials) {
     .attr("class", "fa fa-long-arrow-right")
     .on("click", function () {
       dependencySource = $(this).data("json");
-      feedback.attr("xlink:href", "");
       bullseyes.style("opacity", 1);
       toolboxes.style("opacity", 0);
       d3.event.stopPropagation();
@@ -84,7 +72,6 @@ function drawToolboxes(tutorials) {
 	function afterPost() {
 	  var dep = dependencySource;
 	  dependencySource = null;
-          feedback.attr("xlink:href", "/img/example.png");
 	  redirectTutorialEdit(dep);
         }
 
@@ -102,17 +89,28 @@ function drawToolboxes(tutorials) {
 
 var tutorialMover = {
   moveTarget: null,
+  feedback: null,
 
   reset: function() {
     var target = this.moveTarget;
     this.moveTarget = null;
-    feedback.attr("xlink:href", "/img/example.png");
+    this.feedback.attr("xlink:href", "/img/example.png");
     return target;
+  },
+
+  drawMoveFeedback: function(grid) {
+    this.feedback = grid.append("image")
+      .attr("class", "feedback")
+      .attr("xlink:href", "/img/example.png")
+      .attr("width", 60).attr("height", 60)
+      .attr("x", -100)
+      .attr("y", -100)
+      .attr("opacity", 0);
   },
 
   clickMove: function (target) {
     this.moveTarget = $(target).data("json");
-    feedback.attr("xlink:href", this.moveTarget.iconPath || "/img/example.png");
+    this.feedback.attr("xlink:href", this.moveTarget.iconPath || "/img/example.png");
     d3.event.stopPropagation();
   },
 
@@ -121,7 +119,7 @@ var tutorialMover = {
       dependencySource = null;
       bullseyes.style("opacity", 0);
       toolboxes.style("opacity", 1);
-      feedback.attr("xlink:href", "/img/example.png");
+      this.feedback.attr("xlink:href", "/img/example.png");
     } else if (this.moveTarget !== null) {
       var p = from_mouse(d3.mouse(target));
       d3.event.stopPropagation();
@@ -138,12 +136,12 @@ var tutorialMover = {
       });
 
       if (overlaps.length !== 0) {
-        feedback.attr("opacity", 0);
+        this.feedback.attr("opacity", 0);
       } else {
-        feedback.attr("opacity", 0.2);
+        this.feedback.attr("opacity", 0.2);
 
         var p = to_display(mousePos);
-        feedback.attr("x", p.x) .attr("y", p.y);
+        this.feedback.attr("x", p.x) .attr("y", p.y);
       }
     }
   },
