@@ -1,20 +1,17 @@
-function redirectTutorialEdit(tutorial) {
-  window.location.href = "/tutorials/" + tutorial.id + "/edit";
-}
-
-var grid = null;
 var bullseyes = null;
 var toolboxes = null;
 
-var tutorialData = null;
-var dependencyData = null;
+function drawTools(tutorialData) {
+  $(".modeTray").append($("<button class='toolsButton'>").text("tool mode").on("click", function() {
+    window.location.hash = "#tools";
+    window.location.reload();
+  }));
 
-function drawAdmin() {
-  if (window.isLoggedIn) {
-    grid = d3.select("svg.tree");
+  if (window.isLoggedIn && ("#tools" === window.location.hash || "" === window.location.hash)) {
+    var grid = d3.select("svg.tree");
     drawToolboxes(grid.selectAll("g.tutorial"));
     addEditHandlers(grid);
-    tutorialMover.init(grid);
+    tutorialMover.init(grid, tutorialData);
   }
 }
 
@@ -121,7 +118,8 @@ var tutorialMover = {
     return target;
   },
 
-  init: function(grid) {
+  init: function(grid, tutorialData) {
+    this.tutorialData = tutorialData;
     this.feedback = grid.append("image")
       .attr("class", "feedback")
       .attr("xlink:href", "/img/example.png")
@@ -149,7 +147,7 @@ var tutorialMover = {
   hover: function(mouse) {
     if(this.moveTarget !== null) {
       var mousePos = from_mouse(mouse);
-      var overlaps = tutorialData.filter(function(t) {
+      var overlaps = this.tutorialData.filter(function(t) {
         return (t.x == mousePos.x) && (t.y == mousePos.y);
       });
 

@@ -1,3 +1,7 @@
+function redirectTutorialEdit(tutorial) {
+  window.location.href = "/tutorials/" + tutorial.id + "/edit" + window.location.hash;
+}
+
 function to_display(p) {
   return {x: p.x * 100 + 20,
           y: p.y * 50 + 20};

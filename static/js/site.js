@@ -1,6 +1,7 @@
-var tutorialData = null;
-var dependencyData = null;
 $(function() {
+  var tutorialData = null;
+  var dependencyData = null;
+
   d3.json("/tutorials?format=json", function(error, data) {
     tutorialData = data;
     drawSkilltree();
@@ -15,7 +16,8 @@ $(function() {
     if (tutorialData !== null && dependencyData !== null) {
       drawLines(dependencyData);
       drawTutorials(tutorialData);
-      drawAdmin(tutorialData);
+      drawCreate(tutorialData);
+      drawTools(tutorialData);
     }
   }
 });

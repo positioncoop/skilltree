@@ -4,6 +4,8 @@
   </div>
 
   <div class="section-tutorial">
+    <div class="modeTray">
+    </div>
     <p>
       <ifLoggedIn>
 	Hi, <loggedInUser><userLogin /></loggedInUser>
