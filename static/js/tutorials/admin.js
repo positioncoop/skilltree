@@ -30,8 +30,7 @@ function drawTool(toolboxes, tool) {
 }
 
 function drawToolboxes(tutorials) {
-  toolboxes = tutorials.append("g")
-    .attr("transform", function() {return "translate(-10, -2)";});
+  toolboxes = tutorials.append("g").attr("transform", function() {return "translate(-10, -2)";});
 
   drawTool(toolboxes, {dx: 0, text: "", classes: "fa move-icon",})
     .on("click", function(d){
@@ -74,38 +73,39 @@ function addEditHandlers(grid) {
 }
 
 var tutorialDepender = {
+  dependencySource: null,
+
   reset: function() {
-    if (dependencySource !== null) {
-      dependencySource = null;
-      bullseyes.style("opacity", 0);
-      toolboxes.style("opacity", 1);
-    }
+    var dep = this.dependencySource;
+    this.dependencySource = null;
+    bullseyes.style("opacity", 0);
+    toolboxes.style("opacity", 1);
+    return dep;
   },
 
   clickArrow: function(d) {
-    dependencySource = d;
+    this.dependencySource = d;
     toolboxes.style("opacity", 0);
     bullseyes.style("opacity", 1);
   },
 
   clickBullseye: function (d) {
-    if (dependencySource !== null) {
+    if (this.dependencySource !== null) {
+      var dependencySource = this.dependencySource;
       var existing = dependencyData.filter(function (dep) {
 	return (dep.source.id === d.id && dep.target.id === dependencySource.id)
           || (dep.target.id === d.id && dep.source.id === dependencySource.id);
       });
 
-      function afterPost() {
-	var dep = dependencySource;
-	dependencySource = null;
-	redirectTutorialEdit(dep);
+      function afterPost(dep) {
+	redirectTutorialEdit(tutorialDepender.reset());
       }
 
       if (existing.length !== 0) {
         var dep = existing[0];
         $.post("/dependencies/" + dep.id + "/delete", {}, afterPost);
       } else {
-        $.post("/dependencies/new", {"new.tutorialId": dependencySource.id, "new.dependencyId": d.id}, afterPost);
+        $.post("/dependencies/new", {"new.tutorialId": this.dependencySource.id, "new.dependencyId": d.id}, afterPost);
       }
     }
   },
