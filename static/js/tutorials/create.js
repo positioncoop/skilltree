@@ -7,6 +7,7 @@ var bullseyes = null;
 var toolboxes = null;
 var feedback = null;
 
+var moveTarget = null;
 var dependencySource = null;
 var tutorialData = null;
 var dependencyData = null;
@@ -16,18 +17,7 @@ function drawAdmin() {
     grid = d3.select("svg.tree");
     drawToolboxes(grid.selectAll("g.tutorial"));
     addEditHandlers(grid);
-    drawMoveFeedback(grid);
   }
-}
-
-function drawMoveFeedback(grid) {
-  feedback = grid.append("image")
-    .attr("class", "feedback")
-    .attr("xlink:href", "/img/example.png")
-    .attr("width", 60).attr("height", 60)
-    .attr("x", -100)
-    .attr("y", -100)
-    .attr("opacity", 0);
 }
 
 function drawToolboxes(tutorials) {
@@ -42,7 +32,11 @@ function drawToolboxes(tutorials) {
     .attr("style","font-size: 25px; font-weight: regular")
     .text("")
     .attr("class", "fa move-icon")
-    .on("click", function(){tutorialMover.clickMove(this);});
+    .on("click", function () {
+      moveTarget = $(this).data("json");
+      feedback.attr("xlink:href", moveTarget.iconPath || "/img/example.png");
+      d3.event.stopPropagation();
+    });
 
   toolboxes.append("text")
     .attr("dx", 30)
@@ -100,57 +94,55 @@ function drawToolboxes(tutorials) {
   return toolboxes;
 }
 
-var tutorialMover = {
-  moveTarget: null,
+function addEditHandlers(grid) {
+  grid.on("click", function() {
+    var p = from_mouse(d3.mouse(this));
 
-  reset: function() {
-    var target = this.moveTarget;
-    this.moveTarget = null;
-    feedback.attr("xlink:href", "/img/example.png");
-    return target;
-  },
-
-  clickMove: function (target) {
-    this.moveTarget = $(target).data("json");
-    feedback.attr("xlink:href", this.moveTarget.iconPath || "/img/example.png");
-    d3.event.stopPropagation();
-  },
-
-  clickGrid: function(target) {
-    if (dependencySource !== null) {
+    if(moveTarget === null && dependencySource === null) {
+      $.post("/tutorials/new", {"new.x": p.x , "new.y": p.y}, function(d) {
+	redirectTutorialEdit(d);
+      });
+    } else if (dependencySource !== null) {
       dependencySource = null;
       bullseyes.style("opacity", 0);
       toolboxes.style("opacity", 1);
       feedback.attr("xlink:href", "/img/example.png");
-    } else if (this.moveTarget !== null) {
-      var p = from_mouse(d3.mouse(target));
+    } else if (moveTarget !== null) {
       d3.event.stopPropagation();
-      $.post("/tutorials/" + this.moveTarget.id + "/move", {"move.x": p.x , "move.y": p.y},
-             function() {redirectTutorialEdit(tutorialMover.reset());});
+      $.post("/tutorials/" + moveTarget.id + "/move", {"move.x": p.x , "move.y": p.y}, function() {
+	var target = moveTarget;
+        moveTarget = null;
+        feedback.attr("xlink:href", "/img/example.png");
+	redirectTutorialEdit(target)
+      });
     }
-  },
+  })
+    .on("mousemove", function() {
+      var gridPos = from_mouse(d3.mouse(this));
+      var p = to_display(gridPos);
 
-  moveOnGrid: function(target) {
-    if(this.moveTarget !== null) {
-      var mousePos = from_mouse(d3.mouse(target));
       var overlaps = tutorialData.filter(function(t) {
-        return (t.x == mousePos.x) && (t.y == mousePos.y);
+        if (moveTarget !== null) {
+          return (t.x == gridPos.x) && (t.y == gridPos.y);
+        } else {
+          return (t.x == gridPos.x) &&
+            ((t.y == gridPos.y - 1) || (t.y == gridPos.y) || (t.y == gridPos.y + 1));
+        }
       });
 
       if (overlaps.length !== 0) {
         feedback.attr("opacity", 0);
       } else {
         feedback.attr("opacity", 0.2);
-
-        var p = to_display(mousePos);
         feedback.attr("x", p.x) .attr("y", p.y);
       }
-    }
-  },
-};
+    });
 
-function addEditHandlers(grid) {
-  grid
-    .on("click", function() {tutorialMover.clickGrid(this);})
-    .on("mousemove", function() {tutorialMover.moveOnGrid(this);});
+  feedback = grid.append("image")
+    .attr("class", "feedback")
+    .attr("xlink:href", "/img/example.png")
+    .attr("width", 60).attr("height", 60)
+    .attr("x", -100)
+    .attr("y", -100)
+    .attr("opacity", 0.2);
 }
