@@ -6,7 +6,6 @@ var grid = null;
 var bullseyes = null;
 var toolboxes = null;
 
-var dependencySource = null;
 var tutorialData = null;
 var dependencyData = null;
 
@@ -15,7 +14,7 @@ function drawAdmin() {
     grid = d3.select("svg.tree");
     drawToolboxes(grid.selectAll("g.tutorial"));
     addEditHandlers(grid);
-    tutorialMover.drawMoveFeedback(grid);
+    tutorialMover.init(grid);
   }
 }
 
@@ -35,7 +34,7 @@ function drawToolboxes(tutorials) {
   drawTool(toolboxes, {dx: 0, text: "", classes: "fa move-icon",})
     .on("click", function(d){
       d3.event.stopPropagation();
-      tutorialMover.clickMove(d);
+      tutorialMover.start(d);
     });
 
   drawTool(toolboxes, {dx: 30, text: "", classes: "fa fa-pencil",})
@@ -48,13 +47,13 @@ function drawToolboxes(tutorials) {
     .style("opacity", 0)
     .on("click", function(d) {
       d3.event.stopPropagation();
-      tutorialDepender.clickBullseye(d);
+      tutorialDepender.finish(d);
     });
 
   drawTool(toolboxes, {dx: 60, text:"", classes: "fa fa-long-arrow-right",})
     .on("click", function (d) {
       d3.event.stopPropagation();
-      tutorialDepender.clickArrow(d);
+      tutorialDepender.start(d);
     });
 
   return toolboxes;
@@ -64,11 +63,11 @@ function addEditHandlers(grid) {
   grid
     .on("click", function() {
       d3.event.stopPropagation();
-      tutorialMover.clickGrid(this);
+      tutorialMover.finish(d3.mouse(this));
       tutorialDepender.reset();
     })
     .on("mousemove", function() {
-      tutorialMover.moveOnGrid(this);
+      tutorialMover.hover(d3.mouse(this));
     });
 }
 
@@ -83,13 +82,13 @@ var tutorialDepender = {
     return dep;
   },
 
-  clickArrow: function(d) {
+  start: function(d) {
     this.dependencySource = d;
     toolboxes.style("opacity", 0);
     bullseyes.style("opacity", 1);
   },
 
-  clickBullseye: function (d) {
+  finish: function (d) {
     if (this.dependencySource !== null) {
       var dependencySource = this.dependencySource;
       var existing = dependencyData.filter(function (dep) {
@@ -97,7 +96,7 @@ var tutorialDepender = {
           || (dep.target.id === d.id && dep.source.id === dependencySource.id);
       });
 
-      function afterPost(dep) {
+      function afterPost() {
 	redirectTutorialEdit(tutorialDepender.reset());
       }
 
@@ -122,7 +121,7 @@ var tutorialMover = {
     return target;
   },
 
-  drawMoveFeedback: function(grid) {
+  init: function(grid) {
     this.feedback = grid.append("image")
       .attr("class", "feedback")
       .attr("xlink:href", "/img/example.png")
@@ -132,14 +131,14 @@ var tutorialMover = {
       .attr("opacity", 0);
   },
 
-  clickMove: function (d) {
+  start: function (d) {
     this.moveTarget = d
     this.feedback.attr("xlink:href", this.moveTarget.iconPath || "/img/example.png");
   },
 
-  clickGrid: function(target) {
+  finish: function(mouse) {
     if (this.moveTarget !== null) {
-      var p = from_mouse(d3.mouse(target));
+      var p = from_mouse(mouse);
       $.post("/tutorials/" + this.moveTarget.id + "/move", {"move.x": p.x , "move.y": p.y},
              function() {
                redirectTutorialEdit(tutorialMover.reset());
@@ -147,9 +146,9 @@ var tutorialMover = {
     }
   },
 
-  moveOnGrid: function(target) {
+  hover: function(mouse) {
     if(this.moveTarget !== null) {
-      var mousePos = from_mouse(d3.mouse(target));
+      var mousePos = from_mouse(mouse);
       var overlaps = tutorialData.filter(function(t) {
         return (t.x == mousePos.x) && (t.y == mousePos.y);
       });
