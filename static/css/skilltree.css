@@ -1,6 +1,21 @@
 html, body {
   margin: 0px;
   padding: 0px;
+  width: 1200px;
+}
+
+body > div {
+  float:left;
+}
+
+div.section-tree {
+  width: 600px;
+}
+
+div.section-tutorial {
+  border: 1px solid #231F20;
+  padding: 20px;
+  width: 558px;
 }
 
 svg.tree {
@@ -27,28 +42,4 @@ svg.tree {
 
 .tutorial.Draft {
   opacity: 0.6;
-  fill: black;
-  height: 150px !important;
-  border: 10px solid cyan;
 }
-
-image {
-
-
-  border: 4px solid cyan;
-fill: cyan;
-background-color: cyan;
-stroke-width: 4;
-stroke: cyan;
-display: block;
-}
-
-.tree {
-position: relative;
-}
-.tutorial {
-display: block;
-position: absolute;
-}
-
-
