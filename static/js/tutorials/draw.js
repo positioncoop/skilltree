@@ -1,5 +1,6 @@
 function redirectTutorialEdit(tutorial) {
   window.location.href = "/tutorials/" + tutorial.id + "/edit" + window.location.hash;
+  window.location.reload();
 }
 
 function to_display(p) {

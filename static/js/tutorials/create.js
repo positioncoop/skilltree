@@ -1,11 +1,11 @@
 function drawCreate(tutorialData) {
-  $(".modeTray").append($("<button class='createModeButton'>").text("create mode").on("click", function() {
+  $(".modeTray").append($("<button class='createButton'>").text("create mode").on("click", function() {
     window.location.hash = "#create";
     window.location.reload();
   }));
 
   if (window.isLoggedIn && "#create" === window.location.hash) {
-    $(".modeTray .createModeButton").addClass("active");
+    $(".modeTray .createButton").addClass("active");
     var grid = d3.select("svg.tree");
     tutorialCreator.init(grid, tutorialData);
 

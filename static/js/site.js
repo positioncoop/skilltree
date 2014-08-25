@@ -17,7 +17,7 @@ $(function() {
       drawLines(dependencyData);
       drawTutorials(tutorialData);
       drawCreate(tutorialData);
-      drawTools(tutorialData);
+      drawTools(tutorialData, dependencyData);
     }
   }
 });

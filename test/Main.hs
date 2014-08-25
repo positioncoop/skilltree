@@ -48,14 +48,22 @@ assertChanges action value by = do val <- value
                                    val' <- value
                                    shouldBe True $ val' == by val
 
+createMode = do click =<< findElem (ByCSS ".modeTray .createButton")
+                refresh
+
+toolsMode = do click =<< findElem (ByCSS ".modeTray .toolsButton")
+               refresh
+
 createTutorial = do
+  createMode
   assertChanges
     (do click =<< findElem (ByCSS "svg")
         refresh)
     (length <$> findElems (ByCSS "g.tutorial"))
     (+1)
 
-moveTutorial = do click =<< findElem (ByCSS "g.tutorial .move-icon")
+moveTutorial = do toolsMode
+                  click =<< findElem (ByCSS "g.tutorial .move-icon")
                   (x, y) <- elemPosition (ByCSS "g.tutorial")
                   moveTo (100, 100)
                   clickWith LeftButton
@@ -70,11 +78,13 @@ dependencyBetween tutorial1 tutorial2 =
      refresh
 
 createDep = do createTutorial
+               toolsMode
                [tutorial1, tutorial2] <- findElems (ByCSS "g.tutorial")
                dependencyBetween tutorial1 tutorial2
                assertElem (ByCSS "line")
 
-deleteDep = do [tutorial1, tutorial2] <- findElems (ByCSS "g.tutorial")
+deleteDep = do toolsMode
+               [tutorial1, tutorial2] <- findElems (ByCSS "g.tutorial")
                dependencyBetween tutorial1 tutorial2
                assertNoElem (ByCSS "line")
 

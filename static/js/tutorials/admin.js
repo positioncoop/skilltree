@@ -1,7 +1,7 @@
 var bullseyes = null;
 var toolboxes = null;
 
-function drawTools(tutorialData) {
+function drawTools(tutorialData, dependencyData) {
   $(".modeTray").append($("<button class='toolsButton'>").text("tool mode").on("click", function() {
     window.location.hash = "#tools";
     window.location.reload();
@@ -13,6 +13,7 @@ function drawTools(tutorialData) {
     drawToolboxes(grid.selectAll("g.tutorial"));
     addEditHandlers(grid);
     tutorialMover.init(grid, tutorialData);
+    tutorialDepender.init(dependencyData);
   }
 }
 
@@ -71,6 +72,9 @@ function addEditHandlers(grid) {
 
 var tutorialDepender = {
   dependencySource: null,
+  init: function(dependencyData) {
+    this.dependencyData = dependencyData;
+  },
 
   reset: function() {
     var dep = this.dependencySource;
@@ -89,7 +93,7 @@ var tutorialDepender = {
   finish: function (d) {
     if (this.dependencySource !== null) {
       var dependencySource = this.dependencySource;
-      var existing = dependencyData.filter(function (dep) {
+      var existing = this.dependencyData.filter(function (dep) {
 	return (dep.source.id === d.id && dep.target.id === dependencySource.id)
           || (dep.target.id === d.id && dep.source.id === dependencySource.id);
       });
