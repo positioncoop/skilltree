@@ -15,12 +15,12 @@ html, body {
 	/*margin-top: -110px;*/
 }
 
-.modeTray {
+.modeTray-inner- {
 	/*display: none;*/
 	position: absolute;
 	top: 0px;
 	width:100%;
-	background-color: blue;
+	background-color: beige;
 	height: 40px;
 }
 
@@ -95,7 +95,6 @@ html, body {
   background-color: #EAEAEA;
   
   border: 1px solid #231F20;
-  border-radius: 6px;
 }
 
 .tutorial-step iframe {

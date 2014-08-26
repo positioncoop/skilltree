@@ -26,5 +26,11 @@
     </div>
 
   <div class='courses'></div>
+
+  <div id="javascript-helpers" style="display:none;">
+    <!-- this is hacky, but currently necessary - exposes variables such as default icons to javascript -->
+    <img id="tutorialDefaultIconPath" src="${tutorialDefaultIconPath}" />
+  </div>
+
  </div>
 </apply>

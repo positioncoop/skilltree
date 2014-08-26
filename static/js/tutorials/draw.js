@@ -26,10 +26,13 @@ function drawTutorials(tutorialData) {
         return "translate(" + point.x + ", " + point.y + ")";
       });
 
+  //fetch variable from html
+  var tutorialDefaultIconPath = $("#javascript-helpers #tutorialDefaultIconPath").attr("src"); 
+
   tutorials.append("a")
     .attr("xlink:href", function(d) {return "/tutorials/" + d.id;})
     .append("image")
-    .attr("xlink:href", function(d) {return d.iconPath || "/img/example.png";})
+    .attr("xlink:href", function(d) { return d.iconPath || tutorialDefaultIconPath; })
     .attr("width",60).attr("height",60);
 
   tutorials.append("text")
