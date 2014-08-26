@@ -4,15 +4,24 @@ module Main where
 import qualified Data.ByteString               as B
 import qualified Data.ByteString.Lazy          as LB
 import qualified Data.Map                      as M
+import qualified Data.Text                     as T
 import           Prelude                       hiding ((++))
 import           Snap.Plus
 import           Snap.Snaplet.PostgresqlSimple
 import           Snap.Snaplet.Test
 import           Snap.Test                     (get)
-import           Test.Hspec.WebDriver
+import           Test.Hspec.WebDriver          hiding (shouldHaveText)
+import           Test.HUnit.Lang
 
 import           Application
 import           Site
+
+-- | Asserts that the given element has the given text.
+shouldHaveText :: Element -> Text -> WD ()
+e `shouldHaveText` txt = do
+    t <- getText e
+    liftIO $ assertEqual ("text of " ++ show e) txt t
+    where assertEqual msg expected actual = unless (expected `T.isInfixOf` actual) (assertFailure msg)
 
 runAppFn :: AppHandler a -> IO a
 runAppFn handler = do result <- evalHandler (Just "test") (get "/" M.empty) handler app
@@ -32,8 +41,8 @@ signup = do openPage "http://localhost:8001/auth/signup"
             sendKeys "a@boodle.com" =<< findElem (ById "login.email.address")
             sendKeys "pass" =<< findElem (ById "login.password")
             submit =<< findElem (ByCSS "form")
-            e <- findElem $ ByCSS "p"
-            e `shouldHaveText` "Hi, a@boodle.com Logout"
+            tray <- findElem $ ByCSS ".modeTray"
+            tray `shouldHaveText` "Hi, a@boodle.com Logout"
 
 assertElem selector = do elems <- findElems selector
                          shouldBe False (null elems)
