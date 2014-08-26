@@ -25,7 +25,7 @@ will change.
 
 After that completes, you will have a running virtual machine with all the needed
 libraries and binaries. The only thing left to do is to configure the Makefile to
-use Vagrant. Open up `Makefile` and set `VAGRANT=1` at the top.
+use Vagrant. Copy `.vagrantmode.example` to `.vagrantmode`
 
 Now run `make init` to configure the package, run `make dbup` to run
 all the database migrations, and run `make run` to build and start the
