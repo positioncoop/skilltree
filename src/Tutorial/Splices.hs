@@ -27,10 +27,10 @@ entitySplice entity@(Entity key (Tutorial x' y' title' iconPath' publish')) = do
   "tutorialY" ## textSplice $ tshow y'
   "tutorialTitle" ## textSplice title'
   "tutorialPublish" ## textSplice $ tshow publish'
-  "tutorialIconPath" ## do
+  "tutorialDefaultIconPath" ## do
     conf' <- use conf
-    defaultIconPath' <- liftIO (C.require conf' "default-icon-path")
-    textSplice $ maybe defaultIconPath' pack iconPath'
+    tutorialDefaultIconPath' <- liftIO (C.require conf' "tutorial-default-icon-path")
+    textSplice $ maybe tutorialDefaultIconPath' pack iconPath'
   "tutorialStepNewPath" ## textSplice $ tutorialStepNewPath entity
   "tutorialDeletePath" ## textSplice $ tutorialDeletePath entity
   "tutorialEditPath" ## textSplice $ editPath key
