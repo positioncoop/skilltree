@@ -1,6 +1,6 @@
 <div id="tutorial-steps" class="tutorial-steps">
   <tutorialSteps>
-    <div class="tutorial-step">
+    <div class="tutorial-step" data-id="${stepId}" data-ordinal="${stepOrdinal}">
       <ifLoggedIn>
         <div class="edit-links">
           <a class="step-move step-move-up" href="#">&#9650;</a>
@@ -35,5 +35,4 @@
     </div>
     <div class="empty-step"></div>
   </ifLoggedIn>
- 
 </div>

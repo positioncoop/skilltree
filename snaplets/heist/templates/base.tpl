@@ -9,6 +9,7 @@
     <script type="text/javascript" src="/js/tutorials/draw.js"></script>
     <script type="text/javascript" src="/js/tutorials/admin.js"></script>
     <script type="text/javascript" src="/js/tutorials/create.js"></script>
+    <script type="text/javascript" src="/js/steps/move.js"></script>
     <script type="text/javascript" src="/js/site.js"></script>
     <ifLoggedIn><script type="text/javascript">window.isLoggedIn = true;</script></ifLoggedIn>
     <ifLoggedOut><script type="text/javascript">window.isLoggedIn = false;</script></ifLoggedOut>
