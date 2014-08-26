@@ -18,6 +18,7 @@ VAGRANT_CMD=vagrant ssh -c "export PATH=$$PATH:/home/vagrant/.cabal/bin:/home/va
 
 PRODUCTION_HOST=69.164.222.149
 
+
 .PHONY: all install clean superclean test init deps sandbox tags confirm \
 	dbup dbtest dbnew dbrevert production-init production-provision production-keter
 	deploy repl
@@ -34,12 +35,24 @@ else
 endif
 
 test: $(EXECUTABLE)
+ifeq ($(VAGRANT),1)
+	vagrant ssh -- -f -N -R 4444:localhost:4444
+	java -jar $(DEPDIR)/webdriver-bin/selenium-server-standalone-2.42.2.jar &> log/selenium.log &
+	$(call VAGRANT_CMD, $(EXECUTABLE) -p 8001 -e test &> log/test.log) &
+	@sleep 1
+	$(call VAGRANT_CMD, $(RUN) $(TESTMAIN))
+	$(call VAGRANT_CMD, killall $(EXECUTABLE))
+	killall java
+# not sure how to kill the tunnel...
+# kill `ps aux | grep "ssh vagrant" | grep -v grep | awk '{print $2}'`
+else
 	java -jar $(DEPDIR)/webdriver-bin/selenium-server-standalone-2.42.2.jar &> log/selenium.log &
 	$(EXECUTABLE) -p 8001 -e test &> log/test.log &
 	@sleep 1
 	$(RUN) $(TESTMAIN)
 	killall .cabal-sandbox/bin/skilltree
 	killall java
+endif
 
 run: $(EXECUTABLE)
 ifeq ($(VAGRANT),1)
