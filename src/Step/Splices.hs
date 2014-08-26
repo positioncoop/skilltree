@@ -30,5 +30,5 @@ entitySplice entity@(Entity id (Step tutorialId content ordinal videoCode videoP
     Nothing -> return []
     Just (provider, code) -> runChildrenWith $
       "url" ## textSplice $ case provider of
-                              YouTube -> "//www.youtube-nocookie.com/embed/" ++ code ++ "?rel=0"
-                              Vimeo -> "//player.vimeo.com/video/" ++ code
+                              YouTube -> "//www.youtube-nocookie.com/embed/" ++ code ++ "?rel=0&autoplay=1"
+                              Vimeo -> "//player.vimeo.com/video/" ++ code ++ "?autoplay=1"

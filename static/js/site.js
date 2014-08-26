@@ -27,12 +27,37 @@ $(function() {
     window.tutorialDefaultIconPath = $("#javascript-helpers #tutorialDefaultIconPath").attr("src"); 
   }
 
+/* eventually all of this shit should be moved somewhere */
 
 $(".icon-edit-link .label").click(function() {
   $(".icon-edit-link").toggleClass("clicked");
 });
 
-//  $("textarea.tutorial-title").flexible();
+$(".step-move-up").click(function() {
+  var thisstep = $(this).parents(".tutorial-step");
+  var prevstep = thisstep.prev(".tutorial-step");
+  if(prevstep.length > 0) {
+    thisstep.slideUp('normal', function() {
+      prevstep.before(thisstep.detach())
+      thisstep.slideDown('normal');
+    });
+  }
+});
 
+$(".step-move-down").click(function() {
+  var thisstep = $(this).parents(".tutorial-step");
+  var nextstep = thisstep.next(".tutorial-step");
+  if(nextstep.length > 0) {
+    thisstep.slideUp('normal', function() {
+      nextstep.after(thisstep.detach())
+      thisstep.slideDown('normal');
+    });
+  }
+});
+
+$(".lazy-load").click(function() {
+    var thisIframe = $(this).hide().parents(".step-video").children("iframe").show();
+    thisIframe.attr("src", thisIframe.attr("name"));
+});
 
 });

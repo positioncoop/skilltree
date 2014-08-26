@@ -1,8 +1,10 @@
-<div class="tutorial-steps">
+<div id="tutorial-steps" class="tutorial-steps">
   <tutorialSteps>
     <div class="tutorial-step">
       <ifLoggedIn>
         <div class="edit-links">
+          <a class="step-move step-move-up" href="#">&#9650;</a>
+          <a class="step-move step-move-down" href="#">&#9660;</a>
           <a href="${stepEditPath}">Edit Video</a>
           <a class="delete" onclick="return confirm('Are you sure you want to delete this step? This action cannot be undone.')" href="${stepDeletePath}">Delete Video</a>
         </div>
@@ -13,8 +15,15 @@
         </div>
         <div class="step-video">
           <stepVideo>
-      <iframe src="${url}" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+          <div class="lazy-load">
+            <img src="http://img.youtube.com/vi/${stepVideoCode}/0.jpg" />
+            <div class="lazy-load-button"></div>
+          </div>
+          <iframe class="pre-load" src="" name="${url}" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
           </stepVideo>
+        </div>
+        <div class="step-ordinal" style="display:none;">
+          <stepOrdinal/>
         </div>
       </div>
     </div>
