@@ -1,35 +1,105 @@
+/* @override 
+	http://localhost:8000/css/skilltree.css */
+
 html, body {
+  height: 100%;
+  width: 100%;
   margin: 0px;
   padding: 0px;
-  width: 1200px;
 }
 
-body > div {
-  float:left;
+.container {
+	position: relative;
+	height: 100%;
+	/*padding-top: 100px;*/
+	/*margin-top: -110px;*/
 }
 
-div.section-tree {
-  width: 600px;
+.modeTray {
+	/*display: none;*/
+	position: absolute;
+	top: 0px;
+	width:100%;
+	background-color: blue;
+	height: 40px;
 }
 
-div.section-tutorial {
-  border: 1px solid #231F20;
-  padding: 20px;
-  width: 558px;
+.section-logo {
+	position: absolute;
+	top:  30px;
+	left: 30px;
 }
 
-svg.tree {
-  font: 10px sans-serif;
-  background-color: #EAEAEA;
-  margin: 0;
+.courses {
+	/*display: none;*/
+}
+
+.section-logo .logo {
+	width: 120px;
+	height: 120px;
+}
+
+
+.section-tree {
+	margin-right: 410px;
+	font: 10px sans-serif;
+	height: 100%;
+}
+
+
+.section-tutorial {
+	position: fixed;
+	right: 0px;
+	top: 0px;
+	width: 400px;
+	
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 0.75em;
+}
+
+@media only screen and (max-width:1000px){
+
+	.section-tutorial {
+		position: absolute;
+		right: 0px;
+		top: 0px;
+	}
+	
+	.container {
+		width: 1000px !important;
+	}
+}
+
+
+.section-tree svg.tree {
+	background-color: #EAEAEA;
+	width: 100%;
+	height: 100%;
+	margin: 0px !important;
+	padding: 0px !important;
+}
+
+
+.section-tutorial .title {
+	display: inline;
+	text-transform: uppercase;
+	font-weight: bold;
+	
+	border-bottom: 1px solid #fc0452;
+	letter-spacing: 0.1em;
 }
 
 .tutorial-step {
   margin: 10px;
   padding: 10px;
   background-color: #EAEAEA;
+  
   border: 1px solid #231F20;
   border-radius: 6px;
+}
+
+.tutorial-step iframe {
+	width: 100%;
 }
 
 .tutorial-step hr {

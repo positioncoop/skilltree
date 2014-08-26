@@ -1,22 +1,30 @@
 <apply template="base">
+ <div class="container">
+  <div class="section-logo">
+    <img class="logo" src="${siteLogoPath}" />
+  </div>
   <div class="section-tree">
-    <svg class='tree' width=600 height=1000></svg>
+    <svg class='tree'></svg>
   </div>
 
   <div class="section-tutorial">
-    <div class="modeTray">
-    </div>
-    <p>
-      <ifLoggedIn>
-	Hi, <loggedInUser><userLogin /></loggedInUser>
-	<a href="/auth/logout">Logout</a>
-      </ifLoggedIn>
-      <ifLoggedOut>
-	<a href="/auth/login">Login</a>
-      </ifLoggedOut>
-    </p>
     <apply-content/>
   </div>
 
+    <div class="modeTray">
+      <ifLoggedIn>
+        <div class="modeTray-inner-logged-in">
+          Hi, <loggedInUser><userLogin /></loggedInUser>
+          <a href="/auth/logout">Logout</a>
+        </div>
+      </ifLoggedIn>
+      <ifLoggedOut>
+        <div class="modeTray-inner-logged-out">
+          <a href="/auth/login">Login</a>
+        </div>
+      </ifLoggedOut>
+    </div>
+
   <div class='courses'></div>
+ </div>
 </apply>

@@ -22,6 +22,10 @@ import Application
 
 entitySplice :: TutorialEntity -> Splices (Splice AppHandler)
 entitySplice entity@(Entity key (Tutorial x' y' title' iconPath' publish')) = do
+  "siteLogoPath" ## do
+    conf' <- use conf
+    siteLogoPath' <- liftIO (C.require conf' "site-logo-path")
+    textSplice $ siteLogoPath'
   "tutorialId" ## textSplice $ P.showKey key
   "tutorialX" ## textSplice $ tshow x'
   "tutorialY" ## textSplice $ tshow y'
