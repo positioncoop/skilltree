@@ -6,6 +6,7 @@ module Site
   ( app, routes
   ) where
 
+import           Control.Lens
 import           Control.Monad.State
 import qualified Data.Configurator                           as C
 import           Data.Monoid
@@ -95,4 +96,11 @@ siteSplices = do "prefix-url" ## prefixUrlSplice
                  "suffix-url" ## suffixUrlSplice
                  bindStrictTag ## bindStrictImpl
                  ignoreTag ## ignoreImpl
-
+                 "siteLogoPath" ## do
+                   conf' <- use conf
+                   siteLogoPath' <- liftIO (C.require conf' "site-logo-path")
+                   I.textSplice siteLogoPath'
+                 "tutorialDefaultIconPath" ## do
+                   conf' <- use conf
+                   tutorialDefaultIconPath' <- liftIO (C.require conf' "tutorial-default-icon-path")
+                   I.textSplice tutorialDefaultIconPath'
