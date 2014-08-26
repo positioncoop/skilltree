@@ -27,4 +27,7 @@ $(function() {
     window.tutorialDefaultIconPath = $("#javascript-helpers #tutorialDefaultIconPath").attr("src"); 
   }
 
+  $("textarea.tutorial-title").flexible();
+
+
 });

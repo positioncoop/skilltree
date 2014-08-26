@@ -1,6 +1,8 @@
 /* @override 
 	http://localhost:8000/css/skilltree.css */
 
+/***** STRUCTURE AND LAYOUT *****/
+
 html, body {
   height: 100%;
   width: 100%;
@@ -8,27 +10,26 @@ html, body {
   padding: 0px;
 }
 
-.container {
-	position: relative;
-	height: 100%;
+body {
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+input, textarea {
 	font-family: Helvetica, Arial, sans-serif;
 }
 
 body.logged-in {
-	margin-top: 45px;	
+	/*margin-top: 45px;*/
+	/*padding-top: 90px;	*/
 }
 
-.logged-in .modeTray {
-	/*display: none;*/
-	padding: 10px;
-	position: fixed;
-	top: 0px;
-	width:100%;
-	background-color: #fda5c1;
-	color
-	height: 25px;
-	box-shadow: 0 0 9px #5c5c5c;
+
+.container {
+	position: relative;
+	height: 99%;
 }
+
+
 
 .section-logo {
 	position: absolute;
@@ -52,13 +53,13 @@ body.logged-in {
 	font-size: 0.6em;
 }
 
-
 .section-tutorial {
 	position: absolute;
 	right: 0px;
 	top: 0px;
 	width: 400px;
-	
+	height: 100%;
+	overflow-y: scroll;
 	font-size: 0.75em;
 }
 
@@ -79,6 +80,41 @@ body.logged-in {
 	}
 }
 
+/***** STYLIN' *****/
+/***** STYLIN' *****/
+/***** STYLIN' *****/
+/***** STYLIN' *****/
+/***** STYLIN' *****/
+/***** STYLIN' *****/
+/***** STYLIN' *****/
+/***** STYLIN' *****/
+/***** STYLIN' *****/
+/***** STYLIN' *****/
+/***** STYLIN' *****/
+/***** STYLIN' *****/
+/***** STYLIN' *****/
+/***** STYLIN' *****/
+/***** STYLIN' *****/
+
+
+
+
+a:link, a:active, a:visited { 
+	/*text-decoration: none;*/
+	color: #fc0452;
+}
+
+a:hover { 
+	/*text-decoration: none;*/
+	color: #a41744;
+}
+
+.error {
+	color: #fc0452;
+}
+
+
+
 
 .section-tree svg.tree {
 	background-color: #EAEAEA;
@@ -89,30 +125,6 @@ body.logged-in {
 }
 
 
-.section-tutorial .title {
-	display: inline;
-	text-transform: uppercase;
-	font-weight: bold;
-	
-	border-bottom: 1px solid #fc0452;
-	letter-spacing: 0.1em;
-}
-
-.tutorial-step {
-  margin: 10px;
-  padding: 10px;
-  background-color: #EAEAEA;
-  
-  border: 1px solid #231F20;
-}
-
-.tutorial-step iframe {
-	width: 100%;
-}
-
-.tutorial-step hr {
-  border-color: transparent;
-}
 
 .fa:hover {
   cursor: pointer;
@@ -122,6 +134,23 @@ body.logged-in {
   opacity: 0.6;
 }
 
+
+/**** MODE TRAY ****/
+
+.logged-in .modeTray {
+	/*display: none;*/
+	font-size: 0.8em;
+	padding: 10px;
+	position: fixed;
+	top: 0px;
+	width:100%;
+	background-color: rgba(51, 51, 51, 0.84);
+	color: white;
+	height: 25px;
+	box-shadow: 0 0 9px #5c5c5c;
+	
+	
+}
 .modeTray button {
   background-color: lightblue;
 }
@@ -129,3 +158,194 @@ body.logged-in {
 .modeTray button.active {
   background-color: lightgray;
 }
+
+
+/**** TUTORIAL ****/
+
+.logged-in .section-tutorial-inner {
+	padding-top: 80px;
+}
+.section-tutorial-inner {
+	padding: 20px;
+	/*margin: 20px;*/
+}
+
+.section-tutorial .header-inner {
+	display: table;
+	margin-bottom: 20px;
+	
+}
+
+.section-tutorial .header-inner > div {
+	border-top: 5px solid #fc0452;
+	padding-top: 5px;
+	display: table-cell;
+	vertical-align:middle;
+	padding-right: 10px;
+}
+
+
+.section-tutorial .header-inner textarea {
+	font-size: 1em !important;
+	width: 100%;
+	height: ;
+}
+.section-tutorial .header-inner .title {
+	text-transform: uppercase;
+	font-weight: bold;
+	letter-spacing: 0.1em;
+	font-size: 2em;
+}
+
+.edit-links {
+	text-align:right;
+	padding:  2px 5px;
+}
+
+.edit-links a {
+	text-decoration: none;
+	background-color: #fc0452;
+	color: white;
+	padding: 3px 6px;
+	margin-left: 4px;
+}
+
+.edit-links a:hover {
+	background-color: #a41744;
+	color: white;
+}
+
+
+
+/***** TUTORIAL STEP STYLES *****/
+
+.step-description, .step-description .input {
+	font-size: 11px !important;
+	line-height: 18px !important;
+	letter-spacing: 0px !important;
+}
+
+
+.tutorial-step {
+  /*padding: 20px;*/
+	 margin-bottom: 20px;
+}
+
+.tutorial-step-inner {
+  padding: 10px;
+  border: 1px solid #fc0452;
+}
+
+.tutorial-step .step-description {
+	margin-bottom: 10px;
+}
+
+
+.tutorial-step iframe {
+	width: 100%;
+}
+
+
+.empty-step {
+	height: 20px;
+  	border: 1px solid #fc0452;
+}
+
+
+
+/***** BACKEND/EDITING *****/
+
+.form-step {
+	/*border: 1px solid blue;*/
+	margin-right: 10px;
+	padding: 30px;
+	
+}
+
+.form-step-inner {
+	/*padding: 10px;*/
+	/*border: 1px solid #fc0452;*/
+}
+
+.form-step .edit-step-title {
+	/*background-color: black;*/
+	/*color: white;*/
+	width: 100%;
+	padding: 8px 5px 5px;
+	text-align: center;
+	font-size: 1.3em;
+background: url(
+data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAAKElEQVQIW2NkwAL+AwEjujhYEASQJWCCIDG4BLIgXAJdECyBTRAkAQAIvhgD4hkqMQAAAABJRU5ErkJggg==
+   ) repeat #fea9bd;
+	font-weight: bold;
+	text-transform: uppercase;
+	/*letter-spacing: 0.2 em;*/
+}
+
+.form-step .input {
+	width: 100%;
+	padding: 5px;
+		border: 1px solid #AAA;
+}
+
+.form-step .label {
+	font-weight: bold;
+	margin-top: 10px;
+	color: #d41c56;
+	font-size: 1.1em;	
+	margin-bottom: 5px;
+}
+
+.form-step .step-description .input {
+	height: 350px;
+}
+
+.form-step .submit{
+	width: 100%;
+	margin: auto;
+	padding: 20px 5px 5px;
+}
+
+.form-step .submit a {
+	text-decoration: none;
+}
+.form-step .submit a input {
+    /*-webkit-appearance: button;*/
+    border:none;
+	display: block;
+	margin: auto;
+	width: 100%;
+	/*height: 30px !important;*/
+	background-color: #d41c56;
+	color: white;
+	font-size: 1.25em;
+	padding: 10px;
+	-moz-border-radius:5px; -webkit-border-radius:5px; border-radius:5px; 
+	cursor:pointer;
+	text-shadow: 1px 1px 2px rgba(16, 16, 16, 0.97);
+	box-shadow: 0 2px 1px #848484;
+	font-weight: bold;
+}
+
+.form-step .submit a:hover input {
+	background-color: #a41744;
+}
+
+/***** SELECTION AND SCROLL STYLES *****/
+
+::selection,
+a::selection,
+img::selection {
+background: #fc0452;
+color: #ffffff;
+}
+
+::-moz-selection {
+background: #fc0452;
+color: #ffffff; 
+} 
+
+::-webkit-scrollbar-thumb:vertical { background-color: #fc0452; height:200px;}
+::-webkit-scrollbar-thumb:horizontal { background-color: #fc0452; height:10px !important;}
+::-webkit-scrollbar { height:10px; width:7px; background-color:#fcfeff; }
+
