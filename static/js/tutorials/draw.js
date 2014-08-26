@@ -26,8 +26,6 @@ function drawTutorials(tutorialData) {
         return "translate(" + point.x + ", " + point.y + ")";
       });
 
-  //fetch variable from html
-  var tutorialDefaultIconPath = $("#javascript-helpers #tutorialDefaultIconPath").attr("src"); 
 
   tutorials.append("a")
     .attr("xlink:href", function(d) {return "/tutorials/" + d.id;})

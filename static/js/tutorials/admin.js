@@ -2,6 +2,10 @@ var bullseyes = null;
 var toolboxes = null;
 
 function drawTools(tutorialData, dependencyData) {
+  if (window.isLoggedIn) {
+     $("body").addClass("logged-in");
+  }
+
   $(".modeTray").append($("<button class='toolsButton'>").text("tool mode").on("click", function() {
     window.location.hash = "#tools";
     window.location.reload();
@@ -119,7 +123,7 @@ var tutorialMover = {
   reset: function() {
     var target = this.moveTarget;
     this.moveTarget = null;
-    this.feedback.attr("xlink:href", "/img/example.png");
+    this.feedback.attr("xlink:href", tutorialDefaultIconPath);
     return target;
   },
 
@@ -127,7 +131,7 @@ var tutorialMover = {
     this.tutorialData = tutorialData;
     this.feedback = grid.append("image")
       .attr("class", "feedback")
-      .attr("xlink:href", "/img/example.png")
+      .attr("xlink:href", tutorialDefaultIconPath)
       .attr("width", 60).attr("height", 60)
       .attr("x", -100)
       .attr("y", -100)
@@ -136,7 +140,7 @@ var tutorialMover = {
 
   start: function (d) {
     this.moveTarget = d
-    this.feedback.attr("xlink:href", this.moveTarget.iconPath || "/img/example.png");
+    this.feedback.attr("xlink:href", this.moveTarget.iconPath || tutorialDefaultIconPath);
   },
 
   finish: function(mouse) {

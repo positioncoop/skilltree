@@ -35,7 +35,7 @@ tutorialCreator = {
     this.tutorialData = tutorialData;
     this.feedback = grid.append("image")
       .attr("class", "feedback")
-      .attr("xlink:href", "/img/example.png")
+      .attr("xlink:href", tutorialDefaultIconPath)
       .attr("width", 60).attr("height", 60)
       .attr("x", -100)
       .attr("y", -100)

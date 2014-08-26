@@ -14,10 +14,17 @@ $(function() {
 
   function drawSkilltree() {
     if (tutorialData !== null && dependencyData !== null) {
+      initVariables();
       drawLines(dependencyData);
       drawTutorials(tutorialData);
       drawCreate(tutorialData);
       drawTools(tutorialData, dependencyData);
     }
   }
+
+  function initVariables() {
+    //fetch variable from html, set as global variable
+    window.tutorialDefaultIconPath = $("#javascript-helpers #tutorialDefaultIconPath").attr("src"); 
+  }
+
 });

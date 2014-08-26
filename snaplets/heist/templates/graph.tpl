@@ -11,20 +11,6 @@
     <apply-content/>
   </div>
 
-    <div class="modeTray">
-      <ifLoggedIn>
-        <div class="modeTray-inner-logged-in">
-          Hi, <loggedInUser><userLogin /></loggedInUser>
-          <a href="/auth/logout">Logout</a>
-        </div>
-      </ifLoggedIn>
-      <ifLoggedOut>
-        <div class="modeTray-inner-logged-out">
-          <a href="/auth/login">Login</a>
-        </div>
-      </ifLoggedOut>
-    </div>
-
   <div class='courses'></div>
 
   <div id="javascript-helpers" style="display:none;">
@@ -33,4 +19,18 @@
   </div>
 
  </div>
+
+
+
+  <div class="modeTray">
+    <ifLoggedIn>
+        Hi, <loggedInUser><userLogin /></loggedInUser>
+        <a href="/auth/logout">Logout</a>
+    </ifLoggedIn>
+    <ifLoggedOut>
+        <a href="/auth/login">Login</a>
+    </ifLoggedOut>
+  </div>
+
+
 </apply>

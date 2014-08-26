@@ -11,17 +11,23 @@ html, body {
 .container {
 	position: relative;
 	height: 100%;
-	/*padding-top: 100px;*/
-	/*margin-top: -110px;*/
+	font-family: Helvetica, Arial, sans-serif;
 }
 
-.modeTray-inner- {
+body.logged-in {
+	margin-top: 45px;	
+}
+
+.logged-in .modeTray {
 	/*display: none;*/
-	position: absolute;
+	padding: 10px;
+	position: fixed;
 	top: 0px;
 	width:100%;
-	background-color: beige;
-	height: 40px;
+	background-color: #fda5c1;
+	color
+	height: 25px;
+	box-shadow: 0 0 9px #5c5c5c;
 }
 
 .section-logo {
@@ -42,19 +48,22 @@ html, body {
 
 .section-tree {
 	margin-right: 410px;
-	font: 10px sans-serif;
 	height: 100%;
+	font-size: 0.6em;
 }
 
 
 .section-tutorial {
-	position: fixed;
+	position: absolute;
 	right: 0px;
 	top: 0px;
 	width: 400px;
 	
-	font-family: Helvetica, Arial, sans-serif;
 	font-size: 0.75em;
+}
+
+#javascript-helpers {
+	display: none !important;
 }
 
 @media only screen and (max-width:1000px){
