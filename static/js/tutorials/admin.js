@@ -34,17 +34,17 @@ function drawTool(toolboxes, tool) {
 function drawToolboxes(tutorials) {
   toolboxes = tutorials.append("g").attr("transform", function() {return "translate(-10, -2)";});
 
-  drawTool(toolboxes, {dx: 0, text: "", classes: "fa move-icon",})
+  drawTool(toolboxes, {dx: 15, text: "", classes: "fa move-icon",})
     .on("click", function(d){
       d3.event.stopPropagation();
       tutorialMover.start(d);
     });
 
-  drawTool(toolboxes, {dx: 30, text: "", classes: "fa fa-pencil",})
+/*  drawTool(toolboxes, {dx: 30, text: "", classes: "fa fa-pencil",})
     .on("click", function(d) {
       d3.event.stopPropagation();
       redirectTutorialEdit(d);
-    });
+    }); */
 
   bullseyes = drawTool(tutorials, {dx: -22, dy: 38, text:"", classes: "fa fa-bullseye",})
     .style("opacity", 0)
@@ -53,7 +53,7 @@ function drawToolboxes(tutorials) {
       tutorialDepender.finish(d);
     });
 
-  drawTool(toolboxes, {dx: 60, text:"", classes: "fa fa-long-arrow-right",})
+  drawTool(toolboxes, {dx: 45, text:"", classes: "fa fa-long-arrow-right",})
     .on("click", function (d) {
       d3.event.stopPropagation();
       tutorialDepender.start(d);

@@ -39,6 +39,11 @@ body.logged-in {
 }
 
 .courses {
+	position: fixed;
+	top: 100px;
+	border: 1px solid cyan;
+	height: 100px;
+	width: 300px;
 	/*display: none;*/
 }
 
