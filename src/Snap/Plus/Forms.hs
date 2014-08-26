@@ -1,17 +1,18 @@
-{-# LANGUAGE OverloadedStrings, TupleSections #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TupleSections     #-}
 
 module Snap.Plus.Forms where
 
-import Control.Monad
-import Control.Applicative
-import Text.Digestive
-import qualified Data.Text as T
-import Data.Char
-import Text.Digestive.Snap
-import Snap.Util.FileUploads
+import           Control.Applicative
+import           Control.Monad
+import           Data.Char
+import qualified Data.Text             as T
+import           Snap.Util.FileUploads
+import           Text.Digestive
+import           Text.Digestive.Snap
 
-import Application
-import Snap.Plus
+import           Application
+import           Snap.Plus
 
 requiredForm :: Text -> Form Text AppHandler (Maybe a) -> Form Text AppHandler a
 requiredForm msg = validate (maybe (Error msg) Success)

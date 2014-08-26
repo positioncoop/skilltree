@@ -1,16 +1,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Auth.Handlers where
 
-import qualified Data.Text.Encoding as T
-import Data.Text (Text)
-import Snap.Plus
-import Snap.Snaplet.Auth
-import Snap.Snaplet.Heist
-import Text.Digestive
-import Text.Digestive.Snap
-import Text.Digestive.Heist
-import Auth.Form
-import Application
+import           Application
+import           Auth.Form
+import           Data.Text            (Text)
+import qualified Data.Text.Encoding   as T
+import           Snap.Plus
+import           Snap.Snaplet.Auth
+import           Snap.Snaplet.Heist
+import           Text.Digestive
+import           Text.Digestive.Heist
+import           Text.Digestive.Snap
 
 routes :: [(Text, AppHandler ())]
 routes = [("logout", logoutH)

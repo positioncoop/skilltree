@@ -1,25 +1,29 @@
-{-# LANGUAGE OverloadedStrings, GADTs, FlexibleInstances,
-    TypeFamilies, NoMonomorphismRestriction, ScopedTypeVariables,
-    FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts          #-}
+{-# LANGUAGE FlexibleInstances         #-}
+{-# LANGUAGE GADTs                     #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE OverloadedStrings         #-}
+{-# LANGUAGE ScopedTypeVariables       #-}
+{-# LANGUAGE TypeFamilies              #-}
 
 module Dependency.Handlers where
 
-import Prelude hiding ((++))
-import Snap.Plus
-import Snap.Snaplet.Auth
-import Snap.Snaplet.Persistent
-import Snap.Extras.CoreUtils
-import Snap.Extras.JSON
-import Data.Aeson
-import Database.Persist
-import Text.Digestive.Snap (runForm)
+import           Data.Aeson
+import           Database.Persist
+import           Prelude                 hiding ((++))
+import           Snap.Extras.CoreUtils
+import           Snap.Extras.JSON
+import           Snap.Plus
+import           Snap.Snaplet.Auth
+import           Snap.Snaplet.Persistent
+import           Text.Digestive.Snap     (runForm)
 
-import Dependency.Form
-import Dependency.Types
-import Tutorial.Types
-import Dependency.Queries
+import           Dependency.Form
+import           Dependency.Queries
+import           Dependency.Types
+import           Tutorial.Types
 
-import Application
+import           Application
 
 authCheck :: AppHandler ()
 authCheck = redirect "/auth/login"

@@ -1,21 +1,25 @@
-{-# LANGUAGE OverloadedStrings, GADTs, FlexibleInstances,
-    TypeFamilies, NoMonomorphismRestriction, ScopedTypeVariables,
-    FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts          #-}
+{-# LANGUAGE FlexibleInstances         #-}
+{-# LANGUAGE GADTs                     #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE OverloadedStrings         #-}
+{-# LANGUAGE ScopedTypeVariables       #-}
+{-# LANGUAGE TypeFamilies              #-}
 
 module Step.Splices where
 
-import Prelude hiding ((++))
-import qualified Data.Text as T
-import Data.Text (Text)
-import Heist
-import Heist.Interpreted
-import Snap.Plus
+import           Data.Text               (Text)
+import qualified Data.Text               as T
+import           Heist
+import           Heist.Interpreted
+import           Prelude                 hiding ((++))
+import           Snap.Plus
 
-import Database.Persist.Types
+import           Database.Persist.Types
 import qualified Snap.Snaplet.Persistent as P
 
-import Step.Types
-import Application
+import           Application
+import           Step.Types
 
 entitySplice :: StepEntity -> Splices (Splice AppHandler)
 entitySplice entity@(Entity id (Step tutorialId content ordinal videoCode videoProvider)) = do

@@ -1,13 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Auth.Form where
 
-import Control.Applicative
-import Snap.Plus
-import Snap.Plus.Forms
-import Snap.Snaplet.Auth
-import qualified Data.Text.Encoding as T
-import Text.Digestive
-import Application
+import           Application
+import           Control.Applicative
+import qualified Data.Text.Encoding  as T
+import           Snap.Plus
+import           Snap.Plus.Forms
+import           Snap.Snaplet.Auth
+import           Text.Digestive
 
 loginForm :: Form Text AppHandler (Text, Text)
 loginForm = checkM "Unknown email or password" exists $

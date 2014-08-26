@@ -1,14 +1,21 @@
-{-# LANGUAGE QuasiQuotes, TypeFamilies, GeneralizedNewtypeDeriving, TemplateHaskell,
-             OverloadedStrings, GADTs, FlexibleContexts, FlexibleInstances, EmptyDataDecls,
-             MultiParamTypeClasses #-}
+{-# LANGUAGE EmptyDataDecls             #-}
+{-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE GADTs                      #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE QuasiQuotes                #-}
+{-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE TypeFamilies               #-}
 
 module Snap.Plus.Paths where
 
-import Database.Persist.Types
-import Database.Persist.Sql
-import Snap.Snaplet.Persistent (showKey)
-import Prelude hiding ((++))
-import Snap.Plus
+import           Database.Persist.Sql
+import           Database.Persist.Types
+import           Prelude                 hiding ((++))
+import           Snap.Plus
+import           Snap.Snaplet.Persistent (showKey)
 
 class KeyBackend (PersistEntityBackend record) record ~ k => Paths k record where
   indexPath :: k -> Text

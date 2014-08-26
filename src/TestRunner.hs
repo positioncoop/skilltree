@@ -2,16 +2,18 @@
 
 module TestRunner where
 
-import Control.Monad (void, unless)
-import qualified Data.Text as T
-import Control.Concurrent (threadDelay, forkIO)
-import Control.Concurrent.MVar (MVar, newEmptyMVar, tryPutMVar, takeMVar)
-import System.FSNotify (withManager)
-import System.FSNotify.Devel (treeExtExists)
-import System.Process (system, createProcess, shell, waitForProcess,
-                       CreateProcess(..), StdStream(CreatePipe))
-import System.Exit (ExitCode(..))
-import System.IO (hGetContents)
+import           Control.Concurrent      (forkIO, threadDelay)
+import           Control.Concurrent.MVar (MVar, newEmptyMVar, takeMVar,
+                                          tryPutMVar)
+import           Control.Monad           (unless, void)
+import qualified Data.Text               as T
+import           System.Exit             (ExitCode (..))
+import           System.FSNotify         (withManager)
+import           System.FSNotify.Devel   (treeExtExists)
+import           System.IO               (hGetContents)
+import           System.Process          (CreateProcess (..),
+                                          StdStream (CreatePipe), createProcess,
+                                          shell, system, waitForProcess)
 
 main :: IO ()
 main = do shouldRun <- newEmptyMVar :: IO (MVar ())

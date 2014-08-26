@@ -1,25 +1,29 @@
-{-# LANGUAGE OverloadedStrings, GADTs, FlexibleInstances,
-    TypeFamilies, NoMonomorphismRestriction, ScopedTypeVariables,
-    FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts          #-}
+{-# LANGUAGE FlexibleInstances         #-}
+{-# LANGUAGE GADTs                     #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE OverloadedStrings         #-}
+{-# LANGUAGE ScopedTypeVariables       #-}
+{-# LANGUAGE TypeFamilies              #-}
 
 module Step.Handlers where
 
-import Prelude hiding ((++))
-import Snap.Plus
-import Snap.Plus.Paths
-import Snap.Plus.Handlers
-import Snap.Snaplet.Heist
-import Snap.Snaplet.Persistent (runPersist)
-import Database.Persist
-import Text.Digestive.Snap (runForm)
-import Text.Digestive.Heist
+import           Database.Persist
+import           Prelude                 hiding ((++))
+import           Snap.Plus
+import           Snap.Plus.Handlers
+import           Snap.Plus.Paths
+import           Snap.Snaplet.Heist
+import           Snap.Snaplet.Persistent (runPersist)
+import           Text.Digestive.Heist
+import           Text.Digestive.Snap     (runForm)
 
-import Step.Form
-import Step.Types
-import Tutorial.Types
-import Snap.Plus.Forms
+import           Snap.Plus.Forms
+import           Step.Form
+import           Step.Types
+import           Tutorial.Types
 
-import Application
+import           Application
 
 nestedStepResource :: TutorialEntity -> Resource Step
 nestedStepResource t = Resource pass (authorize $ newH t) (const pass) (const pass) (const pass) [] []

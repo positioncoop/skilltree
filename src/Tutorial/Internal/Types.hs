@@ -1,17 +1,24 @@
-{-# LANGUAGE QuasiQuotes, TypeFamilies, GeneralizedNewtypeDeriving, TemplateHaskell,
-             OverloadedStrings, GADTs, FlexibleContexts, FlexibleInstances, EmptyDataDecls,
-             MultiParamTypeClasses #-}
+{-# LANGUAGE EmptyDataDecls             #-}
+{-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE GADTs                      #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE QuasiQuotes                #-}
+{-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE TypeFamilies               #-}
 
 module Tutorial.Internal.Types where
 
-import Prelude hiding ((++))
-import Snap.Plus
-import Snap.Plus.Paths
-import Database.Persist.Types
-import Database.Persist.TH
-import Data.Aeson.Types
-import Snap.Snaplet.Persistent (showKey)
-import Tutorial.Internal.Publish
+import           Data.Aeson.Types
+import           Database.Persist.TH
+import           Database.Persist.Types
+import           Prelude                   hiding ((++))
+import           Snap.Plus
+import           Snap.Plus.Paths
+import           Snap.Snaplet.Persistent   (showKey)
+import           Tutorial.Internal.Publish
 
 share [mkPersist sqlSettings] [persistLowerCase|
 Tutorial

@@ -1,13 +1,14 @@
 module FileStore where
 
-import Control.Monad
-import Control.Monad.Trans
-import Control.Applicative
-import Data.Text (Text)
-import qualified Data.Text as T
-import System.Directory (copyFile, doesFileExist, removeFile)
-import System.Random (randomRIO)
-import System.FilePath (takeExtension, addExtension, pathSeparator)
+import           Control.Applicative
+import           Control.Monad
+import           Control.Monad.Trans
+import           Data.Text           (Text)
+import qualified Data.Text           as T
+import           System.Directory    (copyFile, doesFileExist, removeFile)
+import           System.FilePath     (addExtension, pathSeparator,
+                                      takeExtension)
+import           System.Random       (randomRIO)
 
 data FileStore = Directory FilePath
 

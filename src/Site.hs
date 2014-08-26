@@ -1,40 +1,41 @@
-{-# LANGUAGE OverloadedStrings, GADTs, ScopedTypeVariables #-}
+{-# LANGUAGE GADTs               #-}
+{-# LANGUAGE OverloadedStrings   #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Site
   ( app, routes
   ) where
 
-import           Prelude hiding ((++))
 import           Control.Monad.State
+import qualified Data.Configurator                           as C
 import           Data.Monoid
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as T
-import           Snap.Plus
-import           Snap.Plus.Handlers
-import           Snap.Snaplet.Heist
-import           Snap.Snaplet.Session.Backends.CookieSession
-import           Snap.Snaplet.Auth
-import           Snap.Snaplet.Auth.Backends.PostgresqlSimple
-import           Snap.Snaplet.PostgresqlSimple
-import           Snap.Snaplet.Persistent
-import           Snap.Snaplet.RedisDB
-import           Snap.Util.FileServe
-import           Snap.Util.FileUploads
+import qualified Data.Text                                   as T
+import qualified Data.Text.Encoding                          as T
 import           Heist
-import qualified Heist.Interpreted as I
-import qualified Text.XmlHtml as X
+import qualified Heist.Interpreted                           as I
 import           Heist.Splices.BindStrict
 import           Heist.Splices.Ignore
-import qualified Data.Configurator as C
-import           System.Directory (createDirectoryIfMissing)
+import           Prelude                                     hiding ((++))
+import           Snap.Plus
+import           Snap.Plus.Handlers
+import           Snap.Snaplet.Auth
+import           Snap.Snaplet.Auth.Backends.PostgresqlSimple
+import           Snap.Snaplet.Heist
+import           Snap.Snaplet.Persistent
+import           Snap.Snaplet.PostgresqlSimple
+import           Snap.Snaplet.RedisDB
+import           Snap.Snaplet.Session.Backends.CookieSession
+import           Snap.Util.FileServe
+import           System.Directory                            (createDirectoryIfMissing)
+import qualified Text.XmlHtml                                as X
 
 import           Application
 import           FileStore
 
 import qualified Auth.Handlers
-import qualified Tutorial.Handlers
-import qualified Step.Handlers
 import qualified Dependency.Handlers
+import qualified Step.Handlers
+import qualified Tutorial.Handlers
 
 routes :: [(Text, AppHandler ())]
 routes = [ ("tutorials",    route Tutorial.Handlers.routes)

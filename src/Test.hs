@@ -1,12 +1,13 @@
-{-# LANGUAGE OverloadedStrings, GADTs #-}
+{-# LANGUAGE GADTs             #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Test where
 
-import qualified Snap.Plus as Snap
-import Snap.Test.BDD
+import qualified Snap.Plus     as Snap
+import           Snap.Test.BDD
 
-import Application
-import Site
+import           Application
+import           Site
 
 main :: IO ()
 main = runSnapTests (defaultConfig {reportGenerators = [consoleReport, linuxDesktopReport]})

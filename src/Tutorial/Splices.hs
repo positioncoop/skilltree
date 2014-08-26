@@ -1,24 +1,28 @@
-{-# LANGUAGE OverloadedStrings, GADTs, FlexibleInstances,
-    TypeFamilies, NoMonomorphismRestriction, ScopedTypeVariables,
-    FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts          #-}
+{-# LANGUAGE FlexibleInstances         #-}
+{-# LANGUAGE GADTs                     #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE OverloadedStrings         #-}
+{-# LANGUAGE ScopedTypeVariables       #-}
+{-# LANGUAGE TypeFamilies              #-}
 
 module Tutorial.Splices where
 
-import Control.Lens
-import Prelude hiding ((++))
-import Heist
-import Heist.Interpreted
-import Snap.Plus
-import Snap.Plus.Paths
-import Database.Persist.Types
+import           Control.Lens
+import qualified Data.Configurator       as C
+import           Database.Persist.Types
+import           Heist
+import           Heist.Interpreted
+import           Prelude                 hiding ((++))
+import           Snap.Plus
+import           Snap.Plus.Paths
 import qualified Snap.Snaplet.Persistent as P
 import qualified Step.Splices
-import qualified Data.Configurator as C
 
-import Tutorial.Types
-import Tutorial.Queries
+import           Tutorial.Queries
+import           Tutorial.Types
 
-import Application
+import           Application
 
 entitySplice :: TutorialEntity -> Splices (Splice AppHandler)
 entitySplice entity@(Entity key (Tutorial x' y' title' iconPath' publish')) = do

@@ -1,17 +1,21 @@
-{-# LANGUAGE OverloadedStrings, GADTs, FlexibleInstances,
-    TypeFamilies, NoMonomorphismRestriction, ScopedTypeVariables,
-    FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts          #-}
+{-# LANGUAGE FlexibleInstances         #-}
+{-# LANGUAGE GADTs                     #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE OverloadedStrings         #-}
+{-# LANGUAGE ScopedTypeVariables       #-}
+{-# LANGUAGE TypeFamilies              #-}
 
 module Dependency.Form where
 
-import Prelude hiding ((++))
-import Text.Digestive
-import Snap.Plus
-import Snap.Snaplet.Persistent
-import Database.Persist
+import           Database.Persist
+import           Prelude                 hiding ((++))
+import           Snap.Plus
+import           Snap.Snaplet.Persistent
+import           Text.Digestive
 
-import Dependency.Types
-import Application
+import           Application
+import           Dependency.Types
 
 newForm :: Form Text AppHandler Dependency
 newForm = checkM "Dependency invalid" validateDep $

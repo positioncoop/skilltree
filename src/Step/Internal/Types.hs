@@ -1,15 +1,22 @@
-{-# LANGUAGE QuasiQuotes, TypeFamilies, GeneralizedNewtypeDeriving, TemplateHaskell,
-             OverloadedStrings, GADTs, FlexibleContexts, FlexibleInstances, EmptyDataDecls #-}
+{-# LANGUAGE EmptyDataDecls             #-}
+{-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE GADTs                      #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE QuasiQuotes                #-}
+{-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE TypeFamilies               #-}
 
 module Step.Internal.Types where
 
-import Prelude hiding ((++))
-import Snap.Plus
-import Database.Persist.Types
-import Database.Persist.TH
-import Snap.Snaplet.Persistent (showKey)
-import Step.Internal.VideoType
-import Tutorial.Types
+import           Database.Persist.TH
+import           Database.Persist.Types
+import           Prelude                 hiding ((++))
+import           Snap.Plus
+import           Snap.Snaplet.Persistent (showKey)
+import           Step.Internal.VideoType
+import           Tutorial.Types
 
 share [mkPersist sqlSettings] [persistLowerCase|
 Step

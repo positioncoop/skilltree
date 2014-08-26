@@ -1,4 +1,6 @@
-{-# LANGUAGE OverloadedStrings, FlexibleInstances, TypeFamilies #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeFamilies      #-}
 
 module Snap.Plus ( module Snap
                  , module Control.Applicative
@@ -26,20 +28,21 @@ module Snap.Plus ( module Snap
                  , Format (..)
                  ) where
 
-import Prelude hiding ((++))
-import Snap hiding (redirect, route, get, addRoutes, getParam)
+import           Control.Applicative     ((<$>), (<*>))
+import           Control.Arrow           (first)
+import           Data.Maybe
+import           Data.Monoid             (Monoid, mappend)
+import           Data.Text               (Text, pack, toLower, unpack)
+import qualified Data.Text               as T
+import qualified Data.Text.Encoding      as T
+import qualified Database.Persist        as Persistent
+import           Prelude                 hiding ((++))
+import           Snap                    hiding (addRoutes, get, getParam,
+                                          redirect, route)
 import qualified Snap
 import qualified Snap.Core
-import Snap.Extras.CoreUtils hiding (getParam')
-import Control.Applicative ((<$>), (<*>))
-import Control.Arrow (first)
-import Data.Monoid (Monoid, mappend)
-import Data.Maybe
-import Data.Text (Text, pack, unpack, toLower)
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as T
+import           Snap.Extras.CoreUtils   hiding (getParam')
 import qualified Snap.Snaplet.Persistent as Persistent
-import qualified Database.Persist as Persistent
 
 (++) :: Monoid d => d -> d -> d
 (++) = mappend

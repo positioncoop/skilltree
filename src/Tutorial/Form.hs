@@ -1,26 +1,30 @@
-{-# LANGUAGE OverloadedStrings, GADTs, FlexibleInstances,
-    TypeFamilies, NoMonomorphismRestriction, ScopedTypeVariables,
-    FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts          #-}
+{-# LANGUAGE FlexibleInstances         #-}
+{-# LANGUAGE GADTs                     #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE OverloadedStrings         #-}
+{-# LANGUAGE ScopedTypeVariables       #-}
+{-# LANGUAGE TypeFamilies              #-}
 
 module Tutorial.Form where
 
-import Control.Lens
-import Prelude hiding ((++))
-import Text.Digestive
-import Snap.Plus
-import Snap.Plus.Forms
-import Snap.Snaplet.Persistent
-import Database.Persist
-import FileStore
+import           Control.Lens
+import           Database.Persist
+import           FileStore
+import           Prelude                      hiding ((++))
+import           Snap.Plus
+import           Snap.Plus.Forms
+import           Snap.Snaplet.Persistent
+import           Text.Digestive
 
-import qualified Data.Conduit as C
-import qualified Data.Conduit.Binary as CB
-import qualified System.IO as IO
 import qualified Control.Monad.Trans.Resource as R
-import Data.Conduit.ImageSize
+import qualified Data.Conduit                 as C
+import qualified Data.Conduit.Binary          as CB
+import           Data.Conduit.ImageSize
+import qualified System.IO                    as IO
 
-import Tutorial.Types
-import Application
+import           Application
+import           Tutorial.Types
 
 untitledTutorial :: Int -> Int -> Tutorial
 untitledTutorial a b = Tutorial a b "Untitled" Nothing Draft
@@ -46,7 +50,7 @@ moveForm (Entity key (Tutorial _ _ title iconPath publish)) = checkM "Tutorial o
 editForm :: Tutorial -> Form Text AppHandler Tutorial
 editForm (Tutorial x y title mIconPath publish) =
   Tutorial x y <$> "title" .: nonEmpty (text (Just title))
-               <*> "iconPath" .: moveFile mIconPath (enforceImageSize file) 
+               <*> "iconPath" .: moveFile mIconPath (enforceImageSize file)
                <*> "publish" .: choice [(Published, "Published"),
                                         (Draft, "Draft")] (Just publish)
 

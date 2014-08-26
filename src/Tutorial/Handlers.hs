@@ -1,30 +1,34 @@
-{-# LANGUAGE OverloadedStrings, GADTs, FlexibleInstances,
-    TypeFamilies, NoMonomorphismRestriction, ScopedTypeVariables,
-    FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts          #-}
+{-# LANGUAGE FlexibleInstances         #-}
+{-# LANGUAGE GADTs                     #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE OverloadedStrings         #-}
+{-# LANGUAGE ScopedTypeVariables       #-}
+{-# LANGUAGE TypeFamilies              #-}
 
 module Tutorial.Handlers where
 
-import Prelude hiding ((++))
-import Snap.Plus
-import Snap.Plus.Handlers
-import Snap.Plus.Forms
-import Snap.Snaplet.Heist
-import Snap.Snaplet.Auth
-import Snap.Snaplet.Persistent
-import Snap.Extras.JSON
-import Data.Aeson
-import Database.Persist
-import Text.Digestive.Snap (runForm)
-import Text.Digestive.Heist
-import Text.Digestive.View
+import           Data.Aeson
+import           Database.Persist
+import           Prelude                 hiding ((++))
+import           Snap.Extras.JSON
+import           Snap.Plus
+import           Snap.Plus.Forms
+import           Snap.Plus.Handlers
+import           Snap.Snaplet.Auth
+import           Snap.Snaplet.Heist
+import           Snap.Snaplet.Persistent
+import           Text.Digestive.Heist
+import           Text.Digestive.Snap     (runForm)
+import           Text.Digestive.View
 
-import Tutorial.Form
-import Tutorial.Types
-import Tutorial.Splices
 import qualified Step.Handlers
-import Tutorial.Queries
+import           Tutorial.Form
+import           Tutorial.Queries
+import           Tutorial.Splices
+import           Tutorial.Types
 
-import Application
+import           Application
 
 tutorialResource :: Resource Tutorial
 tutorialResource = Resource indexH (authorize newH) showH (authorize . editH) (authorize . deleteH)

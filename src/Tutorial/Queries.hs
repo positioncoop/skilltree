@@ -1,12 +1,12 @@
 module Tutorial.Queries where
 
+import           Database.Esqueleto
+import           Dependency.Types
 import qualified Snap.Snaplet.Persistent as P
-import Database.Esqueleto
-import Tutorial.Types
-import Dependency.Types
-import Step.Types
+import           Step.Types
+import           Tutorial.Types
 
-import Application
+import           Application
 
 lookupAllTutorials :: AppHandler [TutorialEntity]
 lookupAllTutorials = P.runPersist $ select $ from return

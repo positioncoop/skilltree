@@ -1,18 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
-import Prelude hiding ((++))
-import Snap.Plus
-import Test.Hspec.WebDriver
-import Snap.Snaplet.Test
-import qualified Data.Map as M
-import Snap.Test (get)
-import Snap.Snaplet.PostgresqlSimple
-import qualified Data.ByteString as B
-import qualified Data.ByteString.Lazy as LB
+import qualified Data.ByteString               as B
+import qualified Data.ByteString.Lazy          as LB
+import qualified Data.Map                      as M
+import           Prelude                       hiding ((++))
+import           Snap.Plus
+import           Snap.Snaplet.PostgresqlSimple
+import           Snap.Snaplet.Test
+import           Snap.Test                     (get)
+import           Test.Hspec.WebDriver
 
-import Site
-import Application
+import           Application
+import           Site
 
 runAppFn :: AppHandler a -> IO a
 runAppFn handler = do result <- evalHandler (Just "test") (get "/" M.empty) handler app

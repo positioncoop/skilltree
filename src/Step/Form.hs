@@ -1,19 +1,23 @@
-{-# LANGUAGE OverloadedStrings, GADTs, FlexibleInstances,
-    TypeFamilies, NoMonomorphismRestriction, ScopedTypeVariables,
-    FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts          #-}
+{-# LANGUAGE FlexibleInstances         #-}
+{-# LANGUAGE GADTs                     #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE OverloadedStrings         #-}
+{-# LANGUAGE ScopedTypeVariables       #-}
+{-# LANGUAGE TypeFamilies              #-}
 
 module Step.Form where
 
-import Prelude hiding ((++))
-import Text.Digestive hiding (choice, string)
-import Snap.Plus
-import Data.Attoparsec.ByteString.Char8 hiding (Result)
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as T
+import           Data.Attoparsec.ByteString.Char8 hiding (Result)
+import qualified Data.Text                        as T
+import qualified Data.Text.Encoding               as T
+import           Prelude                          hiding ((++))
+import           Snap.Plus
+import           Text.Digestive                   hiding (choice, string)
 
-import Tutorial.Types
-import Step.Types
-import Application
+import           Application
+import           Step.Types
+import           Tutorial.Types
 
 mkStep :: TutorialId -> Text -> Int -> Maybe (Text, VideoProvider) -> Step
 mkStep t c o v = Step t c o (fst <$> v) (snd <$> v)

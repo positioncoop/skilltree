@@ -1,12 +1,12 @@
 module Dependency.Queries where
 
-import Snap.Plus
+import           Database.Esqueleto
+import           Dependency.Types
+import           Snap.Plus
 import qualified Snap.Snaplet.Persistent as P
-import Database.Esqueleto
-import Tutorial.Types
-import Dependency.Types
+import           Tutorial.Types
 
-import Application
+import           Application
 
 reorder :: (TutorialEntity, DependencyEntity, TutorialEntity) -> (TutorialEntity, DependencyEntity, TutorialEntity)
 reorder (target, dep, source) =
