@@ -12,6 +12,7 @@ html, body {
 
 body {
 	font-family: Helvetica, Arial, sans-serif;
+	color: #333;
 }
 
 input, textarea {
@@ -48,7 +49,7 @@ body.logged-in {
 
 
 .section-tree {
-	margin-right: 410px;
+	margin-right: 400px;
 	height: 100%;
 	font-size: 0.6em;
 }
@@ -67,16 +68,16 @@ body.logged-in {
 	display: none !important;
 }
 
-@media only screen and (max-width:1000px){
-
+@media only screen and (max-width:1200px){
+/*
 	.section-tutorial {
 		position: absolute;
 		right: 0px;
 		top: 0px;
-	}
+	}*/
 	
 	.container {
-		width: 1000px !important;
+		width: 1200px !important;
 	}
 }
 
@@ -173,7 +174,7 @@ a:hover {
 .section-tutorial .header-inner {
 	display: table;
 	margin-bottom: 20px;
-	
+	width: 100%;
 }
 
 .section-tutorial .header-inner > div {
@@ -188,7 +189,7 @@ a:hover {
 .section-tutorial .header-inner textarea {
 	font-size: 1em !important;
 	width: 100%;
-	height: ;
+
 }
 .section-tutorial .header-inner .title {
 	text-transform: uppercase;
@@ -196,6 +197,66 @@ a:hover {
 	letter-spacing: 0.1em;
 	font-size: 2em;
 }
+
+.section-tutorial .header-edit .label {
+	float: left;
+	width: 100px;
+	padding-top: 5px;
+	font-weight: bold;
+}
+
+.section-tutorial .header-edit .submit {
+	margin: 20px 0px;
+}
+
+.draft-warning {
+	display: none;
+}
+
+.section-tutorial .Draft .draft-warning {
+	-webkit-appearance:none;
+	-moz-appearance:none;
+	appearance:none;
+	display: block !important;
+	font-weight: bold;
+	font-size: 3em; 
+	height:100%;
+	margin-bottom: -20px;
+	color: #bfb029;
+}
+
+.section-tutorial-inner.Draft {
+	background: url(
+	data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAAKElEQVQIW2NkwAL+AwEjujhYEASQJWCCIDG4BLIgXAJdECyBTRAkAQAIvhgD4hkqMQAAAABJRU5ErkJggg==
+	   ) repeat #f4e69c;
+}
+
+.section-tutorial .icon-edit-link .label {
+	/*text-decoration: none;*/
+	background-color: #fc0452;
+	color: white;
+	padding: 3px 6px;
+	margin-top: -5px !important;
+	text-align: center;
+	width: 50%;
+	margin: auto;
+	cursor: pointer;
+}
+
+.section-tutorial .icon-edit-forms {
+	display: none;
+	position: absolute;
+	float: left;
+	border: 1px solid red;
+	padding: 3px 6px;
+	margin: 0px 8px;
+	background-color: white;
+}
+
+.section-tutorial .clicked .icon-edit-forms {
+	display: block !important;
+}
+
 
 .edit-links {
 	text-align:right;
@@ -216,6 +277,11 @@ a:hover {
 }
 
 
+.edit-links .delete {
+	background-color: #333;	
+	color: red;
+}
+
 
 /***** TUTORIAL STEP STYLES *****/
 
@@ -231,9 +297,14 @@ a:hover {
 	 margin-bottom: 20px;
 }
 
-.tutorial-step-inner {
+.edit .tutorial-step-inner {
   padding: 10px;
   border: 1px solid #fc0452;
+}
+
+.show .tutorial-step-inner {
+  padding: 10px;
+  border-top: 1px dotted #fc0452;
 }
 
 .tutorial-step .step-description {
@@ -246,9 +317,13 @@ a:hover {
 }
 
 
-.empty-step {
-	height: 20px;
+.edit .empty-step {
+	height: 40px;
   	border: 1px solid #fc0452;
+}
+.show .empty-step {
+	height: 40px;
+  	border: 1px dotted #fc0452;
 }
 
 
@@ -306,16 +381,20 @@ data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAAKElEQVQIW2
 	padding: 20px 5px 5px;
 }
 
-.form-step .submit a {
+.submit a {
 	text-decoration: none;
 }
-.form-step .submit a input {
+
+.submit a input {
     /*-webkit-appearance: button;*/
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    appearance:none;
+    
     border:none;
 	display: block;
 	margin: auto;
 	width: 100%;
-	/*height: 30px !important;*/
 	background-color: #d41c56;
 	color: white;
 	font-size: 1.25em;
@@ -327,8 +406,36 @@ data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAAKElEQVQIW2
 	font-weight: bold;
 }
 
-.form-step .submit a:hover input {
+.submit a:hover input {
 	background-color: #a41744;
+}
+
+
+.delete-button a.delete {
+    /*-webkit-appearance: button;*/
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    appearance:none;
+    text-align: center;
+    border:none;
+	display: block;
+	margin: auto;
+	width: 100%;
+	text-decoration: none;
+	background-color: #1b1b1b;
+	color: #fc0452;
+	font-size: 1em;
+	padding: 5px;
+	-moz-border-radius:5px; -webkit-border-radius:5px; border-radius:5px; 
+	cursor:pointer;
+	text-shadow: 1px 1px 2px rgba(16, 16, 16, 0.97);
+	box-shadow: 0 2px 1px #848484;
+	font-weight: bold;
+}
+
+.delete-button a:hover.delete {
+	background-color: black;
+	color: white;
 }
 
 /***** SELECTION AND SCROLL STYLES *****/

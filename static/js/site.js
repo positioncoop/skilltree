@@ -27,7 +27,12 @@ $(function() {
     window.tutorialDefaultIconPath = $("#javascript-helpers #tutorialDefaultIconPath").attr("src"); 
   }
 
-  $("textarea.tutorial-title").flexible();
+
+$(".icon-edit-link .label").click(function() {
+  $(".icon-edit-link").toggleClass("clicked");
+});
+
+//  $("textarea.tutorial-title").flexible();
 
 
 });

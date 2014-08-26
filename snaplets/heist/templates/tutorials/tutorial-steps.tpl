@@ -3,8 +3,8 @@
     <div class="tutorial-step">
       <ifLoggedIn>
         <div class="edit-links">
-          <a href="${stepEditPath}">Edit</a>
-          <a onclick="return confirm('Are you sure you want to delete this?')" href="${stepDeletePath}">Delete</a>
+          <a href="${stepEditPath}">Edit Video</a>
+          <a class="delete" onclick="return confirm('Are you sure you want to delete this step? This action cannot be undone.')" href="${stepDeletePath}">Delete Video</a>
         </div>
       </ifLoggedIn>
       <div class="tutorial-step-inner">

@@ -23,6 +23,11 @@
       <div class="submit">
         <a href="#"><dfInputSubmit value="Save" class="btn btn-lg btn-primary btn-block" /></a>
       </div>
+
+      <div class="delete-button">
+        <a class="delete" onclick="return confirm('Are you sure you want to delete this step? This action cannot be undone.')" href="${stepDeletePath}">Delete Video</a>
+      </div>
+
     </div>
   </dfForm>
 </apply>
