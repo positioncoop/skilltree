@@ -16,7 +16,7 @@
         <div class="step-video">
           <stepVideo>
           <div class="lazy-load">
-            <div class="lazy-load-thumbnail" data-video-url="${url}" data-video-code="${stepVideoCode}" ></div>
+            <img class="lazy-load-thumbnail" data-video-url="${url}" data-video-code="${stepVideoCode}" />
   <!--          <img src="http://img.youtube.com/vi/${stepVideoCode}/0.jpg" />
            <img src="${stepVideoCode}" name="${url}" /> -->
             <div class="lazy-load-button"></div>

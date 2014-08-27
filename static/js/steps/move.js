@@ -31,12 +31,19 @@ function setupSteps() {
     }
   });
 
-/*  if($(".lazy-load-thumbnail").attr("name").indexOf("youtube") == -1) { //vimeo
-    $.getJSON("http://vimeo.com/api/oembed.json?url=http%3A//vimeo.com/76979871", function(data) {
-      console.log("got data.");
-      console.log(data);
-    });
-    } */
+  $(".lazy-load-thumbnail").each(function() {
+      var thisthumb = $(this);
+      if(thisthumb.data("video-url").indexOf("youtube") == -1) { //vimeo
+      $.getJSON("http://vimeo.com/api/oembed.json?url=http%3A//vimeo.com/" 
+          + thisthumb.data("video-code"), function(data) {
+       thisthumb.attr("src", data.thumbnail_url);
+      });
+    } else {
+      // hopefully youtube
+      thisthumb.attr("src", "http://img.youtube.com/vi/" + thisthumb.data("video-code") + "/0.jpg");
+    }
+
+  });
 
 
   $(".lazy-load").click(function() {
