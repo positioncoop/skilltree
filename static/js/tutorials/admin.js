@@ -16,7 +16,7 @@ function drawTools(tutorialData, dependencyData) {
     var grid = d3.select("svg.tree");
     drawToolboxes(grid.selectAll("g.tutorial"));
     addEditHandlers(grid);
-    tutorialMover.init(grid, tutorialData);
+    tutorialMover.init(grid, tutorialData, dependencyData);
     tutorialDepender.init(dependencyData);
   }
 }
@@ -39,12 +39,6 @@ function drawToolboxes(tutorials) {
       d3.event.stopPropagation();
       tutorialMover.start(d);
     });
-
-/*  drawTool(toolboxes, {dx: 30, text: "", classes: "fa fa-pencil",})
-    .on("click", function(d) {
-      d3.event.stopPropagation();
-      redirectTutorialEdit(d);
-    }); */
 
   bullseyes = drawTool(tutorials, {dx: -22, dy: 38, text:"", classes: "fa fa-bullseye",})
     .style("opacity", 0)
@@ -98,12 +92,12 @@ var tutorialDepender = {
     if (this.dependencySource !== null) {
       var dependencySource = this.dependencySource;
       var existing = this.dependencyData.filter(function (dep) {
-	return (dep.source.id === d.id && dep.target.id === dependencySource.id)
+        return (dep.source.id === d.id && dep.target.id === dependencySource.id)
           || (dep.target.id === d.id && dep.source.id === dependencySource.id);
       });
 
       function afterPost() {
-	redirectTutorialEdit(tutorialDepender.reset());
+        redirectTutorialEdit(tutorialDepender.reset());
       }
 
       if (existing.length !== 0) {
@@ -118,29 +112,20 @@ var tutorialDepender = {
 
 var tutorialMover = {
   moveTarget: null,
-  feedback: null,
 
   reset: function() {
     var target = this.moveTarget;
     this.moveTarget = null;
-    this.feedback.attr("xlink:href", tutorialDefaultIconPath);
     return target;
   },
 
-  init: function(grid, tutorialData) {
+  init: function(grid, tutorialData, dependencyData) {
     this.tutorialData = tutorialData;
-    this.feedback = grid.append("image")
-      .attr("class", "feedback")
-      .attr("xlink:href", tutorialDefaultIconPath)
-      .attr("width", 60).attr("height", 60)
-      .attr("x", -100)
-      .attr("y", -100)
-      .attr("opacity", 0);
+    this.dependencyData = dependencyData;
   },
 
   start: function (d) {
-    this.moveTarget = d
-    this.feedback.attr("xlink:href", this.moveTarget.iconPath || tutorialDefaultIconPath);
+    this.moveTarget = d;
   },
 
   finish: function(mouse) {
@@ -156,17 +141,28 @@ var tutorialMover = {
   hover: function(mouse) {
     if(this.moveTarget !== null) {
       var mousePos = from_mouse(mouse);
-      var overlaps = this.tutorialData.filter(function(t) {
-        return (t.x == mousePos.x) && (t.y == mousePos.y);
-      });
-
-      if (overlaps.length !== 0) {
-        this.feedback.attr("opacity", 0);
-      } else {
-        this.feedback.attr("opacity", 0.2);
-
-        var p = to_display(mousePos);
-        this.feedback.attr("x", p.x) .attr("y", p.y);
+      if(!(this.moveTarget.x === mousePos.x && this.moveTarget.y === mousePos.y)) {
+        var id = this.moveTarget.id;
+        $.each(this.dependencyData, function(i, dep) {
+          if(dep.source.id === id) {
+            dep.source.x = mousePos.x;
+            dep.source.y = mousePos.y;
+          }
+          if(dep.target.id === id) {
+            dep.target.x = mousePos.x;
+            dep.target.y = mousePos.y;
+          }
+        });
+        $.each(this.tutorialData, function(i, tut) {
+          if(tut.id === id) {
+            tut.x = mousePos.x;
+            tut.y = mousePos.y;
+          }
+        });
+        this.moveTarget.x = mousePos.x;
+        this.moveTarget.y = mousePos.y;
+        drawLines(this.dependencyData);
+        drawTutorials(this.tutorialData);
       }
     }
   },

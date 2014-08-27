@@ -14,18 +14,13 @@ function from_mouse(mouse) {
 }
 
 function drawTutorials(tutorialData) {
-  var enter = d3.select("svg.tree").selectAll("g.tutorial").data(tutorialData).enter();
-  var tutorials = enter.append("g")
+  var selection = d3.select("svg.tree").selectAll("g.tutorial").data(tutorialData);
+  var tutorials = selection.enter().append("g")
       .attr("data-tutorial-id", function(d) { return d.id; })
       .attr("data-json", function(d) {return JSON.stringify(d);})
       .attr("class", function(d) {
         return "tutorial " + d.publish;
-      })
-      .attr("transform", function(d) {
-        var point = to_display(d);
-        return "translate(" + point.x + ", " + point.y + ")";
       });
-
 
   tutorials.append("a")
     .attr("xlink:href", function(d) {return "/tutorials/" + d.id;})
@@ -37,15 +32,37 @@ function drawTutorials(tutorialData) {
     .attr("dx", 5)
     .attr("dy", 72)
     .text(function(d) { return d.title });
+
+  selection.attr("transform", function(d) {
+    var point = to_display(d);
+    return "translate(" + point.x + ", " + point.y + ")";
+  });
+
   return tutorials;
 }
 
+function bezPath(d) {
+  x1 = to_display(d.source).x;
+  y1 = to_display(d.source).y + 30;
+  x2 = to_display(d.target).x + 60;
+  y2 = to_display(d.target).y + 30;
+  return "M"
+    + x1 + "," + y1
+    + " C"
+    + ((x2 + x1) / 2 - (Math.sqrt(y1 + y2) / 2)) + "," + y1
+    + " "
+    + ((x2 + x1) / 2 + (Math.sqrt(y1 + y2) / 2)) + "," + y2
+    + " "
+    + x2 + "," + y2;
+}
+
 function drawLines(dependencyData) {
-  d3.select("svg.tree").selectAll("line.dependency").data(dependencyData).enter()
-    .append("line")
-    .attr("x1", function(d) {return to_display(d.source).x;})
-    .attr("y1", function(d) {return to_display(d.source).y + 30;})
-    .attr("x2", function(d) {return to_display(d.target).x + 60;})
-    .attr("y2", function(d) {return to_display(d.target).y + 30;})
-    .attr("style", "stroke:#A2A1A1;stroke-width:2;stroke-dasharray:3;");
+  var selection = d3.select("svg.tree").selectAll("path.dependency").data(dependencyData, function(d) {return d.id;})
+
+    selection.enter()
+    .append("path")
+    .attr("class", function(d) {return "dependency source-of-" + d.source.id + " target-of-" + d.target.id;})
+    .attr("style", "stroke:#333;stroke-width:1;stroke-dasharray:3;fill:none;");
+
+    selection.attr("d", bezPath)
 }
