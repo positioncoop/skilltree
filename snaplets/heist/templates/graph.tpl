@@ -30,6 +30,8 @@
     <ifLoggedOut>
         <a href="/auth/login">Login</a>
     </ifLoggedOut>
+    <div id="saving-status"></div>
+
   </div>
 
 
