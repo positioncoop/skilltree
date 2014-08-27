@@ -41,7 +41,7 @@ ifeq ($(VAGRANT),1)
 	$(call VAGRANT_CMD, $(EXECUTABLE) -p 8001 -e test &> log/test.log) &
 	@sleep 1
 	$(call VAGRANT_CMD, $(RUN) $(TESTMAIN))
-	$(call VAGRANT_CMD, killall $(EXECUTABLE))
+	$(call VAGRANT_CMD, pkill -f "$(EXECUTABLE) -p 8001")
 	killall java
 # not sure how to kill the tunnel...
 # kill `ps aux | grep "ssh vagrant" | grep -v grep | awk '{print $2}'`
@@ -50,7 +50,7 @@ else
 	$(EXECUTABLE) -p 8001 -e test &> log/test.log &
 	@sleep 1
 	$(RUN) $(TESTMAIN)
-	killall .cabal-sandbox/bin/skilltree
+	pkill -f "$(EXECUTABLE) -p 8001")
 	killall java
 endif
 
