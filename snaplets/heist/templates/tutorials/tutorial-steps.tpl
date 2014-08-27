@@ -16,8 +16,9 @@
         <div class="step-video">
           <stepVideo>
           <div class="lazy-load">
-            <img src="http://img.youtube.com/vi/${stepVideoCode}/0.jpg" />
-   <!--         <img src="${stepVideoCode}" name="${url}" /> -->
+            <div class="lazy-load-thumbnail" data-video-url="${url}" data-video-code="${stepVideoCode}" ></div>
+  <!--          <img src="http://img.youtube.com/vi/${stepVideoCode}/0.jpg" />
+           <img src="${stepVideoCode}" name="${url}" /> -->
             <div class="lazy-load-button"></div>
           </div>
           <iframe class="pre-load" src="" name="${url}" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>

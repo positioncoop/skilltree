@@ -31,8 +31,11 @@ function setupSteps() {
     }
   });
 
-  /*if($(".lazy-load img").attr("name").indexOf("youtube") == -1) { //vimeo
-    $.getJSON("http://vimeo.com/api/oembed.json?url=http%3A//vimeo.com/76979871
+/*  if($(".lazy-load-thumbnail").attr("name").indexOf("youtube") == -1) { //vimeo
+    $.getJSON("http://vimeo.com/api/oembed.json?url=http%3A//vimeo.com/76979871", function(data) {
+      console.log("got data.");
+      console.log(data);
+    });
     } */
 
 

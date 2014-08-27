@@ -61,8 +61,13 @@ function drawLines(dependencyData) {
 
     selection.enter()
     .append("path")
-    .attr("class", function(d) {return "dependency source-of-" + d.source.id + " target-of-" + d.target.id;})
-    .attr("style", "stroke:#333;stroke-width:1;stroke-dasharray:3;fill:none;");
+    .attr("class", function(d) {
+      var classes  = "dependency source-of-" + d.source.id + " target-of-" + d.target.id;
+      if(d.source.publish === "Draft" || d.target.publish === "Draft") {
+        classes += " draft";
+      }
+      return classes;
+    });
 
     selection.attr("d", bezPath)
 }
