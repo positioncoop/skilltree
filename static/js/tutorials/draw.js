@@ -19,7 +19,7 @@ function drawTutorials(tutorialData) {
       .attr("data-tutorial-id", function(d) { return d.id; })
       .attr("data-json", function(d) {return JSON.stringify(d);})
       .attr("class", function(d) {
-        return "tutorial " + d.publish;
+        return "tutorial tutorial-" + d.id + " "  + d.publish;
       });
 
   tutorials.append("a")

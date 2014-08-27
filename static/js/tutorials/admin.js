@@ -126,15 +126,35 @@ var tutorialMover = {
 
   start: function (d) {
     this.moveTarget = d;
+    $(".tutorial-" + this.moveTarget.id).attr('class', function(index, classNames) {
+      //addClass doesn't work on SVG elements
+      return classNames + ' hover';
+    });
   },
 
   finish: function(mouse) {
     if (this.moveTarget !== null) {
+      console.log("finish tutorialMover");
       var p = from_mouse(mouse);
-      $.post("/tutorials/" + this.moveTarget.id + "/move", {"move.x": p.x , "move.y": p.y},
-             function() {
-               redirectTutorialEdit(tutorialMover.reset());
-             });
+      console.log("saving..");
+      $.post("/tutorials/" + this.moveTarget.id + "/move", {"move.x": p.x , "move.y": p.y})
+         .done(function() {
+           console.log("saving success");
+         })
+         .fail(function() {
+           alert("saving error");
+         })
+         .always(function() {
+           console.log("now you can close the page");
+         });
+
+      $(".tutorial-" + this.moveTarget.id).attr('class', function(index, classNames) {
+        //removeClass doesn't work on SVG elements
+        return classNames.replace('hover', '');
+      }); 
+        
+      this.moveTarget = null;
+
     }
   },
 

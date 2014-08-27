@@ -371,6 +371,10 @@ iframe.pre-load {
 
 /***** BACKEND/EDITING *****/
 
+g.tutorial.hover a {
+	pointer-events: none;
+}
+
 .form-step {
 	/*border: 1px solid blue;*/
 	margin-right: 10px;
