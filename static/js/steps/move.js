@@ -32,10 +32,10 @@ function setupSteps() {
   });
 
   $(".lazy-load-thumbnail").each(function() {
-      var thisthumb = $(this);
-      if(thisthumb.data("video-url").indexOf("youtube") == -1) { //vimeo
+    var thisthumb = $(this);
+    if(thisthumb.data("video-url").indexOf("youtube") == -1) { //vimeo
       $.getJSON("http://vimeo.com/api/oembed.json?url=http%3A//vimeo.com/" 
-          + thisthumb.data("video-code"), function(data) {
+        + thisthumb.data("video-code"), function(data) {
        thisthumb.attr("src", data.thumbnail_url);
       });
     } else {
