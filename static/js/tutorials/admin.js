@@ -60,7 +60,7 @@ function addEditHandlers(grid) {
   grid
     .on("click", function() {
       d3.event.stopPropagation();
-      tutorialMover.finish(d3.mouse(this));
+//      tutorialMover.finish(d3.mouse(this));
       tutorialDepender.reset();
     })
     .on("mousemove", function() {

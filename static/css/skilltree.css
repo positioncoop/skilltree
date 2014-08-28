@@ -147,12 +147,14 @@ a:hover {
 /**** MODE TRAY ****/
 
 .modeTray {
-	/*display: none;*/
-	font-size: 0.8em;
-	padding: 10px;
 	position: fixed;
 	top: 0px;
 	width:100%;
+}
+.modeTray-inner {
+	/*display: none;*/
+	font-size: 0.8em;
+	padding: 10px;
 	background-color: rgba(51, 51, 51, 0.84);
 	color: white;
 	height: 25px;
@@ -162,10 +164,15 @@ a:hover {
 .modeTray .login-form {
 	position:absolute;
 	top:  40px;
+	right: 20px;
 	background-color: inherit;
 	padding: 10px;
 	display: none;
 	
+}
+
+.loginout-link {
+	float: right;
 }
 
 .login-form div {
@@ -439,6 +446,11 @@ iframe.pre-load {
 /***** BACKEND/EDITING *****/
 
 g.tutorial.hover a {
+	pointer-events: none;
+}
+
+.tutorial.dragging {
+	stroke: blue;
 	pointer-events: none;
 }
 

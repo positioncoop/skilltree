@@ -38,6 +38,15 @@ function drawTutorials(tutorialData) {
     return "translate(" + point.x + ", " + point.y + ")";
   });
 
+  tutorials
+    .on("mousedown", function(d) {
+      tutorialMover.start(d);
+  });
+
+  d3.select("svg.tree").on("mouseup", function() {
+    tutorialMover.finish(d3.mouse(this));
+  });
+
   return tutorials;
 }
 
