@@ -156,10 +156,62 @@ a:hover {
 	background-color: rgba(51, 51, 51, 0.84);
 	color: white;
 	height: 25px;
-	box-shadow: 0 0 9px #5c5c5c;
-	
+	box-shadow: 0 0 9px #5c5c5c;	
+}
+
+.modeTray .login-form {
+	position:absolute;
+	top:  40px;
+	background-color: inherit;
+	padding: 10px;
+	display: none;
 	
 }
+
+.login-form div {
+	display: inline-block;
+}
+.login-form form .email, .login-form .password, .login-form .label {
+	/*float: left;*/
+}
+
+.login-form .label {
+	vertical-align: middle;
+	margin-right: 2px;
+	margin-left: 5px;
+	text-transform: uppercase;
+	font-weight: bold;
+	font-size: 0.9em;
+	   margin-bottom: 0.1em;
+	
+}
+
+.login-form .submit {
+	display: inline-block;
+	vertical-align:middle;
+}
+.login-form .submit input {
+	float: right;
+    /*-webkit-appearance: button;*/
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    appearance:none;
+    /*vertical-align: middle;*/
+    margin-bottom: 5px;
+    border:none;
+	display: block;
+	/*margin: auto;*/
+	background-color: #d41c56;
+	color: white;
+	font-size: 0.8em;
+	padding: 3px 15px;
+	-moz-border-radius:5px; -webkit-border-radius:5px; border-radius:5px; 
+	cursor:pointer;
+	text-shadow: 1px 1px 2px rgba(16, 16, 16, 0.97);
+	box-shadow: 0 1px 1px #848484;
+	font-weight: bold;
+}
+
 .modeTray button {
   background-color: lightblue;
 }

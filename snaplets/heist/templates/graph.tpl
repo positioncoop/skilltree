@@ -23,16 +23,39 @@
 
 
   <div class="modeTray">
-    <ifLoggedIn>
-        Hi, <loggedInUser><userLogin /></loggedInUser>
-        <a href="/auth/logout">Logout</a>
-    </ifLoggedIn>
     <ifLoggedOut>
-        <a href="/auth/login">Login</a>
+      <div class="login-form">
+        <form method='post' enctype='application/x-www-form-urlencoded' action="/auth/login">
+          <div class="email">
+            <div class="label">Email</div>
+            <input id='login.email.address' name='login.email.address' value />
+          </div>
+          <div class="password">
+            <div class="label">Password</div>
+            <input type='password' id='login.password' name='login.password' value />
+          </div>
+          <div class="submit">
+            <input type='submit' />
+          </div>
+        </form>
+      </div>
     </ifLoggedOut>
-    <div id="saving-status"></div>
 
-  </div>
+    <div class="motd">
+      <ifLoggedIn>
+        Hi, <loggedInUser><userLogin /></loggedInUser>
+      </ifLoggedIn>
+    </div>
+    <div class="loginout-link">
+      <ifLoggedIn>
+          <a id="logout-link" href="/auth/logout">Logout</a>
+      </ifLoggedIn>
+      <ifLoggedOut>
+          <a id="login-link" href="#">Login</a>
+      </ifLoggedOut>
+    <div id="saving-status"></div>
+    </div>
+      </div>
 
 
 </apply>
