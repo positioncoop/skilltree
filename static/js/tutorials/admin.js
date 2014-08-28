@@ -128,7 +128,7 @@ var tutorialMover = {
     this.moveTarget = d;
     $(".tutorial-" + this.moveTarget.id).attr('class', function(index, classNames) {
       //addClass doesn't work on SVG elements
-      return classNames + ' hover';
+      return classNames + ' dragging';
     });
   },
 
@@ -151,7 +151,7 @@ var tutorialMover = {
 
       $(".tutorial-" + this.moveTarget.id).attr('class', function(index, classNames) {
         //removeClass doesn't work on SVG elements
-        return classNames.replace('hover', '');
+        return classNames.replace('dragging', '');
       }); 
         
       this.moveTarget = null;

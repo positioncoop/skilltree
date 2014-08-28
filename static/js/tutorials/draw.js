@@ -38,13 +38,14 @@ function drawTutorials(tutorialData) {
     return "translate(" + point.x + ", " + point.y + ")";
   });
 
-  tutorials
-    .on("mousedown", function(d) {
-      tutorialMover.start(d);
+  tutorials.on("mousedown", function(d) {
+    tutorialMover.start(d);
+    $(".section-tree").addClass("dragging");
   });
 
   d3.select("svg.tree").on("mouseup", function() {
     tutorialMover.finish(d3.mouse(this));
+    $(".section-tree").removeClass("dragging");
   });
 
   return tutorials;

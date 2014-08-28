@@ -445,14 +445,21 @@ iframe.pre-load {
 
 /***** BACKEND/EDITING *****/
 
-g.tutorial.hover a {
+g.tutorial.dragging a {
 	pointer-events: none;
+opacity: 0.5;
 }
 
-.tutorial.dragging {
-	stroke: blue;
-	pointer-events: none;
+.section-tree.dragging {
+	cursor: move;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
+
 
 .form-step {
 	/*border: 1px solid blue;*/
