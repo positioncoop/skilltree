@@ -136,14 +136,14 @@ var tutorialMover = {
     if (this.moveTarget !== null) {
       console.log("finish tutorialMover");
       var p = from_mouse(mouse);
-          $("#saving-status").html("Saving...");
       $.post("/tutorials/" + this.moveTarget.id + "/move", {"move.x": p.x , "move.y": p.y})
          .done(function() {
-           $("#saving-status").html("Saving success!");
+           var date = new Date();
+           $("#saving-status .timeago").html("Last save at " + date.toLocaleString());
          })
          .fail(function() {
            $("#saving-status").html("Error saving - refresh page.");
-           $("body").addClass("error-saving");
+           $("body").addClass("error error-saving");
          })
          .always(function() {
            console.log("now you can close the page");

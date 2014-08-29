@@ -1,4 +1,8 @@
 <apply template="base">
+ <div class="error-overlay">
+  <div class="error-message">
+  </div>
+ </div>
  <div class="container">
   <div class="section-logo">
     <img class="logo" src="${siteLogoPath}" />
@@ -54,8 +58,8 @@
         <ifLoggedOut>
             <a id="login-link" href="#">Login</a>
         </ifLoggedOut>
-      <div id="saving-status"></div>
-    </div>
+      </div>
+      <div id="saving-status"><div class="timeago"></div></div>
    </div>
 
 </div>
