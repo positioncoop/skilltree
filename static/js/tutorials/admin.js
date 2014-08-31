@@ -29,14 +29,8 @@ function drawTool(toolboxes, tool) {
 function drawToolboxes(tutorialData) {
   var alltutorials = d3.select("svg.tree").selectAll("g.tutorial").data(tutorialData);
   var newtutorials = alltutorials.append("g");
-  console.log("alltutorials");
-  console.log(alltutorials);
-  console.log("newtutorials");
-  console.log(newtutorials);
 
   toolboxes = newtutorials.attr("class", "toolboxes").attr("transform", function() {return "translate(-10, -2)";});
-
-  console.log(toolboxes);
 
 /*  drawTool(toolboxes, {dx: 15, text: "", classes: "fa move-icon",})
     .on("click", function(d){
@@ -160,6 +154,9 @@ var tutorialMover = {
   hover: function(mouse) {
     console.log("tutorial-mover: hover");
     if(this.moveTarget !== null) {
+      
+      this.moveTarget.hasHovered = true;
+
       var mousePos = from_mouse(mouse);
       if(!(this.moveTarget.x === mousePos.x && this.moveTarget.y === mousePos.y)) {
         var id = this.moveTarget.id;

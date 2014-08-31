@@ -134,7 +134,9 @@ a:hover {
 	padding: 0px !important;
 }
 
-
+.tutorial {
+	cursor: pointer;
+}
 
 .fa:hover {
   cursor: pointer;

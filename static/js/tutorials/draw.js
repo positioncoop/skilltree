@@ -23,8 +23,8 @@ function drawTutorials(tutorialData) {
         return "tutorial tutorial-" + d.id + " "  + d.publish;
       });
 
-  newtutorials.append("a")
-    .attr("xlink:href", function(d) {return "/tutorials/" + d.id;})
+  newtutorials
+    .attr("data-href", function(d) { return "/tutorials/" + d.id;}) 
     .append("image")
     .attr("xlink:href", function(d) { return d.iconPath || tutorialDefaultIconPath; })
     .attr("width",60).attr("height",60);
@@ -41,15 +41,18 @@ function drawTutorials(tutorialData) {
     return "translate(" + point.x + ", " + point.y + ")";
   });
   
-  alltutorials.on("click", function(d) {
-    console.log("well, we lciked");
-  });
-
   alltutorials.on("mousedown", function(d) {
+    d.hasHovered = false;
     tutorialMover.start(d);
     $(".section-tree").addClass("dragging");
-  });
+  }); 
 
+  alltutorials.on("click", function(d) {
+    if (window.isLoggedIn && d.hasHovered == true) return;
+    window.location.href = d3.select("g.tutorial-" + d.id).attr("data-href");
+    window.location.reload();
+  });
+  
   d3.select("svg.tree").on("mouseup", function() {
     if($(".section-tree").hasClass("dragging")) {
       tutorialMover.finish(d3.mouse(this));
