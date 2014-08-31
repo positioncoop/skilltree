@@ -504,10 +504,15 @@ body.error .error-overlay {
 	position:fixed;
 	width:100%;
 	background-color: black;
-	z-index: 10;
-	opacity:0.8
-	/*display: none;*/
+	z-index: 100;
+	opacity:0.8;
+	display: block;
 }
+
+body.error {
+	cursor: not-allowed !important;
+}
+
 
 .tutorial .toolboxes {
 	-webkit-transition: opacity .2s ease-in-out;

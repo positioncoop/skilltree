@@ -24,7 +24,7 @@ $(function() {
     }
   }
 
-  $(".section-tree").mousemove(mousePointerScroll);
+//  $(".section-tree").mousemove(mousePointerScroll);
 
 });
 
@@ -35,17 +35,11 @@ function lookupDefaultIconPath() {
 
 function mousePointerScroll(e) {
 
-  //what we weant to do: proportional to client, scroll page.
-  //so: if cursor is 25% of clientX and 25% of clientY, scroll page to 25% of pageX and 25% of pageY.
-  //but actually. we want some padding. so: if cursor is 25% of clientX and 25% of clientY, scroll page to 25% of pageX and 25% of pageY.
-
   var toScroll = $(".section-tree");
   var x = e.pageX - toScroll.offset().left;
   var y = e.pageY - toScroll.offset().top;
   var scrollToX = (x / toScroll.width()) * (toScroll[0].scrollWidth - toScroll.width());
   var scrollToY = (y / toScroll.height()) * (toScroll[0].scrollHeight - toScroll.height());
-  console.log(e.pageY + " / " + toScroll.height() + " * " + toScroll[0].scrollHeight);
-
 
   toScroll.scrollTop(scrollToY);
 }
