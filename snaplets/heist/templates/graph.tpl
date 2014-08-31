@@ -28,43 +28,49 @@
 
   <div class="modeTray">
     <div class="modeTray-inner">
-      <ifLoggedOut>
-        <div class="login-form">
-          <form method='post' enctype='application/x-www-form-urlencoded' action="/auth/login">
-            <div class="email">
-              <div class="label">Email</div>
-              <input id='login.email.address' name='login.email.address' value />
-            </div>
-            <div class="password">
-              <div class="label">Password</div>
-              <input type='password' id='login.password' name='login.password' value />
-            </div>
-            <div class="submit">
-              <input type='submit' />
-            </div>
-          </form>
-        </div>
-      </ifLoggedOut>
-
-      <div class="motd">
+      <div class="modeTray-toolbar">
         <ifLoggedIn>
-          Hi, <loggedInUser><userLogin /></loggedInUser>
+        <div class="buttons">
+          <button class='create-button'>+ Create Tutorial</button>
+        </div>
         </ifLoggedIn>
       </div>
-      <div class="loginout-link">
+
+      <div class="modeTray-loginout">
         <ifLoggedIn>
-            <a id="logout-link" href="/auth/logout">Logout</a>
+        <div id="saving-status"><div class="timeago"></div></div>
+        <div class="motd">
+          Hi, <loggedInUser><userLogin /></loggedInUser>
+        </div>
         </ifLoggedIn>
+        <div class="loginout-links">
+          <ifLoggedIn>
+              <a id="logout-link" href="/auth/logout">Logout</a>
+          </ifLoggedIn>
+          <ifLoggedOut>
+              <a id="login-link" href="#">Login</a>
+          </ifLoggedOut>
+        </div>
+
         <ifLoggedOut>
-            <a id="login-link" href="#">Login</a>
+          <div class="login-form">
+            <form method='post' enctype='application/x-www-form-urlencoded' action="/auth/login">
+              <div class="email">
+                <div class="label">Email</div>
+                <input id='login.email.address' name='login.email.address' value />
+              </div>
+              <div class="password">
+                <div class="label">Password</div>
+                <input type='password' id='login.password' name='login.password' value />
+              </div>
+              <div class="submit">
+                <input type='submit' />
+              </div>
+            </form>
+          </div>
         </ifLoggedOut>
       </div>
-      <div id="saving-status"><div class="timeago"></div></div>
 
-
-      <div class="buttons">
-        <button class='create-button'>+</button>
-      </div>
 
    </div>
 </div>
