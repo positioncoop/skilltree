@@ -51,8 +51,8 @@ function drawTutorials(tutorialData) {
 
   allTutorialImages.on("click", function(d) {
     if (window.isLoggedIn && d.hasHovered == true) return;
+    console.log(d3.select("g.tutorial-" + d.id).attr("data-href"));
     window.location.href = d3.select("g.tutorial-" + d.id).attr("data-href");
-    window.location.reload();
   });
   
   d3.select("svg.tree").on("mouseup", function() {
