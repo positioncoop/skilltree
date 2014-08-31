@@ -1,22 +1,21 @@
 function drawCreate(tutorialData) {
-  $(".modeTray").append($("<button class='createButton'>").text("create mode").on("click", function() {
+  $("button.create-button").on("click", function() {
     window.location.hash = "#create";
-    window.location.reload();
-  }));
 
-  if (window.isLoggedIn && "#create" === window.location.hash) {
-    $(".modeTray .createButton").addClass("active");
-    var grid = d3.select("svg.tree");
-    tutorialCreator.init(grid, tutorialData);
+    if (window.isLoggedIn && window.location.hash === "#create") {
+      $("body").addClass("create-mode");
+      var grid = d3.select("svg.tree");
+      tutorialCreator.init(grid, tutorialData);
 
-    grid
-      .on("click", function() {
-        tutorialCreator.create(d3.mouse(this));
-      })
-      .on("mousemove", function() {
-        tutorialCreator.hover(d3.mouse(this));
-      });
-  }
+      grid
+        .on("click", function() {
+          tutorialCreator.create(d3.mouse(this));
+        })
+        .on("mousemove", function() {
+          tutorialCreator.hover(d3.mouse(this));
+        });
+    }
+  });
 }
 
 tutorialCreator = {
@@ -26,20 +25,36 @@ tutorialCreator = {
     var p = from_mouse(mouse);
 
     $.post("/tutorials/new", {"new.x": p.x , "new.y": p.y}, function(d) {
-      console.log(window.location.href);
-      redirectTutorialEdit(d);
+      window.location.hash = "";
+      $("body").removeClass("create-mode");
+      d3.json("/tutorials?format=json", function(error, data) {
+
+        data.sort(function(a,b) { return d3.ascending(parseInt(a.id), parseInt(b.id)); });
+        this.tutorialData = data;
+        drawTutorials(this.tutorialData);
+
+        var grid = d3.select("svg.tree");
+        tutorialMover.init(grid, tutorialData, tutorialMover.dependencyData) 
+        addEditHandlers(grid);
+        drawToolboxes(tutorialData);
+
+      });
+
+      $(".tutorial-create-feedback").remove();
+
+      console.log("created Tutorial");
+
     });
   },
 
   init: function(grid, tutorialData) {
     this.tutorialData = tutorialData;
     this.feedback = grid.append("image")
-      .attr("class", "feedback")
+      .attr("class", "tutorial-create-feedback")
       .attr("xlink:href", tutorialDefaultIconPath)
       .attr("width", 60).attr("height", 60)
       .attr("x", -100)
       .attr("y", -100)
-      .attr("opacity", 0.2);
   },
 
   hover: function(mouse) {

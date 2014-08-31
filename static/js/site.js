@@ -3,6 +3,7 @@ $(function() {
   var dependencyData = null;
 
   d3.json("/tutorials?format=json", function(error, data) {
+    data.sort(function(a,b) { return d3.ascending(parseInt(a.id), parseInt(b.id)); });
     tutorialData = data;
     drawSkilltree();
   });

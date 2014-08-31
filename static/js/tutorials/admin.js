@@ -6,15 +6,10 @@ function drawTools(tutorialData, dependencyData) {
      $("body").addClass("logged-in");
   }
 
-  $(".modeTray").append($("<button class='toolsButton'>").text("tool mode").on("click", function() {
-    window.location.hash = "#tools";
-    window.location.reload();
-  }));
-
   if (window.isLoggedIn && ("#tools" === window.location.hash || "" === window.location.hash)) {
     $(".modeTray .toolsButton").addClass("active");
     var grid = d3.select("svg.tree");
-    drawToolboxes(grid.selectAll("g.tutorial"));
+    drawToolboxes(tutorialData); //grid.selectAll("g.tutorial"));
     addEditHandlers(grid);
     tutorialMover.init(grid, tutorialData, dependencyData);
     tutorialDepender.init(dependencyData);
@@ -31,23 +26,31 @@ function drawTool(toolboxes, tool) {
     .attr("class", tool.classes);
 }
 
-function drawToolboxes(tutorials) {
-  toolboxes = tutorials.append("g").attr("transform", function() {return "translate(-10, -2)";});
+function drawToolboxes(tutorialData) {
+  var alltutorials = d3.select("svg.tree").selectAll("g.tutorial").data(tutorialData);
+  var newtutorials = alltutorials.append("g");
+  console.log("alltutorials");
+  console.log(alltutorials);
+  console.log("newtutorials");
+  console.log(newtutorials);
 
-  drawTool(toolboxes, {dx: 15, text: "", classes: "fa move-icon",})
+  toolboxes = newtutorials.attr("class", "toolboxes").attr("transform", function() {return "translate(-10, -2)";});
+
+  console.log(toolboxes);
+
+/*  drawTool(toolboxes, {dx: 15, text: "", classes: "fa move-icon",})
     .on("click", function(d){
       d3.event.stopPropagation();
       tutorialMover.start(d);
-    });
+    }); 
 
-  bullseyes = drawTool(tutorials, {dx: -22, dy: 38, text:"", classes: "fa fa-bullseye",})
-    .style("opacity", 0)
+  bullseyes = drawTool(newtutorials, {dx: -22, dy: 38, text:"", classes: "fa fa-bullseye",})
     .on("click", function(d) {
       d3.event.stopPropagation();
       tutorialDepender.finish(d);
-    });
+    }); */
 
-  drawTool(toolboxes, {dx: 45, text:"", classes: "fa fa-long-arrow-right",})
+  drawTool(toolboxes, {dx: 25, text:"", classes: "fa fa-dependency-arrow",})
     .on("click", function (d) {
       d3.event.stopPropagation();
       tutorialDepender.start(d);
@@ -59,8 +62,7 @@ function drawToolboxes(tutorials) {
 function addEditHandlers(grid) {
   grid
     .on("click", function() {
-      d3.event.stopPropagation();
-//      tutorialMover.finish(d3.mouse(this));
+//      d3.event.stopPropagation();
       tutorialDepender.reset();
     })
     .on("mousemove", function() {
@@ -77,15 +79,11 @@ var tutorialDepender = {
   reset: function() {
     var dep = this.dependencySource;
     this.dependencySource = null;
-    bullseyes.style("opacity", 0);
-    toolboxes.style("opacity", 1);
     return dep;
   },
 
   start: function(d) {
     this.dependencySource = d;
-    toolboxes.style("opacity", 0);
-    bullseyes.style("opacity", 1);
   },
 
   finish: function (d) {
@@ -160,6 +158,7 @@ var tutorialMover = {
   },
 
   hover: function(mouse) {
+    console.log("tutorial-mover: hover");
     if(this.moveTarget !== null) {
       var mousePos = from_mouse(mouse);
       if(!(this.moveTarget.x === mousePos.x && this.moveTarget.y === mousePos.y)) {
@@ -180,6 +179,7 @@ var tutorialMover = {
             tut.y = mousePos.y;
           }
         });
+        console.log("hovering to " + mousePos.x + "," + mousePos.y);
         this.moveTarget.x = mousePos.x;
         this.moveTarget.y = mousePos.y;
         drawLines(this.dependencyData);

@@ -22,11 +22,10 @@ input, textarea {
 	font-family: 'Open Sans', Helvetica, Arial, sans-serif;
 }
 
-body.logged-in {
-	/*margin-top: 45px;*/
-	/*padding-top: 90px;	*/
-}
 
+.logged-in .container {
+	margin-top: 40px;	
+}
 
 .container {
 	position: relative;
@@ -156,11 +155,11 @@ a:hover {
 }
 .modeTray-inner {
 	/*display: none;*/
-	font-size: 0.8em;
+	font-size: 0.7em;
 	padding: 10px;
 	background-color: rgba(51, 51, 51, 0.84);
 	color: white;
-	height: 25px;
+	height: 20px;
 	box-shadow: 0 0 9px #5c5c5c;	
 }
 
@@ -174,8 +173,23 @@ a:hover {
 	
 }
 
+.modeTray .motd {
+	vertical-align: middle;
+	 display:inline-block;
+	 margin-right: 10px;
+	 padding-right: 10px;
+	 border-right: 1px dotted #AAA;
+}
+
+.modeTray #saving-status {
+	vertical-align: middle;
+	 display:inline-block;
+}
+
 .loginout-link {
 	float: right;
+		 margin-right: 10px;
+	
 }
 
 .login-form div {
@@ -233,9 +247,6 @@ a:hover {
 
 /**** TUTORIAL ****/
 
-.logged-in .section-tutorial-inner {
-	padding-top: 80px;
-}
 .section-tutorial-inner {
 	padding: 20px;
 	/*margin: 20px;*/
@@ -462,6 +473,22 @@ body.error .error-overlay {
 	/*display: none;*/
 }
 
+.tutorial .toolboxes {
+	-webkit-transition: opacity .2s ease-in-out;
+	 -moz-transition: opacity .2s ease-in-out;
+	 -ms-transition: opacity .2s ease-in-out;
+	 -o-transition: opacity .2s ease-in-out;
+	 transition: opacity .2s ease-in-out;
+}
+
+.create-mode .tutorial .toolboxes {
+	opacity: 0;
+} 
+
+.create-mode .tree {
+	cursor: pointer;
+}
+
 g.tutorial.dragging a {
 	pointer-events: none;
 	opacity: 0.5;
@@ -471,8 +498,7 @@ g.tutorial.dragging {
 	fill: #fc0452;
 }
 
-.section-tree.dragging {
-	cursor: move;
+.section-tree {
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -481,6 +507,17 @@ g.tutorial.dragging {
 	user-select: none;
 }
 
+.section-tree.dragging {
+	cursor: move;
+	cursor: -webkit-grabbing;
+	cursor: -moz-grabbing;
+}
+
+.tutorial-create-feedback {
+	width: 60px;
+	height: 60px;
+	opacity: 0.5;
+}
 
 .form-step {
 	/*border: 1px solid blue;*/

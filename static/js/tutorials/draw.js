@@ -14,41 +14,50 @@ function from_mouse(mouse) {
 }
 
 function drawTutorials(tutorialData) {
-  var selection = d3.select("svg.tree").selectAll("g.tutorial").data(tutorialData);
-  var tutorials = selection.enter().append("g")
+  var alltutorials = d3.select("svg.tree").selectAll("g.tutorial").data(tutorialData);
+  var newtutorials = alltutorials.enter().append("g")
       .attr("data-tutorial-id", function(d) { return d.id; })
       .attr("data-json", function(d) {return JSON.stringify(d);})
       .attr("class", function(d) {
+        console.log("tutorial tutorial-" + d.id + " "  + d.publish);
         return "tutorial tutorial-" + d.id + " "  + d.publish;
       });
 
-  tutorials.append("a")
+  newtutorials.append("a")
     .attr("xlink:href", function(d) {return "/tutorials/" + d.id;})
     .append("image")
     .attr("xlink:href", function(d) { return d.iconPath || tutorialDefaultIconPath; })
     .attr("width",60).attr("height",60);
 
-  tutorials.append("text")
+  newtutorials.append("text")
     .attr("dx", 5)
     .attr("dy", 72)
     .text(function(d) { return d.title });
 
-  selection.attr("transform", function(d) {
+  //drawToolboxes(tutorials);
+
+  alltutorials.attr("transform", function(d) {
     var point = to_display(d);
     return "translate(" + point.x + ", " + point.y + ")";
   });
+  
+  alltutorials.on("click", function(d) {
+    console.log("well, we lciked");
+  });
 
-  tutorials.on("mousedown", function(d) {
+  alltutorials.on("mousedown", function(d) {
     tutorialMover.start(d);
     $(".section-tree").addClass("dragging");
   });
 
   d3.select("svg.tree").on("mouseup", function() {
-    tutorialMover.finish(d3.mouse(this));
-    $(".section-tree").removeClass("dragging");
+    if($(".section-tree").hasClass("dragging")) {
+      tutorialMover.finish(d3.mouse(this));
+      $(".section-tree").removeClass("dragging");
+    }
   });
 
-  return tutorials;
+  return newtutorials;
 }
 
 function bezPath(d) {

@@ -60,8 +60,13 @@
         </ifLoggedOut>
       </div>
       <div id="saving-status"><div class="timeago"></div></div>
-   </div>
 
+
+      <div class="buttons">
+        <button class='create-button'>+</button>
+      </div>
+
+   </div>
 </div>
 
 
