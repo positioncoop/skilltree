@@ -135,6 +135,9 @@ a:hover {
 }
 
 .tutorial {
+	cursor: default;
+}
+.tutorial image {
 	cursor: pointer;
 }
 
@@ -529,6 +532,17 @@ g.tutorial.dragging a {
 
 g.tutorial.dragging {
 	fill: #fc0452;
+}
+
+.fa-bullseye {
+	display: none;
+}
+body.dependency-mode {
+	cursor:	e-resize;
+}
+
+.dependency-mode .fa-bullseye {
+	display: block !important;
 }
 
 .section-tree {

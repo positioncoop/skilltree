@@ -40,14 +40,16 @@ function drawTutorials(tutorialData) {
     var point = to_display(d);
     return "translate(" + point.x + ", " + point.y + ")";
   });
+
+  var allTutorialImages = d3.select("svg.tree").selectAll("g.tutorial image").data(tutorialData);
   
-  alltutorials.on("mousedown", function(d) {
+  allTutorialImages.on("mousedown", function(d) {
     d.hasHovered = false;
     tutorialMover.start(d);
     $(".section-tree").addClass("dragging");
   }); 
 
-  alltutorials.on("click", function(d) {
+  allTutorialImages.on("click", function(d) {
     if (window.isLoggedIn && d.hasHovered == true) return;
     window.location.href = d3.select("g.tutorial-" + d.id).attr("data-href");
     window.location.reload();
@@ -79,10 +81,12 @@ function bezPath(d) {
 }
 
 function drawLines(dependencyData) {
-  var selection = d3.select("svg.tree").selectAll("path.dependency").data(dependencyData, function(d) {return d.id;})
 
-    selection.enter()
-    .append("path")
+  var alllines = d3.select("svg.tree").selectAll("path.dependency").data(dependencyData, function(d) {return d.id;})
+
+  var newlines = alllines.enter().append("path");
+
+  newlines
     .attr("class", function(d) {
       var classes  = "dependency source-of-" + d.source.id + " target-of-" + d.target.id;
       if(d.source.publish === "Draft" || d.target.publish === "Draft") {
@@ -91,5 +95,5 @@ function drawLines(dependencyData) {
       return classes;
     });
 
-    selection.attr("d", bezPath)
+  alllines.attr("d", bezPath)
 }

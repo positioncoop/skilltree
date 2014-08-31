@@ -36,13 +36,13 @@ function drawToolboxes(tutorialData) {
     .on("click", function(d){
       d3.event.stopPropagation();
       tutorialMover.start(d);
-    }); 
+    });  */
 
   bullseyes = drawTool(newtutorials, {dx: -22, dy: 38, text:"", classes: "fa fa-bullseye",})
     .on("click", function(d) {
       d3.event.stopPropagation();
       tutorialDepender.finish(d);
-    }); */
+    }); 
 
   drawTool(toolboxes, {dx: 25, text:"", classes: "fa fa-dependency-arrow",})
     .on("click", function (d) {
@@ -77,6 +77,7 @@ var tutorialDepender = {
   },
 
   start: function(d) {
+    $("body").addClass("dependency-mode");
     this.dependencySource = d;
   },
 
@@ -89,7 +90,14 @@ var tutorialDepender = {
       });
 
       function afterPost() {
-        redirectTutorialEdit(tutorialDepender.reset());
+        tutorialDepender.reset();
+        tutorialMover.reloadData();
+        d3.json("/dependencies?format=json", function(error, data) {
+          this.dependencyData = data;
+          drawLines(this.dependencyData);
+        });
+
+//      redirectTutorialEdit(tutorialDepender.reset());
       }
 
       if (existing.length !== 0) {
@@ -98,6 +106,7 @@ var tutorialDepender = {
       } else {
         $.post("/dependencies/new", {"new.tutorialId": this.dependencySource.id, "new.dependencyId": d.id}, afterPost);
       }
+      $("body").removeClass("dependency-mode");
     }
   },
 };
@@ -114,6 +123,17 @@ var tutorialMover = {
   init: function(grid, tutorialData, dependencyData) {
     this.tutorialData = tutorialData;
     this.dependencyData = dependencyData;
+  },
+
+  reloadData: function() {
+    d3.json("/tutorials?format=json", function(error, data) {
+      data.sort(function(a,b) { return d3.ascending(parseInt(a.id), parseInt(b.id)); });
+      this.tutorialData = data;
+    });
+    d3.json("/dependencies?format=json", function(error, data) {
+      console.log("reloading data");
+      this.dependencyData = data;
+    });
   },
 
   start: function (d) {
