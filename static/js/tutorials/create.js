@@ -22,7 +22,7 @@ tutorialCreator = {
   feedback: null,
 
   create: function(mouse) {
-    var p = from_mouse(mouse);
+    var p = gridDisplayToDatabase(mouse);
 
     $.post("/tutorials/new", {"new.x": p.x , "new.y": p.y}, function(d) {
       window.location.hash = "";
@@ -58,7 +58,7 @@ tutorialCreator = {
   },
 
   hover: function(mouse) {
-    var gridPos = from_mouse(mouse);
+    var gridPos = gridDisplayToDatabase(mouse);
 
     var overlaps = this.tutorialData.filter(function(t) {
       return (t.x == gridPos.x) && ((t.y == gridPos.y - 1) || (t.y == gridPos.y) || (t.y == gridPos.y + 1));
@@ -68,7 +68,7 @@ tutorialCreator = {
       this.feedback.attr("opacity", 0);
     } else {
       this.feedback.attr("opacity", 0.2);
-      var p = to_display(gridPos);
+      var p = gridDatabaseToDisplay(gridPos);
       this.feedback.attr("x", p.x) .attr("y", p.y);
     }
   }

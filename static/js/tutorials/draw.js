@@ -3,18 +3,20 @@ function redirectTutorialEdit(tutorial) {
   window.location.reload();
 }
 
-function to_display(p) {
+function gridDatabaseToDisplay(p) {
   return {x: p.x * 100 + 20,
           y: p.y * 50 + 20};
 }
 
-function from_mouse(mouse) {
+function gridDisplayToDatabase(mouse) {
   return {x: Math.floor(mouse[0]/100),
           y: Math.floor((mouse[1] - 25)/50)};
 }
 
 function drawTutorials(tutorialData) {
-  var alltutorials = d3.select("svg.tree").selectAll("g.tutorial").data(tutorialData);
+
+  var alltutorials = d3.select("svg.tree g.tutorials").selectAll("g.tutorial").data(tutorialData);
+
   var newtutorials = alltutorials.enter().append("g")
       .attr("data-tutorial-id", function(d) { return d.id; })
       .attr("data-json", function(d) {return JSON.stringify(d);})
@@ -37,7 +39,7 @@ function drawTutorials(tutorialData) {
   //drawToolboxes(tutorials);
 
   alltutorials.attr("transform", function(d) {
-    var point = to_display(d);
+    var point = gridDatabaseToDisplay(d);
     return "translate(" + point.x + ", " + point.y + ")";
   });
 
@@ -50,7 +52,15 @@ function drawTutorials(tutorialData) {
   }); 
 
   allTutorialImages.on("click", function(d) {
+
     if (window.isLoggedIn && d.hasHovered == true) return;
+
+    if ($("body").hasClass("dependency-mode")) {
+      d3.event.stopPropagation();
+      tutorialDepender.finish(d);
+      return;
+    }
+  
     console.log(d3.select("g.tutorial-" + d.id).attr("data-href"));
     $.cookie("treeScroll", $(".section-tree").scrollTop() );
     window.location.href = d3.select("g.tutorial-" + d.id).attr("data-href");
@@ -67,10 +77,10 @@ function drawTutorials(tutorialData) {
 }
 
 function bezPath(d) {
-  x1 = to_display(d.source).x;
-  y1 = to_display(d.source).y + 30;
-  x2 = to_display(d.target).x + 60;
-  y2 = to_display(d.target).y + 30;
+  x1 = gridDatabaseToDisplay(d.source).x;
+  y1 = gridDatabaseToDisplay(d.source).y + 30;
+  x2 = gridDatabaseToDisplay(d.target).x + 60;
+  y2 = gridDatabaseToDisplay(d.target).y + 30;
   return "M"
     + x1 + "," + y1
     + " C"
@@ -83,11 +93,22 @@ function bezPath(d) {
 
 function drawLines(dependencyData) {
 
-  var alllines = d3.select("svg.tree").selectAll("path.dependency").data(dependencyData, function(d) {return d.id;})
+  var allLines = d3.select("svg.tree g.paths").selectAll("path.dependency").data(dependencyData, function(d) {return d.id;})
 
-  var newlines = alllines.enter().append("path");
+  console.log("allLines");
+  console.log(allLines);
 
-  newlines
+  var oldLines = allLines.exit().remove();
+
+  console.log("oldLines");
+  console.log(oldLines);
+
+  var newLines = allLines.enter().append("path");
+
+  console.log("newLines");
+  console.log(newLines);
+
+  newLines
     .attr("class", function(d) {
       var classes  = "dependency source-of-" + d.source.id + " target-of-" + d.target.id;
       if(d.source.publish === "Draft" || d.target.publish === "Draft") {
@@ -96,5 +117,5 @@ function drawLines(dependencyData) {
       return classes;
     });
 
-  alllines.attr("d", bezPath)
+  allLines.attr("d", bezPath)
 }

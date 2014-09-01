@@ -38,13 +38,13 @@ function drawToolboxes(tutorialData) {
       tutorialMover.start(d);
     });  */
 
-  bullseyes = drawTool(newtutorials, {dx: -22, dy: 38, text:"", classes: "fa fa-bullseye",})
+/*  bullseyes = drawTool(newtutorials, {dx: -22, dy: 38, text:"", classes: "fa fa-bullseye",})
     .on("click", function(d) {
       d3.event.stopPropagation();
       tutorialDepender.finish(d);
-    }); 
+    });  */
 
-  drawTool(toolboxes, {dx: 25, text:"", classes: "fa fa-dependency-arrow",})
+  drawTool(toolboxes, {dx: 28, dy: 3, text:"", classes: "fa fa-dependency-arrow",})
     .on("click", function (d) {
       d3.event.stopPropagation();
       tutorialDepender.start(d);
@@ -60,6 +60,7 @@ function addEditHandlers(grid) {
       tutorialDepender.reset();
     })
     .on("mousemove", function() {
+      tutorialDepender.hover(d3.mouse(this));
       tutorialMover.hover(d3.mouse(this));
     });
 }
@@ -73,12 +74,34 @@ var tutorialDepender = {
   reset: function() {
     var dep = this.dependencySource;
     this.dependencySource = null;
+    d3.select("line.dependencyHover").remove();
+    $("body").removeClass("dependency-mode");
     return dep;
   },
 
   start: function(d) {
     $("body").addClass("dependency-mode");
     this.dependencySource = d;
+
+    d3.select("svg.tree").append("line")
+      .attr("class", "dependencyHover")
+      .attr("x1", gridDatabaseToDisplay(d).x + 60)
+      .attr("y1", gridDatabaseToDisplay(d).y + 30)
+      .attr("x2", gridDatabaseToDisplay(d).x + 60)
+      .attr("y2", gridDatabaseToDisplay(d).y + 30)
+      .attr("stroke", "black");
+
+  },
+
+  hover: function(mouse) {
+    var depHov = d3.select("line.dependencyHover");
+    if( !depHov.empty()) {
+      console.log(mouse);
+      depHov
+        .attr("x2", mouse[0] - 3)
+        .attr("y2", mouse[1]); 
+      console.log(depHov);
+    }
   },
 
   finish: function (d) {
@@ -93,11 +116,11 @@ var tutorialDepender = {
         tutorialDepender.reset();
         tutorialMover.reloadData();
         d3.json("/dependencies?format=json", function(error, data) {
-          this.dependencyData = data;
-          drawLines(this.dependencyData);
+          window.tutorialDepender.dependencyData = data;
+          window.tutorialMover.dependencyData = data;
+          drawLines(data);
         });
 
-//      redirectTutorialEdit(tutorialDepender.reset());
       }
 
       if (existing.length !== 0) {
@@ -106,7 +129,6 @@ var tutorialDepender = {
       } else {
         $.post("/dependencies/new", {"new.tutorialId": this.dependencySource.id, "new.dependencyId": d.id}, afterPost);
       }
-      $("body").removeClass("dependency-mode");
     }
   },
 };
@@ -147,7 +169,7 @@ var tutorialMover = {
   finish: function(mouse) {
     if (this.moveTarget !== null) {
       console.log("finish tutorialMover");
-      var p = from_mouse(mouse);
+      var p = gridDisplayToDatabase(mouse);
       $.post("/tutorials/" + this.moveTarget.id + "/move", {"move.x": p.x , "move.y": p.y})
          .done(function() {
            var date = new Date();
@@ -177,7 +199,7 @@ var tutorialMover = {
       
       this.moveTarget.hasHovered = true;
 
-      var mousePos = from_mouse(mouse);
+      var mousePos = gridDisplayToDatabase(mouse);
       if(!(this.moveTarget.x === mousePos.x && this.moveTarget.y === mousePos.y)) {
         var id = this.moveTarget.id;
         $.each(this.dependencyData, function(i, dep) {

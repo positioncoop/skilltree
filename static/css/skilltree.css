@@ -492,6 +492,14 @@ iframe.pre-load {
 	opacity: 0.3;
 }
 
+.dependencyHover {
+	stroke:#333;
+	stroke-width:3;
+	stroke-dasharray:3;
+	fill:none;
+	pointer-events: none;
+}
+
 
 /***** BACKEND/EDITING *****/
 

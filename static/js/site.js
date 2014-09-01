@@ -15,7 +15,7 @@ $(function() {
 
   function drawSkilltree() {
     if (tutorialData !== null && dependencyData !== null) {
-      handleScroll();
+      setupTreeCanvas();
       lookupDefaultIconPath();
       drawLines(dependencyData);
       drawTutorials(tutorialData);
@@ -32,7 +32,10 @@ function lookupDefaultIconPath() {
   window.tutorialDefaultIconPath = $("#javascript-helpers #tutorialDefaultIconPath").attr("src");
 }
 
-function handleScroll() {
+function setupTreeCanvas() {
+
+    d3.select("svg.tree").append("g").attr("class", "tutorials");
+    d3.select("svg.tree").append("g").attr("class", "paths");
 /*  $(".section-tree").mousemove(function (e) {
     var toScroll = $(".section-tree");
     var x = e.pageX - toScroll.offset().left;
