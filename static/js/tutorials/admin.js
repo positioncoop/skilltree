@@ -76,12 +76,15 @@ var tutorialDepender = {
     this.dependencySource = null;
     d3.select("line.dependencyHover").remove();
     $("body").removeClass("dependency-mode");
+    $(".tutorial.dependency-source").attr('class', function(index, classNames) { return classNames.replace(" dependency-source", "");  });
     return dep;
   },
 
   start: function(d) {
     $("body").addClass("dependency-mode");
     this.dependencySource = d;
+    console.log(this.dependencySource);
+    $(".tutorial-" + this.dependencySource.id).attr('class', function(index, classNames) { return classNames + " dependency-source";  });
 
     d3.select("svg.tree").append("line")
       .attr("class", "dependencyHover")
@@ -197,7 +200,7 @@ var tutorialMover = {
     console.log("tutorial-mover: hover");
     if(this.moveTarget !== null) {
       
-      this.moveTarget.hasHovered = true;
+      this.moveTarget.hasDragged = true;
 
       var mousePos = gridDisplayToDatabase(mouse);
       if(!(this.moveTarget.x === mousePos.x && this.moveTarget.y === mousePos.y)) {

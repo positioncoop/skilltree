@@ -404,6 +404,19 @@ vertical-align: middle;
 	color: red;
 }
 
+.highlight {
+	fill: none;
+}
+
+.dependency-mode .tutorial.hovering .highlight {
+	stroke: red;
+	stroke-width: 4px;
+}
+
+.dependency-mode .dependency-source .highlight {
+	stroke: none !important;
+}
+
 
 /***** TUTORIAL STEP STYLES *****/
 

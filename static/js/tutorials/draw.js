@@ -31,6 +31,11 @@ function drawTutorials(tutorialData) {
     .attr("xlink:href", function(d) { return d.iconPath || tutorialDefaultIconPath; })
     .attr("width",60).attr("height",60);
 
+  newtutorials
+    .append("rect")
+    .attr("class","highlight")
+    .attr("width",60).attr("height",60);
+
   newtutorials.append("text")
     .attr("dx", 5)
     .attr("dy", 72)
@@ -45,15 +50,26 @@ function drawTutorials(tutorialData) {
 
   var allTutorialImages = d3.select("svg.tree").selectAll("g.tutorial image").data(tutorialData);
   
+  $("g.tutorial").hover(function() {
+     $(this).attr('class', function(index, classNames) {
+       return classNames + ' hovering';
+     });
+  }, function() {
+     $(this).attr('class', function(index, classNames) {
+       return classNames.replace(' hovering', '');
+     });
+  });
+    
+
   allTutorialImages.on("mousedown", function(d) {
-    d.hasHovered = false;
+    d.hasDragged = false;
     tutorialMover.start(d);
     $(".section-tree").addClass("dragging");
   }); 
 
   allTutorialImages.on("click", function(d) {
 
-    if (window.isLoggedIn && d.hasHovered == true) return;
+    if (window.isLoggedIn && d.hasDragged == true) return;
 
     if ($("body").hasClass("dependency-mode")) {
       d3.event.stopPropagation();
