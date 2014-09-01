@@ -21,7 +21,6 @@ function drawTutorials(tutorialData) {
       .attr("data-tutorial-id", function(d) { return d.id; })
       .attr("data-json", function(d) {return JSON.stringify(d);})
       .attr("class", function(d) {
-        console.log("tutorial tutorial-" + d.id + " "  + d.publish);
         return "tutorial tutorial-" + d.id + " "  + d.publish;
       });
 
@@ -37,9 +36,10 @@ function drawTutorials(tutorialData) {
     .attr("width",60).attr("height",60);
 
   newtutorials.append("text")
+    .attr("class", "label")
     .attr("dx", 5)
     .attr("dy", 72)
-    .text(function(d) { return d.title });
+    .text(function(d) { return d.title.toUpperCase(); });
 
   //drawToolboxes(tutorials);
 
@@ -77,7 +77,6 @@ function drawTutorials(tutorialData) {
       return;
     }
   
-    console.log(d3.select("g.tutorial-" + d.id).attr("data-href"));
     $.cookie("treeScroll", $(".section-tree").scrollTop() );
     window.location.href = d3.select("g.tutorial-" + d.id).attr("data-href");
   });
@@ -111,18 +110,9 @@ function drawLines(dependencyData) {
 
   var allLines = d3.select("svg.tree g.paths").selectAll("path.dependency").data(dependencyData, function(d) {return d.id;})
 
-  console.log("allLines");
-  console.log(allLines);
-
   var oldLines = allLines.exit().remove();
 
-  console.log("oldLines");
-  console.log(oldLines);
-
   var newLines = allLines.enter().append("path");
-
-  console.log("newLines");
-  console.log(newLines);
 
   newLines
     .attr("class", function(d) {
