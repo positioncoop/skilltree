@@ -52,6 +52,7 @@ function drawTutorials(tutorialData) {
   allTutorialImages.on("click", function(d) {
     if (window.isLoggedIn && d.hasHovered == true) return;
     console.log(d3.select("g.tutorial-" + d.id).attr("data-href"));
+    $.cookie("treeScroll", $(".section-tree").scrollTop() );
     window.location.href = d3.select("g.tutorial-" + d.id).attr("data-href");
   });
   

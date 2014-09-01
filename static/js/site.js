@@ -15,6 +15,7 @@ $(function() {
 
   function drawSkilltree() {
     if (tutorialData !== null && dependencyData !== null) {
+      handleScroll();
       lookupDefaultIconPath();
       drawLines(dependencyData);
       drawTutorials(tutorialData);
@@ -24,7 +25,6 @@ $(function() {
     }
   }
 
-//  $(".section-tree").mousemove(mousePointerScroll);
 
 });
 
@@ -32,16 +32,24 @@ function lookupDefaultIconPath() {
   window.tutorialDefaultIconPath = $("#javascript-helpers #tutorialDefaultIconPath").attr("src");
 }
 
+function handleScroll() {
+/*  $(".section-tree").mousemove(function (e) {
+    var toScroll = $(".section-tree");
+    var x = e.pageX - toScroll.offset().left;
+    var y = e.pageY - toScroll.offset().top;
+    var scrollToX = (x / toScroll.width()) * (toScroll[0].scrollWidth - toScroll.width());
+    var scrollToY = (y / toScroll.height()) * (toScroll[0].scrollHeight - toScroll.height());
+    toScroll.scrollTop(scrollToY);
+  } */
 
-function mousePointerScroll(e) {
+  if ( $.cookie("treeScroll") !== null ) {
+    $(".section-tree").scrollTop( $.cookie("treeScroll") );
+  }
 
-  var toScroll = $(".section-tree");
-  var x = e.pageX - toScroll.offset().left;
-  var y = e.pageY - toScroll.offset().top;
-  var scrollToX = (x / toScroll.width()) * (toScroll[0].scrollWidth - toScroll.width());
-  var scrollToY = (y / toScroll.height()) * (toScroll[0].scrollHeight - toScroll.height());
-
-  toScroll.scrollTop(scrollToY);
+  $(window).on('beforeunload', function(){
+    $.cookie("treeScroll", $(".section-tree").scrollTop() );
+  });
 }
+
 
 
