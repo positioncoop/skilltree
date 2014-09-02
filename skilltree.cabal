@@ -65,8 +65,7 @@ Executable skilltree
     transformers,
     unordered-containers,
     esqueleto,
-    attoparsec >= 0.11 && < 0.13,
-    hspec-webdriver
+    attoparsec >= 0.11 && < 0.13
 
   if flag(development)
     build-depends:
