@@ -6,4 +6,5 @@ stanzas:
       - prod
     hosts:
       - skilltree.dbpapp.com
+      - skilltree.gsapp.org
 postgres: false
