@@ -3,16 +3,18 @@ RUN apt-get update
 RUN apt-get upgrade -y
 RUN apt-get install zlib1g-dev libssl-dev -y
 RUN apt-get install git -y
-RUN apt-get install postgresql libpq-dev postgresql-client postgresql-contrib -y
 ENV LANG en_US.utf8
 RUN cabal update
 ADD ./skilltree.cabal /srv/skilltree.cabal
 ADD ./deps /srv/deps
 RUN cd /srv && cabal sandbox init
 RUN cd /srv && bash /srv/deps/add-all
-RUN cd /srv && cabal install --enable-tests --only-dependencies --reorder-goals -j4
+RUN cd /srv && cabal install --only-dependencies --reorder-goals
 ADD ./src /srv/src
-RUN cd /srv && cabal install -fdevelopment
-ADD ./docker/run /srv/run
-CMD /srv/run
+RUN cd /srv && cabal build
+ADD ./snaplets /srv/snaplets
+ADD ./static /srv/static
+ADD ./prod.cfg /srv/prod.cfg
+ADD ./defaults.cfg /srv/defaults.cfg
+CMD /srv/dist/build/skilltree/skilltree --no-access-log --no-error-log -e prod
 EXPOSE 8000
