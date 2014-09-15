@@ -25,8 +25,10 @@ if [ ! -d ${PG_DATADIR} ]; then
     sudo -u postgres psql template1 -c "CREATE USER skilltree_user WITH PASSWORD '111'"
     sudo -u postgres psql template1 -c "CREATE DATABASE skilltree_devel"
     sudo -u postgres psql template1 -c "GRANT ALL ON DATABASE skilltree_devel TO skilltree_user"
+    sudo -u postgres psql template1 -c "CREATE DATABASE skilltree_test"
+    sudo -u postgres psql template1 -c "GRANT ALL ON DATABASE skilltree_test TO skilltree_user"
 else
     /usr/sbin/service postgresql start
 fi
 
-/srv/dist/build/skilltree/skilltree --no-access-log --no-error-log
+/srv/.cabal-sandbox/bin/skilltree --no-access-log --no-error-log

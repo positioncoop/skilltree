@@ -1,0 +1,30 @@
+image: dbp1/ghc-7.8.3-migrate-rivet
+script:
+  - socat TCP-LISTEN:5432,fork TCP:`gethostip -d $HOSTNAME`:5432 &
+  - echo {{hubEmail}}
+  - psql -c 'create database skilltree_test;' -U postgres -h 127.0.0.1
+  - psql -c "create user skilltree_user with password '111' superuser" -U postgres -h 127.0.0.1
+  - cabal update
+  - mkdir -p /sandbox && pushd /sandbox && cabal sandbox init && popd
+  - ln -s /sandbox/.cabal-sandbox .
+  - rivet setup
+  - migrate up test
+  - cabal exec -- runghc -isrc spec/Main.hs
+  - echo `/sbin/ip route|awk '/default/ { print $3 }'` dockerhost >> /etc/hosts
+  - mv docker/Dockerfile.production Dockerfile
+services:
+  - postgres
+cache:
+  - /sandbox
+publish:
+  docker:
+    docker_server: dockerhost
+    docker_port: 2375
+    docker_version: 1.2.0
+    registry_login: true
+    username: {{hubUsername}}
+    password: {{hubPassword}}
+    email: {{hubEmail}}
+    image_name: dbp1/skilltree_production
+    keep_build: true
+    branch: master
