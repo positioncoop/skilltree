@@ -20,6 +20,7 @@ RUN cd /srv/migrate && git pull
 RUN cd /srv/migrate && cabal install
 ADD ./migrations /srv/migrations
 ADD ./devel.cfg /srv/devel.cfg
+ADD ./test.cfg /srv/test.cfg
 ADD ./defaults.cfg /srv/defaults.cfg
 ADD ./snaplets /srv/snaplets
-CMD /usr/sbin/service postgresql start && cd /srv && /srv/migrate/.cabal-sandbox/bin/migrate up
+CMD /usr/sbin/service postgresql start && cd /srv && /srv/migrate/.cabal-sandbox/bin/migrate up devel && /srv/migrate/.cabal-sandbox/bin/migrate up test
