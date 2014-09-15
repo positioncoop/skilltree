@@ -65,7 +65,8 @@ Executable skilltree
     transformers,
     unordered-containers,
     esqueleto,
-    attoparsec >= 0.11 && < 0.13
+    attoparsec >= 0.11 && < 0.13,
+    migrate
 
   if flag(development)
     build-depends:
