@@ -31,4 +31,4 @@ else
     /usr/sbin/service postgresql start
 fi
 
-/srv/dist/build/skilltree/skilltree --no-access-log --no-error-log
+/srv/.cabal-sandbox/bin/skilltree --no-access-log --no-error-log
