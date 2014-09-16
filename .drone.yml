@@ -20,6 +20,7 @@ publish:
     docker_server: dockerhost
     docker_port: 2375
     docker_version: 1.2.0
+    registry_login: true
     username: {{ hubUsername }}
     password: {{ hubPassword }}
     email: {{ hubEmail }}
