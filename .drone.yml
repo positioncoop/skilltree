@@ -5,8 +5,10 @@ script:
   - socat TCP-LISTEN:5432,fork TCP:`gethostip -d $HOSTNAME`:5432 &
   - psql -c 'create database skilltree_test;' -U postgres -h 127.0.0.1
   - psql -c "create user skilltree_user with password '111' superuser" -U postgres -h 127.0.0.1
+  - cabal update
   - cd / && git clone https://github.com/dbp/migrate migrate; true
   - cd /migrate && cabal sandbox init && cabal install
+  - pwd
   - /migrate/.cabal-sandbox/bin/migrate up test
   - cd / && mkdir sandbox && cd /sandbox && cabal sandbox init
   - cabal install --only-dependencies --enable-tests --sandbox-config-file=/sandbox/cabal.sandbox.config
