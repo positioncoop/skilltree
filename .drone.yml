@@ -3,12 +3,14 @@ script:
   - apt-get install git zlib1g-dev libssl-dev libpq-dev postgresql-client -y
   - psql -c 'create database skilltree_test;' -U postgres -h 127.0.0.1
   - psql -c "create user skilltree_user with password '111' superuser"
-  - git clone https://github.com/dbp/migrate migrate
+  - git clone https://github.com/dbp/migrate migrate; true
   - cd migrate && cabal sandbox init && cabal install
   - ./migrate/.cabal-sandbox/bin/migrate up test
   - cabal sandbox init
   - cabal install --only-dependencies --enable-tests
   - cabal exec -- runghc -isrc src/Test.hs
+cache:
+  - migrate
 services:
   - postgres
 notify:
