@@ -1,28 +1,11 @@
-image: dbp1/ghc-7.8.3-postgres-git
+image: dbp1/ghc-7.8.3-migrate-rivet
 script:
-  - apt-get install syslinux -y
   - socat TCP-LISTEN:5432,fork TCP:`gethostip -d $HOSTNAME`:5432 &
   - psql -c 'create database skilltree_test;' -U postgres -h 127.0.0.1
   - psql -c "create user skilltree_user with password '111' superuser" -U postgres -h 127.0.0.1
   - cabal update
-  - if [ ! -d "/dep/migrate" ] ; then git clone https://github.com/dbp/migrate /dep/migrate; fi
-  - pushd /dep/migrate
-  - cabal sandbox init && cabal install
-  - popd
-  - if [ ! -d "/dep/rivet" ] ; then git clone https://github.com/dbp/rivet /dep/rivet; fi
-  - pushd /dep/rivet
-  - ls -l
-  - cabal sandbox init && cabal install --force-reinstalls
-  - popd
-  - /dep/rivet/.cabal-sandbox/bin/rivet setup
-  - /dep/migrate/.cabal-sandbox/bin/migrate up test
-  - ls -l
+  - rivet setup
+  - migrate up test
   - cabal exec -- runghc -isrc spec/Main.hs
 services:
   - postgres
-cache:
-  - /dep
-notify:
-  email:
-    recipients:
-      - dbp@dbpmail.net
