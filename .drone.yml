@@ -16,7 +16,7 @@ cache:
 publish:
   docker:
     dockerfile: docker/Dockerfile.production
-    docker_host: {{ dockerHost }}
+    docker_server: {{ dockerServer }}
     docker_port: {{ dockerPort }}
     docker_version: 1.0
     username: {{ hubUsername }}
