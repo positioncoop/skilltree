@@ -10,10 +10,10 @@ script:
   - pushd /migrate
   - cabal sandbox init && cabal install
   - popd
-  - mkdir /sandbox && pushd /sandbox && cabal sandbox init && popd
-  - cabal install --only-dependencies --enable-tests --sandbox-config-file=/sandbox/cabal.sandbox.config
+  - mkdir -p /sandbox && pushd /sandbox && cabal sandbox init && popd
+  - cabal --sandbox-config-file=/sandbox/cabal.sandbox.config install --only-dependencies --enable-tests
   - /migrate/.cabal-sandbox/bin/migrate up test
-  - cabal exec --sandbox-config-file=/sandbox/cabal.sandbox.config -- runghc -isrc spec/Main.hs
+  - cabal --sandbox-config-file=/sandbox/cabal.sandbox.config exec -- runghc -isrc spec/Main.hs
 services:
   - postgres
 cache:
