@@ -10,13 +10,13 @@ script:
   - migrate up test
   - cabal exec -- runghc -isrc spec/Main.hs
   - echo `/sbin/ip route|awk '/default/ { print $3 }'` dockerhost >> /etc/hosts
+  - mv docker/Dockerfile.production Dockerfile
 services:
   - postgres
 cache:
   - /sandbox
 publish:
   docker:
-    docker_file: docker/Dockerfile.production
     docker_server: dockerhost
     docker_port: 2375
     docker_version: 1.2.0
