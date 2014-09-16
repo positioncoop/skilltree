@@ -15,13 +15,11 @@ cache:
   - /sandbox
 publish:
   docker:
-    dockerfile: docker/Dockerfile.production
-    docker_server: {{ dockerServer }}
-    docker_port: {{ dockerPort }}
+    docker_file: docker/Dockerfile.production
+    docker_server: localhost
+    docker_port: 1000
     docker_version: 1.0
     username: {{ hubUsername }}
     password: {{ hubPassword }}
     email: {{ hubEmail }}
     image_name: skilltree_production
-    push_latest: true
-    keep_builds: false
