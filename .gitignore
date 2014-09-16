@@ -16,3 +16,4 @@ skilltree.key
 skilltree.keter
 *.swp
 .vagrantmode
+.shake/
