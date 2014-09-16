@@ -9,6 +9,7 @@ script:
   - rivet setup
   - migrate up test
   - cabal exec -- runghc -isrc spec/Main.hs
+  - echo `/sbin/ip route|awk '/default/ { print $3 }'` dockerhost >> /etc/hosts
 services:
   - postgres
 cache:
@@ -16,8 +17,8 @@ cache:
 publish:
   docker:
     docker_file: docker/Dockerfile.production
-    docker_server: $HOSTNAME
-    docker_port: 1000
+    docker_server: dockerhost
+    docker_port: 2375
     docker_version: 1.2.0
     username: {{ hubUsername }}
     password: {{ hubPassword }}
