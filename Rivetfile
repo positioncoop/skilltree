@@ -1,5 +1,5 @@
 database-password = "111"
-dependencies = ["dbp/migrate"]
+dependencies = ["dbp/migrate","dbp/hspec-snap"]
 
 commands {
   run_production = "sudo docker run -w /srv -p 8000:8000 -i -t -v /var/run/postgresql/.s.PGSQL.5432:/var/run/postgresql/.s.PGSQL.5432 skilltree_prod"
