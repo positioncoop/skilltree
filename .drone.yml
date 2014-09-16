@@ -9,9 +9,6 @@ script:
   - rivet setup
   - migrate up test
   - cabal exec -- runghc -isrc spec/Main.hs
-  - mkdir -p /sandbox
-  - mv cabal.sandbox.config /sandbox/
-  - mv .cabal-sandbox /sandbox
 services:
   - postgres
 cache:
