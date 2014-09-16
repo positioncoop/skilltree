@@ -9,6 +9,7 @@ script:
   - pushd /migrate
   - cabal sandbox init && cabal install
   - popd
+  - rm -rf /rivet
   - if [ ! -d "/rivet" ] ; then git clone https://github.com/dbp/rivet /rivet; fi
   - pushd /rivet
   - ls -l
