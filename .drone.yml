@@ -23,4 +23,4 @@ publish:
     username: {{ hubUsername }}
     password: {{ hubPassword }}
     email: {{ hubEmail }}
-    image_name: dbp/skilltree_production
+    image_name: dbp1/skilltree_production
