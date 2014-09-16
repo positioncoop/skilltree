@@ -5,24 +5,22 @@ script:
   - psql -c 'create database skilltree_test;' -U postgres -h 127.0.0.1
   - psql -c "create user skilltree_user with password '111' superuser" -U postgres -h 127.0.0.1
   - cabal update
-  - if [ ! -d "/migrate" ] ; then git clone https://github.com/dbp/migrate /migrate; fi
-  - pushd /migrate
+  - if [ ! -d "/dep/migrate" ] ; then git clone https://github.com/dbp/migrate /dep/migrate; fi
+  - pushd /dep/migrate
   - cabal sandbox init && cabal install
   - popd
-  - rm -rf /rivet
-  - if [ ! -d "/rivet" ] ; then git clone https://github.com/dbp/rivet /rivet; fi
-  - pushd /rivet
+  - if [ ! -d "/dep/rivet" ] ; then git clone https://github.com/dbp/rivet /dep/rivet; fi
+  - pushd /dep/rivet
   - ls -l
-  - cabal sandbox init && cabal install
+  - cabal sandbox init && cabal install --force-reinstalls
   - popd
-  - /rivet/.cabal-sandbox/bin/rivet setup
-  - /migrate/.cabal-sandbox/bin/migrate up test
+  - /dep/rivet/.cabal-sandbox/bin/rivet setup
+  - /dep/migrate/.cabal-sandbox/bin/migrate up test
   - cabal exec -- runghc -isrc spec/Main.hs
 services:
   - postgres
-#cache:
-#  - /migrate
-#  - /rivet
+cache:
+  - /dep
 notify:
   email:
     recipients:
