@@ -19,5 +19,5 @@ ADD ./defaults.cfg /srv/defaults.cfg
 CMD /srv/dist/build/skilltree/skilltree --no-access-log --no-error-log -e prod
 EXPOSE 8000
 # NOTE(dbp 2014-09-15): To run, use:
-# sudo docker run -w /srv -p 8000:8000 -i -t -v /var/run/postgresql/.s.PGSQL.5432:/var/run/postgresql/.s.PGSQL.5432 skilltree_prod
+# sudo docker run -w /srv -p 8000:8000 -i -t -v /var/run/postgresql/.s.PGSQL.5432:/var/run/postgresql/.s.PGSQL.5432 -v prod.cfg:/srv/prod.cfg skilltree_prod
 # Which allows access to postgres. More to be done to give access to Redis as well.

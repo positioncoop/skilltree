@@ -26,4 +26,4 @@ publish:
     password: {{hubPassword}}
     email: {{hubEmail}}
     image_name: dbp1/skilltree_production
-    keep_builds: true
+    keep_build: true
