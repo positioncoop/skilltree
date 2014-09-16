@@ -20,9 +20,9 @@ script:
   - cabal exec -- runghc -isrc spec/Main.hs
 services:
   - postgres
-cache:
-  - /migrate
-  - /rivet
+#cache:
+#  - /migrate
+#  - /rivet
 notify:
   email:
     recipients:
