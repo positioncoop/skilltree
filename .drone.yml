@@ -18,7 +18,7 @@ publish:
     docker_file: docker/Dockerfile.production
     docker_server: localhost
     docker_port: 1000
-    docker_version: 1.0
+    docker_version: 1.2.0
     username: {{ hubUsername }}
     password: {{ hubPassword }}
     email: {{ hubEmail }}
