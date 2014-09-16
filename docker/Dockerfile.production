@@ -15,7 +15,6 @@ ADD ./src /srv/src
 RUN cd /srv && cabal build
 ADD ./snaplets /srv/snaplets
 ADD ./static /srv/static
-ADD ./prod.cfg /srv/prod.cfg
 ADD ./defaults.cfg /srv/defaults.cfg
 CMD /srv/dist/build/skilltree/skilltree --no-access-log --no-error-log -e prod
 EXPOSE 8000
