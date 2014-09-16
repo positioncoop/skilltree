@@ -16,6 +16,7 @@ script:
   - popd
   - /dep/rivet/.cabal-sandbox/bin/rivet setup
   - /dep/migrate/.cabal-sandbox/bin/migrate up test
+  - ls -l
   - cabal exec -- runghc -isrc spec/Main.hs
 services:
   - postgres
