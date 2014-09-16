@@ -13,3 +13,12 @@ services:
   - postgres
 cache:
   - /sandbox
+publish:
+  docker:
+    dockerfile: docker/Dockerfile.production
+    username: {{ hubUsername }}
+    password: {{ hubPassword }}
+    email: {{ hubEmail }}
+    image_name: skilltree_production
+    push_latest: true
+    keep_builds: false
