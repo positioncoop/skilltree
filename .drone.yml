@@ -8,7 +8,10 @@ script:
   - ln -s /sandbox/.cabal-sandbox .
   - rivet setup
   - migrate up test
+  - apt-get install redis-server -y
+  - redis-server &
   - cabal exec -- runghc -isrc spec/Main.hs
+  # NOTE(dbp 2014-09-17): The following are to set up for (a potential) publish build.
   - echo `/sbin/ip route|awk '/default/ { print $3 }'` dockerhost >> /etc/hosts
   - mv docker/Dockerfile.production Dockerfile
 services:
@@ -25,5 +28,18 @@ publish:
     password: {{hubPassword}}
     email: {{hubEmail}}
     image_name: dbp1/skilltree_production
-    keep_build: true
+    keep_build: false
     branch: master
+deploy:
+  bash:
+    script:
+    # NOTE(dbp 2014-09-18): There isn't any way of restricting deploy
+    # to a branch, so the plan is just that the tag shouldn't have an
+    # image on other branches (as they should be ahead or on a
+    # different path from master). A little annoying, but what are you
+    # going to do.
+      - ssh host@stage.skilltree.dbpapp.com /srv/deploy.sh skilltree stage dbp1/skilltree_production $(git rev-parse --short HEAD) 1; echo 0
+notify:
+  email:
+    recipients:
+      - dbp@dbpmail.net

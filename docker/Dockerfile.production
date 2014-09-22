@@ -1,23 +1,17 @@
-FROM biscarch/ghc-7.8.3
-RUN apt-get update
-RUN apt-get upgrade -y
-RUN apt-get install zlib1g-dev libssl-dev -y
-RUN apt-get install git -y
-RUN apt-get install libpq-dev postgresql-client -y
-ENV LANG en_US.utf8
-RUN cabal update
+FROM dbp1/skilltree_base:latest
 ADD ./skilltree.cabal /srv/skilltree.cabal
 ADD ./deps /srv/deps
-RUN cd /srv && cabal sandbox init
 RUN cd /srv && bash /srv/deps/add-all
-RUN cd /srv && cabal install --only-dependencies --reorder-goals
 ADD ./src /srv/src
-RUN cd /srv && cabal build
+# Since the base image could get out of sync (and we don't want to have to update
+# it whenever we change dependencies, we can't cabal build. But hopefully nothing
+# will have to get build, and we still get huge speed up.
+RUN cd /srv && cabal install --reorder-goals --force-reinstalls
 ADD ./snaplets /srv/snaplets
 ADD ./static /srv/static
-ADD ./defaults.cfg /srv/defaults.cfg
-CMD /srv/dist/build/skilltree/skilltree --no-access-log --no-error-log -e prod
+ADD ./migrations /srv/migrations
+CMD /srv/.cabal-sandbox/bin/skilltree --no-access-log --no-error-log -e prod
 EXPOSE 8000
-# NOTE(dbp 2014-09-15): To run, use:
-# sudo docker run -w /srv -p 8000:8000 -i -t -v /var/run/postgresql/.s.PGSQL.5432:/var/run/postgresql/.s.PGSQL.5432 -v prod.cfg:/srv/prod.cfg skilltree_prod
-# Which allows access to postgres. More to be done to give access to Redis as well.
+# NOTE(dbp 2014-09-15): To run, use something like:
+# Note that you have to set up redis to listen on a socket (it's not on by default).
+# sudo docker run -w /srv -p 8000:8000 -i -t -v /tmp/redis.sock:/tmp/redis.sock -v /var/run/postgresql/.s.PGSQL.5432:/var/run/postgresql/.s.PGSQL.5432 -v prod.cfg:/srv/prod.cfg skilltree_prod
