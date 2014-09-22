@@ -27,3 +27,4 @@ publish:
     email: {{hubEmail}}
     image_name: dbp1/skilltree_production
     keep_build: true
+    branch: master
