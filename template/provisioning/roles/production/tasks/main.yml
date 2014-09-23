@@ -6,6 +6,9 @@
 - name: make sure host owns /srv
   file: "dest=/srv mode=755 state=directory owner=host"
 
+- name: make sure host owns /srv/data (and it exists)
+  file: "dest=/srv/data mode=755 state=directory owner=host"
+
 - name: add local key to the authorized_keys for deployment
   authorized_key: user=host key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 

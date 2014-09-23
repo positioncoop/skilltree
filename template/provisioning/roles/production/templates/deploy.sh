@@ -36,7 +36,7 @@ echo "starting new containers"
 for i in `seq 1 $NUM` ; do
     echo "inside loop $i"
     UNIQ=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1 | tr '[:upper:]' '[:lower:]')
-    JOB=`docker run -d -w /srv -p 8000 -v /srv/${CFG}:/srv/prod.cfg -v /var/run/redis/redis.sock:/var/run/redis/redis.sock -v /var/run/postgresql/.s.PGSQL.5432:/var/run/postgresql/.s.PGSQL.5432 --name=${SLUG}_${UNIQ} ${IMG}:${SHA} | cut -c1-12`
+    JOB=`docker run -d -w /srv -p 8000 -v /srv/data:/srv/data -v /srv/${CFG}:/srv/prod.cfg -v /var/run/redis/redis.sock:/var/run/redis/redis.sock -v /var/run/postgresql/.s.PGSQL.5432:/var/run/postgresql/.s.PGSQL.5432 --name=${SLUG}_${UNIQ} ${IMG}:${SHA} | cut -c1-12`
     if [ -z "$JOB" ]
     then
 	echo "could not create new container. aborting."
@@ -51,6 +51,10 @@ for i in `seq 1 $NUM` ; do
     fi
     etcdctl set "${REPO}/${ENV}/upstream/${JOB}" "127.0.0.1:$PORT"
 done
+
+# TODO(dbp 2014-09-23): We actually want to make sure what is in
+# etcdctl does not have stale (ie, failed) containers. And we want
+# to run confd even if there were no running containers.
 echo "removing old containers"
 for i in ${OLDPORTS[@]}
 do
