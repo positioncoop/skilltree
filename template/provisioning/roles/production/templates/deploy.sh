@@ -16,12 +16,14 @@ cd /srv/$REPO
 git fetch
 git checkout $SHA
 cd ..
-if [ -ne $REPO/.rivetcrypt ]
+if [ ! -e $REPO/.rivetcrypt ]
 then
     echo ".rivetcrypt does not exist at ${SHA}, aborting."
     exit -1
 fi
-gpg --yes -o prod_${SHA}.cfg --passphrase-file .rivetpass -d $REPO/.rivetcrypt
+# NOTE(dbp 2014-09-23): gpg seems to sometimes not understand how to read a passphrase
+# from a file. Seems like not that difficult, but, apparently this is the workaround.
+cat .rivetpass | gpg --yes -o prod_${SHA}.cfg --passphrase-fd 0 -d $REPO/.rivetcrypt
 
 CFG=prod_${SHA}.cfg
 

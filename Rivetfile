@@ -1,6 +1,9 @@
 database-password = "111"
 dependencies = ["dbp/migrate","dbp/hspec-snap"]
 
+stage-host = "host@stage.skilltree.dbpapp.com"
+prod-host = "host@stage.skilltree.dbpapp.com"
+production-image = "dbp1/skilltree_production"
 
 commands {
   crypt = "scripts/crypt.sh"

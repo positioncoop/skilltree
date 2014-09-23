@@ -45,6 +45,7 @@
     accept_hostkey=yes
     key_file=/srv/.ssh/id_rsa
     dest=/srv/skilltree
+  ignore_errors: true
 
 - name: make host own repository
   file: path=/srv/skilltree state=directory owner=host recurse=yes

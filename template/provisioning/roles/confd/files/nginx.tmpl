@@ -1,11 +1,11 @@
 upstream skilltree-stage {
-  {{range $server := .skilltree_{{env}}_upstream}}
+  {{range $server := .skilltree_stage_upstream}}
   server {{$server.Value}};
   {{end}}
 }
 
 server {
-  server_name {{server_names}};
+  server_name stage.skilltree.dbpapp.com;
   listen 80;
 
   location / {
