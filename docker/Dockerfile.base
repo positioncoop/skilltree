@@ -1,0 +1,16 @@
+FROM dbp1/ghc-7.8.3-migrate-rivet
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get install zlib1g-dev libssl-dev -y
+RUN apt-get install git -y
+RUN apt-get install libpq-dev postgresql-client -y
+ENV LANG en_US.utf8
+RUN cabal update
+ADD ./skilltree.cabal /srv/skilltree.cabal
+ADD ./deps /srv/deps
+RUN cd /srv && cabal sandbox init
+RUN cd /srv && bash /srv/deps/add-all
+RUN cd /srv && cabal install --only-dependencies --reorder-goals
+RUN cd /srv && cabal exec -- ghc-pkg hide resource-pool
+RUN rm /srv/skilltree.cabal
+RUN rm -rf /srv/deps

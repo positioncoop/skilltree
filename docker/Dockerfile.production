@@ -10,6 +10,7 @@ RUN cd /srv && cabal install --reorder-goals --force-reinstalls
 ADD ./snaplets /srv/snaplets
 ADD ./static /srv/static
 ADD ./migrations /srv/migrations
+ADD ./defaults.cfg /srv/defaults.cfg
 CMD /srv/.cabal-sandbox/bin/skilltree --no-access-log --no-error-log -e prod
 EXPOSE 8000
 # NOTE(dbp 2014-09-15): To run, use something like:
