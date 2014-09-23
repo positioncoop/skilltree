@@ -10,6 +10,7 @@ SLUG=${REPO}_${ENV}
 IMG=$3
 SHA=$4
 NUM=$5
+CFG=prod_${SHA}.cfg
 
 # Get correct revision of prod.cfg
 cd /srv/$REPO
@@ -21,11 +22,8 @@ then
     echo ".rivetcrypt does not exist at ${SHA}, aborting."
     exit -1
 fi
-# NOTE(dbp 2014-09-23): gpg seems to sometimes not understand how to read a passphrase
-# from a file. Seems like not that difficult, but, apparently this is the workaround.
-cat .rivetpass | gpg --yes -o prod_${SHA}.cfg --passphrase-fd 0 -d $REPO/.rivetcrypt
+openssl enc -aes-256-cbc -d -a -salt -in $REPO/.rivetcrypt -out ${CFG} -pass file:.rivetpass
 
-CFG=prod_${SHA}.cfg
 
 echo "Logging in..."
 docker login -e {{docker_email}} -u {{docker_username}} -p {{docker_password}}

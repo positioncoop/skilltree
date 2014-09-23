@@ -2,10 +2,10 @@
 
 if [ -e ".rivetcrypt" ]
 then
-    gpg --yes -o /tmp/rivetdecrypted --passphrase-file .rivetpass -d .rivetcrypt
+    openssl enc -aes-256-cbc -d -a -salt -in .rivetcrypt -out /tmp/rivetdecrypted -pass file:.rivetpass
 else
     touch /tmp/rivetdecrypted
 fi
 $EDITOR /tmp/rivetdecrypted
-gpg --yes -o .rivetcrypt --symmetric --passphrase-file .rivetpass --cipher-algo AES256 < /tmp/rivetdecrypted
+openssl enc -aes-256-cbc -e -a -salt -in /tmp/rivetdecrypted -out .rivetcrypt -pass file:.rivetpass
 rm /tmp/rivetdecrypted

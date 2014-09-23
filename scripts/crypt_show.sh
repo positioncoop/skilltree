@@ -2,7 +2,7 @@
 
 if [ -e ".rivetcrypt" ]
 then
-    gpg -o - --passphrase-file .rivetpass -d .rivetcrypt
+    openssl enc -aes-256-cbc -d -a -salt -in .rivetcrypt -pass file:.rivetpass
 else
     echo "No .rivetcrypt."
 fi
