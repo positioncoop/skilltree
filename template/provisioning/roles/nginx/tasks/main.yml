@@ -1,0 +1,9 @@
+---
+
+- name: install nginx
+  sudo: yes
+  apt:  "pkg=nginx update_cache=yes"
+
+- name: ensure nginx server is started
+  service: name=nginx state=restarted enabled=yes
+  sudo: true

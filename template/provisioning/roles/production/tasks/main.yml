@@ -1,0 +1,58 @@
+---
+
+- name: create host deploy user
+  user: name=host shell=/bin/bash home=/srv groups=docker
+
+- name: make sure host owns /srv
+  file: "dest=/srv mode=755 state=directory owner=host"
+
+- name: add local key to the authorized_keys for deployment
+  authorized_key: user=host key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+- name: install database creation library
+  sudo: yes
+  apt: pkg=python-psycopg2 update_cache=yes
+
+- name: create production database
+  sudo: yes
+  sudo_user: postgres
+  postgresql_db: name=skilltree_prod
+
+- name: ensure user has access to production database
+  sudo: yes
+  sudo_user: postgres
+  postgresql_user: db=skilltree_prod name=skilltree_user password={{ production_db_password }} priv=ALL
+
+- name: ensure user does not have unnecessary privilege
+  sudo: yes
+  sudo_user: postgres
+  postgresql_user: name=skilltree_user role_attr_flags=NOSUPERUSER,NOCREATEDB
+
+- name: allow host to run confd
+  lineinfile: "dest=/etc/sudoers state=present line='host ALL=NOPASSWD: /usr/local/bin/confd'"
+
+- name: add deploy key
+  copy:
+    content="{{ deploy_key }}"
+    dest="/srv/.ssh/id_rsa"
+    owner=host
+    group=host
+    mode=0600
+
+- name: clone source repository
+  git:
+    repo=git@github.com:positioncoop/skilltree.git
+    accept_hostkey=yes
+    key_file=/srv/.ssh/id_rsa
+    dest=/srv/skilltree
+
+- name: make host own repository
+  file: path=/srv/skilltree state=directory owner=host recurse=yes
+
+- name: add deploy script
+  template:
+    src=deploy.sh
+    dest=/srv/deploy.sh
+    owner=host
+    group=host
+    mode=0755

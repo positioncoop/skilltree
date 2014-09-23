@@ -1,0 +1,15 @@
+[web:children]
+stage
+prod
+
+[prod]
+
+
+[stage]
+stage.skilltree.dbpapp.com ansible_ssh_user=root
+
+[prod:vars]
+env=prod
+
+[stage:vars]
+env=stage

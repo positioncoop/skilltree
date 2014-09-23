@@ -1,0 +1,66 @@
+---
+- name: look for cabal database
+  shell: (ls {{ cabal_prefix_dir }}/packages ; true)
+  register: cabal_packages_dir
+
+- name: download cabal update
+  shell: "PATH=$PATH:{{ cabal_prefix_dir }}/bin cabal update"
+  when: cabal_packages_dir.stdout.find("hackage") == -1
+
+- name: install database creation library
+  sudo: yes
+  apt: pkg=python-psycopg2 update_cache=yes
+
+- name: create development database
+  sudo: yes
+  sudo_user: postgres
+  postgresql_db: name=skilltree_devel
+
+- name: create test database
+  sudo: yes
+  sudo_user: postgres
+  postgresql_db: name=skilltree_test
+
+- name: ensure user has access to development database
+  sudo: yes
+  sudo_user: postgres
+  postgresql_user: db=skilltree_devel name=skilltree_user password=111 priv=ALL
+
+- name: ensure user has access to test database
+  sudo: yes
+  sudo_user: postgres
+  postgresql_user: db=skilltree_test name=skilltree_user password=111 priv=ALL
+
+- name: ensure user does not have unnecessary privilege
+  sudo: yes
+  sudo_user: postgres
+  postgresql_user: name=skilltree_user role_attr_flags=NOSUPERUSER,NOCREATEDB
+
+- name: install happy
+  sudo: no
+  shell: "export PATH=$PATH:{{ cabal_prefix_dir }}/bin:{{ ghc_prefix_dir}}/bin; cabal install happy creates={{ cabal_prefix_dir }}/bin/happy"
+  ignore_errors: yes
+
+- name: install alex
+  sudo: no
+  shell: "export PATH=$PATH:{{ cabal_prefix_dir }}/bin:{{ ghc_prefix_dir}}/bin; cabal install alex creates={{ cabal_prefix_dir }}/bin/alex"
+  ignore_errors: yes
+
+- name: install moo dependencies
+  sudo: yes
+  apt: pkg=libsqlite3-dev update_cache=yes
+
+
+- name: install moo
+  sudo: no
+  shell: "export PATH=$PATH:{{ cabal_prefix_dir }}/bin:{{ ghc_prefix_dir}}/bin; cabal install dbmigrations creates={{ cabal_prefix_dir }}/bin/moo"
+  ignore_errors: yes
+
+- name: install keter
+  sudo: no
+  shell: "export PATH=$PATH:{{ cabal_prefix_dir }}/bin:{{ ghc_prefix_dir}}/bin; cabal install keter creates={{ cabal_prefix_dir }}/bin/keter"
+  ignore_errors: yes
+
+- name: install git
+  sudo: yes
+  apt: pkg=git-core update_cache=yes

@@ -1,0 +1,11 @@
+---
+# file: group_vars/all
+
+# postgresql
+postgresql_packages:
+  - postgresql-9.3
+  - libpq-dev
+
+# redis
+redis_packages:
+  - redis-server
