@@ -1,5 +1,8 @@
 database-password = "111"
-dependencies = ["dbp/migrate","dbp/hspec-snap"]
+dependencies = ["dbp/migrate"
+               ,"dbp/hspec-snap"
+               ,"positioncoop/digestive-functors+digestive-functors-snap"
+               ]
 
 stage-host = "host@stage.skilltree.dbpapp.com"
 prod-host = "host@stage.skilltree.dbpapp.com"
