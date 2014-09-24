@@ -34,6 +34,7 @@ data App = App
      , _conf       :: Config
      , _env        :: Text
      , _filestore  :: FileStore
+     , _absPath    :: FilePath
      }
 
 makeLenses ''App

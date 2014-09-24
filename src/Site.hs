@@ -57,9 +57,9 @@ app = makeSnaplet "app" "" Nothing $ do
                                             siteSplices }
     conf <- getSnapletUserConfig
     url <- liftIO (C.require conf "siteUrl")
-    absPath <- liftIO (C.lookupDefault "" conf "absolutePath")
+    aPath <- liftIO (C.lookupDefault "" conf "absolutePath")
     s <- nestSnaplet "sess" sess $
-           initCookieSessionManager (absPath ++ "site_key.txt") "sess" Nothing
+           initCookieSessionManager (aPath ++ "site_key.txt") "sess" Nothing
     p <- nestSnaplet "persistent" persistent $ initPersist (return ())
     d <- nestSnaplet "db" db pgsInit
     r <- nestSnaplet "redis" redis redisDBInitConf
@@ -67,10 +67,10 @@ app = makeSnaplet "app" "" Nothing $ do
     e <- getEnvironment
     addAuthSplices h auth
     addRoutes routes
-    let storePath = absPath ++ "store"
+    let storePath = aPath ++ "store"
     addRoutes [("store", serveDirectory storePath)]
     liftIO $ createDirectoryIfMissing True storePath
-    return $ App h s a p d r url conf (pack e) (Directory storePath)
+    return $ App h s a p d r url conf (pack e) (Directory storePath) aPath
 
 prefixUrlSplice :: I.Splice AppHandler
 prefixUrlSplice = do node <- getParamNode

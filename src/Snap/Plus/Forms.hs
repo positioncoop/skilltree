@@ -3,7 +3,10 @@
 
 module Snap.Plus.Forms where
 
+import           Prelude               hiding ((++))
+
 import           Control.Applicative
+import           Control.Lens
 import           Control.Monad
 import           Data.Char
 import qualified Data.Text             as T
@@ -54,7 +57,13 @@ deleteForm t = snd <$> ((,) <$> "prompt" .: text (Just t)
 numericTextForm :: Form Text AppHandler Text
 numericTextForm = check "Must be all numbers" (all isDigit . T.unpack) (text Nothing)
 
-runMultipartForm :: MonadSnap m	=> Text -> Form v m a -> m (View v, Maybe a)
-runMultipartForm = runFormWith (defaultSnapFormConfig { uploadPolicy = setMaximumFormInputSize tenmegs defaultUploadPolicy
-                                                      , partPolicy = const $ allowWithMaximumSize tenmegs})
+runMultipartForm :: Text -> Form v AppHandler a -> AppHandler (View v, Maybe a)
+runMultipartForm nm form =
+  do apath <- use absPath
+     runFormWith (defaultSnapFormConfig
+                 { uploadPolicy = setMaximumFormInputSize tenmegs defaultUploadPolicy
+                 , partPolicy = const $ allowWithMaximumSize tenmegs
+                 , temporaryDirectory = Just (apath ++ "tmp")})
+                 nm
+                 form
   where tenmegs = 10 * 1024 * 1024
