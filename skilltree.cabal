@@ -66,7 +66,9 @@ Executable skilltree
     unordered-containers,
     esqueleto,
     attoparsec >= 0.11 && < 0.13,
-    migrate
+    migrate,
+    hspec2,
+    hspec-snap >= 0.2
 
   if flag(development)
     build-depends:
