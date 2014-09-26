@@ -3,13 +3,15 @@ stage
 prod
 
 [prod]
-
+104.131.63.251 ansible_ssh_user=root
 
 [stage]
 stage.skilltree.dbpapp.com ansible_ssh_user=root
 
 [prod:vars]
 env=prod
+server_domain=skilltree.dbpapp.com
 
 [stage:vars]
 env=stage
+server_domain=stage.skilltree.dbpapp.com

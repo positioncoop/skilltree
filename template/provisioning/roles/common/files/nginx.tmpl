@@ -1,15 +1,15 @@
-upstream skilltree-stage {
-  {{range $server := .skilltree_stage_upstream}}
+upstream PROJECTSLUG-ENV {
+  {{range $server := .PROJECTSLUG_ENV_upstream}}
   server {{$server.Value}};
   {{end}}
 }
 
 server {
-  server_name stage.skilltree.dbpapp.com;
+  server_name HOSTNAME;
   listen 80;
 
   location / {
-    proxy_pass http://skilltree-stage;
+    proxy_pass http://PROJECTSLUG-ENV;
     proxy_redirect off;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;

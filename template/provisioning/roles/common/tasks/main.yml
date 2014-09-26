@@ -19,17 +19,17 @@
 - name: create production database
   sudo: yes
   sudo_user: postgres
-  postgresql_db: name=skilltree_prod
+  postgresql_db: name={{project_slug}}_prod
 
 - name: ensure user has access to production database
   sudo: yes
   sudo_user: postgres
-  postgresql_user: db=skilltree_prod name=skilltree_user password={{ production_db_password }} priv=ALL
+  postgresql_user: db={{project_slug}}_prod name={{project_slug}}_user password={{ production_db_password }} priv=ALL
 
 - name: ensure user does not have unnecessary privilege
   sudo: yes
   sudo_user: postgres
-  postgresql_user: name=skilltree_user role_attr_flags=NOSUPERUSER,NOCREATEDB
+  postgresql_user: name={{project_slug}}_user role_attr_flags=NOSUPERUSER,NOCREATEDB
 
 - name: allow host to run confd
   lineinfile: "dest=/etc/sudoers state=present line='host ALL=NOPASSWD: /usr/local/bin/confd'"
@@ -44,14 +44,14 @@
 
 - name: clone source repository
   git:
-    repo=git@github.com:positioncoop/skilltree.git
+    repo={{ source_repo }}
     accept_hostkey=yes
     key_file=/srv/.ssh/id_rsa
-    dest=/srv/skilltree
+    dest=/srv/{{project_slug}}
   ignore_errors: true
 
 - name: make host own repository
-  file: path=/srv/skilltree state=directory owner=host recurse=yes
+  file: path=/srv/{{project_slug}} state=directory owner=host recurse=yes
 
 - name: add deploy script
   template:
@@ -60,3 +60,32 @@
     owner=host
     group=host
     mode=0755
+
+
+- name: create containers for etcd
+  command: etcdctl mkdir {{project_slug}}/{{env}}
+  ignore_errors: yes
+
+- name: install templates
+  copy: src=nginx.tmpl dest=/etc/confd/templates/nginx-{{project_slug}}-{{env}}.tmpl
+
+- name: do hostname in template
+  replace:
+    dest=/etc/confd/templates/nginx-{{project_slug}}-{{env}}.tmpl
+    regexp='HOSTNAME'
+    replace={{server_domain}}
+
+- name: do slug replacement in template
+  replace:
+    dest=/etc/confd/templates/nginx-{{project_slug}}-{{env}}.tmpl
+    regexp='PROJECTSLUG'
+    replace={{project_slug}}
+
+- name: do env replacement in template
+  replace:
+    dest=/etc/confd/templates/nginx-{{project_slug}}-{{env}}.tmpl
+    regexp='ENV'
+    replace={{env}}
+
+- name: install configuration
+  template: src=nginx.toml dest=/etc/confd/conf.d/nginx-{{project_slug}}-{{env}}.toml

@@ -41,13 +41,3 @@
   command: cp /tmp/etcd-v0.4.6-linux-amd64/{{ item }} /usr/bin/{{ item }}
   with_items:
     - etcdctl
-
-- name: create containers for etcd
-  command: etcdctl mkdir skilltree/stage
-  ignore_errors: yes
-
-- name: install templates
-  copy: src=nginx.tmpl dest=/etc/confd/templates/nginx-skilltree-stage.tmpl
-
-- name: install configuration
-  template: src=nginx.toml dest=/etc/confd/conf.d/nginx-skilltree-stage.toml

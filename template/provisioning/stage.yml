@@ -1,5 +1,5 @@
 ---
-- hosts: web
+- hosts: stage
   gather_facts: yes
 
   sudo: no
@@ -14,7 +14,7 @@
     - angstwad.docker_ubuntu
     - postgresql
     - redis
-    - tarsnap
+    - { role: tarsnap, when: env == "prod" }
     - nginx
     - confd
-    - production
+    - common

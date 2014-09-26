@@ -4,6 +4,9 @@
   sudo: yes
   apt:  "pkg=nginx update_cache=yes"
 
+- name: remove default sites-enabled config
+  command: rm /etc/nginx/sites-enabled/default removes=/etc/nginx/sites-enabled/default
+
 - name: ensure nginx server is started
   service: name=nginx state=restarted enabled=yes
   sudo: true

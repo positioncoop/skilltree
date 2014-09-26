@@ -9,3 +9,7 @@ postgresql_packages:
 # redis
 redis_packages:
   - redis-server
+
+source_repo: git@github.com:positioncoop/skilltree.git
+
+project_slug: skilltree

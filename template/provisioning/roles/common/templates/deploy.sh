@@ -1,9 +1,11 @@
 #!/bin/bash
+
 if [ "$#" -ne 5 ]
 then
     echo "usage : deploy.sh repo env imgname SHA 3 -- start three new repo/env instances of imgname:SHA"
     exit -1
 fi
+
 REPO=$1
 ENV=$2
 SLUG=${REPO}_${ENV}
@@ -29,7 +31,7 @@ echo "Logging in..."
 docker login -e {{docker_email}} -u {{docker_username}} -p {{docker_password}}
 
 echo "Getting currently running containers..."
-OLDPORTS=( `docker ps | grep $SLUG | awk '{print $1}'` )
+OLDPORTS=( `docker ps | grep ${SLUG}_ | awk '{print $1}'` )
 echo "pulling version $SHA"
 docker pull $IMG:$SHA
 echo "starting new containers"
