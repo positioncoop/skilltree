@@ -6,19 +6,19 @@
 module Main where
 
 import           Data.Maybe
-import qualified Data.Text                     as T
+import qualified Data.Text                          as T
 import           Data.Time.Clock
-import           Snap.Plus                     (liftIO, route, void, with)
-import           Snap.Snaplet.Auth             (AuthUser (..))
-import qualified Snap.Snaplet.Auth             as A
-import           Snap.Snaplet.PostgresqlSimple
-import           System.Random                 (randomIO)
+import           Snap.Plus                          (liftIO, route, void, with)
+import           Snap.Snaplet.Auth                  (AuthUser (..))
+import qualified Snap.Snaplet.Auth                  as A
+import           Snap.Snaplet.PostgresqlSimple.Plus
+import           System.Random                      (randomIO)
 import           Test.Hspec
 import           Test.Hspec.Snap
 
 import           Application
-import           Database.Persist              (Entity (..))
-import qualified Database.Persist              as P
+import           Database.Persist                   (Entity (..))
+import qualified Database.Persist                   as P
 import           Dependency.Types
 import           Site
 import           Snap.Snaplet.Persistent
@@ -111,9 +111,11 @@ deleteAll = do runPersist $ P.deleteWhere ([] :: [P.Filter Dependency])
 
 main :: IO ()
 main = hspec $ do
-  describe "basic tests" $ snap (route routes) app $ do
+  describe "basic tests" $ snap (route routes) app $ afterEval deleteAll $ do
     it "should redirect from index to /tutorials" $
       get "/" >>= should300To "tutorials"
+    it "should render /tutorials" $
+      get "/tutorials" >>= should200
   describe "api test" $ snap (route routes) app $ afterEval deleteAll $ do
     describe "/tutorial?format=json" $
       do it "should return published tutorials" $
@@ -151,6 +153,23 @@ main = hspec $ do
            do createWith DraftTutorial () Nothing :: HspecApp DependencyEntity
               get' "/dependencies" (params [("format", "json")])
                 >>= shouldHaveText "source"
+  describe "accounts" $ snap (route routes) app $ afterEval deleteAll $ do
+    let userCount = numberQuery' "select count(*) from snap_auth_user"
+    describe "signup" $
+      do it "should not be able to signup without key" $
+           do get "/auth/signup" >>= should404
+              post "/auth/signup" (params [("signup.email.address", "a@gmail.com")
+                                          ,("signup.email.confirm", "a@gmail.com")
+                                          ,("signup.password", "pass")])
+                >>= should404
+         it "should be able to signup with proper key" $
+           do get' "/auth/signup" (params [("key", "111")]) >>= should200
+              post "/auth/signup" (params [("key", "111")
+                                          ,("signup.email.address", "a@gmail.com")
+                                          ,("signup.email.confirm", "a@gmail.com")
+                                          ,("signup.password", "pass")])
+                >>= should300To "/"
+              eval userCount >>= shouldEqual 1
 
 
 loginAs :: AuthUser -> SnapHspecM App a -> SnapHspecM App a

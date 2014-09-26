@@ -44,9 +44,9 @@ routes = [ ("tutorials",    route Tutorial.Handlers.routes)
          , ("dependencies", route Dependency.Handlers.routes)
          , ("auth",         route Auth.Handlers.routes)
          , ("",             ifTop $ redirect "tutorials")
-         , ("",             heistServe)
          , ("",             serveDirectory "static")
-         , ("",             render "notfound")
+         , ("",             do modifyResponse (setResponseCode 404)
+                               render "notfound")
          ]
 
 app :: SnapletInit App App
@@ -70,7 +70,8 @@ app = makeSnaplet "app" "" Nothing $ do
     let storePath = aPath ++ "store"
     addRoutes [("store", serveDirectory storePath)]
     liftIO $ createDirectoryIfMissing True storePath
-    return $ App h s a p d r url conf (pack e) (Directory storePath) aPath
+    k <- liftIO (C.require conf "signup-key")
+    return $ App h s a p d r url conf (pack e) (Directory storePath) aPath k
 
 prefixUrlSplice :: I.Splice AppHandler
 prefixUrlSplice = do node <- getParamNode

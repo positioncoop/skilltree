@@ -35,6 +35,7 @@ data App = App
      , _env        :: Text
      , _filestore  :: FileStore
      , _absPath    :: FilePath
+     , _signupKey  :: Text
      }
 
 makeLenses ''App
