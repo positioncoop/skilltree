@@ -24,44 +24,42 @@ import           Site
 import           Snap.Snaplet.Persistent
 import           Tutorial.Types
 
-class FactoryArgs a t where
-  toArgs :: t -> a -> a
+class FactoryArgs d t where
+  toArgs :: t -> d -> d
 
-instance FactoryArgs a () where
+instance FactoryArgs d () where
   toArgs _ = id
 
-instance FactoryArgs a (a -> a) where
+instance FactoryArgs d (d -> d) where
   toArgs f = f
 
-class Factory b a c | a -> b, a -> c where
-  build :: FactoryArgs a t => t -> SnapHspecM b a
-  save :: a -> Maybe UTCTime -> SnapHspecM b c
+class Factory b a c d | a -> b, a -> c, a -> d where
+  build :: d -> SnapHspecM b a
+  save :: a -> SnapHspecM b c
+  factoryFields :: d
   setId :: c -> a -> a
-  create :: FactoryArgs a t => t -> Maybe UTCTime -> SnapHspecM b a
-  create t now = do a <- build t
-                    i <- save a now
-                    let newa = setId i a
-                    return newa
+  create :: FactoryArgs d t => t -> SnapHspecM b a
+  create t = do a <- build $ (toArgs t) factoryFields
+                i <- save a
+                let newa = setId i a
+                return newa
   reload :: a -> SnapHspecM b a
   reload = return
 
-class Factory b a c => FactoryWith b a c t | a -> b, a -> c where
-  buildWith :: FactoryArgs a x => t -> x -> SnapHspecM b a
-  createWith :: FactoryArgs a x => t -> x -> Maybe UTCTime -> SnapHspecM b a
-  createWith t x now = do a <- buildWith t x
-                          i <- save a now
-                          let newa = setId i a
-                          return newa
 
-instance Factory App TutorialEntity TutorialId where
-  build args = return $ toArgs args (Entity (mkKey 0) (Tutorial 0 0 "Untitled" Nothing Draft))
+type TutorialFields = (Int, Int, Text, Maybe Text, Publish)
+
+instance Factory App TutorialEntity TutorialId TutorialFields where
+  factoryFields = (0, 0, "Untitled", Nothing, Draft)
+  build (x,y,t,ic,pub) = return (Entity (mkKey 0) (Tutorial x y t ic pub))
   save (Entity _ t) _ = eval $ runPersist $ P.insert t
   setId k (Entity _ t) = Entity k t
 
-instance Factory App AuthUser A.UserId where
-  build args = do n <- liftIO $ randomIO :: SnapHspecM App Int
-                  let username = T.pack $ "user" ++ show (n `mod` 10000)
-                  return $ toArgs args A.defAuthUser { userLogin = username }
+instance Factory App AuthUser A.UserId (IO Text) where
+  factoryFields = do n <- randomIO :: SnapHspecM App Int
+                     return $ T.pack $ "user" ++ show (n `mod` 10000)
+  build mlogin = do username <- liftIO mlogin
+                    return $ A.defAuthUser { userLogin = username }
   save au _ = do mau <- eval $ with auth $ A.saveUser au
                  case mau of
                    Left err -> error (show err)
@@ -69,38 +67,18 @@ instance Factory App AuthUser A.UserId where
                      return (fromJust $ A.userId au')
   setId i a = a { A.userId = Just i }
 
-instance Factory App DependencyEntity DependencyId where
-  build args = do t1 <- create () Nothing
-                  t2 <- create () Nothing
-                  return $ toArgs args (Entity (mkKey 0) (Dependency (entityKey t1) (entityKey t2)))
+instance Factory App DependencyEntity DependencyId (SnapHspecM TutorialEntity, SnapHspecM TutorialEntity) where
+  factoryFields = (create () Nothing, create () Nothing)
+  build (mtutorial1, mtutorial2) = do
+    t1 <- mtutorial1
+    t2 <- mtutorial2
+    return $ (Entity (mkKey 0) (Dependency (entityKey t1) (entityKey t2)))
   save (Entity _ d) _ = eval $ runPersist $ P.insert d
   setId k (Entity _ d) = Entity k d
 
-data PublishedTutorial = PublishedTutorial
-data DraftTutorial = DraftTutorial
-data MixedTutorial = MixedTutorial
-
-instance FactoryWith App  DependencyEntity DependencyId PublishedTutorial where
-  buildWith _ args =
-    do t1 <- create (setMode Published) Nothing
-       t2 <- create (setMode Published) Nothing
-       return $ toArgs args (Entity (mkKey 0) (Dependency (entityKey t1) (entityKey t2)))
-
-instance FactoryWith App  DependencyEntity DependencyId DraftTutorial where
-  buildWith _ args =
-    do t1 <- create (setMode Draft) Nothing
-       t2 <- create (setMode Draft) Nothing
-       return $ toArgs args (Entity (mkKey 0) (Dependency (entityKey t1) (entityKey t2)))
-
-instance FactoryWith App  DependencyEntity DependencyId MixedTutorial where
-  buildWith _ args =
-    do t1 <- create (setMode Published) Nothing
-       t2 <- create (setMode Draft) Nothing
-       return $ toArgs args (Entity (mkKey 0) (Dependency (entityKey t1) (entityKey t2)))
-
 type HspecApp = SnapHspecM App
 
-setTitle title (Entity k t) = Entity k t {tutorialTitle = title} :: TutorialEntity
+setTitle title (x, y, _, icon, publish) = (x, y, title, icon, publish)
 setMode m (Entity k t) = Entity k t {tutorialPublish = m} :: TutorialEntity
 
 deleteAll :: AppHandler ()
@@ -138,7 +116,7 @@ main = hspec $ do
               shouldHaveText "Tutorial #2" p
     describe "/dependencies?format=json" $
       do it "should return dependencies between published tutorials" $
-           do createWith PublishedTutorial () Nothing :: HspecApp DependencyEntity
+           do createWith PublishedTutorial (setDependent (create (setMode Published) Nothing)) Nothing :: HspecApp DependencyEntity
               get' "/dependencies" (params [("format", "json")])
                 >>= shouldHaveText "source"
          it "should not return dependencies between draft tutorials" $
