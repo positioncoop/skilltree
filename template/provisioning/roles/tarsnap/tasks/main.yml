@@ -94,4 +94,4 @@
     name="Tarsnap backup"
     hour="7"
     minute="0"
-    job="sh {{base_dir}}/tarsnap.sh >> /var/log/tarsnap.log"
+    job="sh {{base_dir}}/tarsnap.sh && curl {{backup_notify_url}} &>> /var/log/tarsnap.log"
