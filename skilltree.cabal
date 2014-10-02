@@ -47,10 +47,9 @@ Executable skilltree
     random,
     amazon-emailer-client-snap  >= 0.1.1.0,
     dns,
-    snap-testing                >= 0.6,
     monad-logger,
     resource-pool-catchio,
-    snaplet-redis,
+    snaplet-redis >= 0.1.4,
     hedis,
     aeson                       >= 0.7 && < 0.8,
     snap-extras                 >= 0.9 && < 0.10,
@@ -68,7 +67,9 @@ Executable skilltree
     attoparsec >= 0.11 && < 0.13,
     migrate,
     hspec2,
-    hspec-snap >= 0.2
+    hspec-snap >= 0.2,
+    -- NOTE(dbp 2014-10-01): snaplet-redis requires this, and cabal doesn't seem to figure that out.
+    network < 2.6
 
   if flag(development)
     build-depends:
