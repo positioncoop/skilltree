@@ -7,7 +7,6 @@ module Main where
 
 import           Data.Maybe
 import qualified Data.Text                          as T
-import           Data.Time.Clock
 import           Snap.Plus                          (liftIO, route, void, with)
 import           Snap.Snaplet.Auth                  (AuthUser (..))
 import qualified Snap.Snaplet.Auth                  as A
@@ -33,53 +32,64 @@ instance FactoryArgs d () where
 instance FactoryArgs d (d -> d) where
   toArgs f = f
 
-class Factory b a c d | a -> b, a -> c, a -> d where
+class Factory b a c d | a -> b, a -> c, a -> d, d -> a where
   build :: d -> SnapHspecM b a
   save :: a -> SnapHspecM b c
   factoryFields :: d
   setId :: c -> a -> a
   create :: FactoryArgs d t => t -> SnapHspecM b a
-  create t = do a <- build $ (toArgs t) factoryFields
-                i <- save a
-                let newa = setId i a
-                return newa
+  create transform = do a <- build $ (toArgs transform) factoryFields
+                        i <- save a
+                        let newa = setId i a
+                        return newa
   reload :: a -> SnapHspecM b a
   reload = return
 
 
-type TutorialFields = (Int, Int, Text, Maybe Text, Publish)
+type TutorialFields = (Int, Int, T.Text, Maybe FilePath, Publish)
 
 instance Factory App TutorialEntity TutorialId TutorialFields where
   factoryFields = (0, 0, "Untitled", Nothing, Draft)
   build (x,y,t,ic,pub) = return (Entity (mkKey 0) (Tutorial x y t ic pub))
-  save (Entity _ t) _ = eval $ runPersist $ P.insert t
+  save (Entity _ t) = eval $ (runPersist $ P.insert t :: AppHandler TutorialId)
   setId k (Entity _ t) = Entity k t
 
-instance Factory App AuthUser A.UserId (IO Text) where
-  factoryFields = do n <- randomIO :: SnapHspecM App Int
+instance Factory App AuthUser A.UserId (IO T.Text) where
+  factoryFields = do n <- randomIO :: IO Int
                      return $ T.pack $ "user" ++ show (n `mod` 10000)
   build mlogin = do username <- liftIO mlogin
                     return $ A.defAuthUser { userLogin = username }
-  save au _ = do mau <- eval $ with auth $ A.saveUser au
-                 case mau of
-                   Left err -> error (show err)
-                   Right au' ->
-                     return (fromJust $ A.userId au')
+  save au = do mau <- eval $ with auth $ A.saveUser au
+               case mau of
+                 Left err -> error (show err)
+                 Right au' ->
+                   return (fromJust $ A.userId au')
   setId i a = a { A.userId = Just i }
 
-instance Factory App DependencyEntity DependencyId (SnapHspecM TutorialEntity, SnapHspecM TutorialEntity) where
-  factoryFields = (create () Nothing, create () Nothing)
+type DependentFields = (SnapHspecM App TutorialEntity, SnapHspecM App TutorialEntity)
+
+instance Factory App DependencyEntity DependencyId DependentFields where
+  factoryFields = (create (), create ())
   build (mtutorial1, mtutorial2) = do
     t1 <- mtutorial1
     t2 <- mtutorial2
     return $ (Entity (mkKey 0) (Dependency (entityKey t1) (entityKey t2)))
-  save (Entity _ d) _ = eval $ runPersist $ P.insert d
+  save (Entity _ d)  = eval $ runPersist $ P.insert d
   setId k (Entity _ d) = Entity k d
 
 type HspecApp = SnapHspecM App
 
+setTitle :: T.Text -> TutorialFields -> TutorialFields
 setTitle title (x, y, _, icon, publish) = (x, y, title, icon, publish)
-setMode m (Entity k t) = Entity k t {tutorialPublish = m} :: TutorialEntity
+setMode :: Publish -> TutorialFields -> TutorialFields
+setMode mode (x, y, title, icon, _) = (x, y, title, icon, mode)
+
+setDependent1 :: SnapHspecM App TutorialEntity -> DependentFields -> DependentFields
+setDependent1 l (_,r) = (l,r)
+setDependent2 :: SnapHspecM App TutorialEntity -> DependentFields -> DependentFields
+setDependent2 r (l,_) = (l,r)
+
+setDependentModes m1 m2 = setDependent1 (create (setMode m1)) . setDependent2 (create (setMode m2))
 
 deleteAll :: AppHandler ()
 deleteAll = do runPersist $ P.deleteWhere ([] :: [P.Filter Dependency])
@@ -97,38 +107,38 @@ main = hspec $ do
   describe "api test" $ snap (route routes) app $ afterEval deleteAll $ do
     describe "/tutorial?format=json" $
       do it "should return published tutorials" $
-           do create (setTitle "Tutorial Title" . setMode Published) Nothing :: HspecApp TutorialEntity
+           do create (setTitle "Tutorial Title" . setMode Published) :: HspecApp TutorialEntity
               get' "/tutorials" (params [("format", "json")])
                 >>= shouldHaveText "Tutorial Title"
          it "should not return draft tutorials when not logged in" $
-           do create (setTitle "Tutorial Title" . setMode Draft) Nothing :: HspecApp TutorialEntity
+           do create (setTitle "Tutorial Title" . setMode Draft) :: HspecApp TutorialEntity
               get' "/tutorials" (params [("format", "json")])
                 >>= shouldNotHaveText "Tutorial Title"
          it "should return draft tutorials when logged in" $ withAccount $
-           do create (setTitle "Tutorial Title" . setMode Draft) Nothing :: HspecApp TutorialEntity
+           do create (setTitle "Tutorial Title" . setMode Draft) :: HspecApp TutorialEntity
               get' "/tutorials" (params [("format", "json")])
                 >>= shouldHaveText "Tutorial Title"
          it "should return multiple tutorials" $
-           do create (setTitle "Tutorial #1" . setMode Published) Nothing :: HspecApp TutorialEntity
-              create (setTitle "Tutorial #2" . setMode Published) Nothing :: HspecApp TutorialEntity
+           do create (setTitle "Tutorial #1" . setMode Published) :: HspecApp TutorialEntity
+              create (setTitle "Tutorial #2" . setMode Published) :: HspecApp TutorialEntity
               p <- get' "/tutorials" (params [("format", "json")])
               shouldHaveText "Tutorial #1" p
               shouldHaveText "Tutorial #2" p
     describe "/dependencies?format=json" $
       do it "should return dependencies between published tutorials" $
-           do createWith PublishedTutorial (setDependent (create (setMode Published) Nothing)) Nothing :: HspecApp DependencyEntity
+           do create (setDependentModes Published Published) :: HspecApp DependencyEntity
               get' "/dependencies" (params [("format", "json")])
                 >>= shouldHaveText "source"
          it "should not return dependencies between draft tutorials" $
-           do createWith DraftTutorial () Nothing :: HspecApp DependencyEntity
+           do create (setDependentModes Draft Draft) :: HspecApp DependencyEntity
               get' "/dependencies" (params [("format", "json")])
                 >>= shouldNotHaveText "source"
          it "should not return dependencies between draft and published tutorials" $
-           do createWith MixedTutorial () Nothing :: HspecApp DependencyEntity
+           do create (setDependentModes Published Draft) :: HspecApp DependencyEntity
               get' "/dependencies" (params [("format", "json")])
                 >>= shouldNotHaveText "source"
          it "should return dependencies between draft tutorials when logged in" $ withAccount $
-           do createWith DraftTutorial () Nothing :: HspecApp DependencyEntity
+           do create (setDependentModes Draft Draft) :: HspecApp DependencyEntity
               get' "/dependencies" (params [("format", "json")])
                 >>= shouldHaveText "source"
   describe "accounts" $ snap (route routes) app $ afterEval deleteAll $ do
@@ -156,11 +166,11 @@ loginAs u = modifySite'
             s)
 
 withAccount :: SnapHspecM App a -> SnapHspecM App a
-withAccount h = do u' <- create () Nothing :: HspecApp AuthUser
+withAccount h = do u' <- create () :: HspecApp AuthUser
                    u <- reload u'
                    loginAs u h
 
 withAccount' :: (AuthUser -> SnapHspecM App a) -> SnapHspecM App a
-withAccount' h = do u' <- create () Nothing :: HspecApp AuthUser
+withAccount' h = do u' <- create () :: HspecApp AuthUser
                     u <- reload u'
                     loginAs u (h u)
