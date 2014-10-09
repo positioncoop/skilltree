@@ -46,11 +46,11 @@ class Factory b a c d | a -> b, a -> c, a -> d, d -> a where
   reload = return
 
 
-type TutorialFields = (Int, Int, T.Text, Maybe FilePath, Publish)
+newtype TutorialFields = TutorialFields (Int, Int, T.Text, Maybe FilePath, Publish)
 
 instance Factory App TutorialEntity TutorialId TutorialFields where
-  factoryFields = (0, 0, "Untitled", Nothing, Draft)
-  build (x,y,t,ic,pub) = return (Entity (mkKey 0) (Tutorial x y t ic pub))
+  factoryFields = TutorialFields (0, 0, "Untitled", Nothing, Draft)
+  build (TutorialFields (x,y,t,ic,pub)) = return (Entity (mkKey 0) (Tutorial x y t ic pub))
   save (Entity _ t) = eval $ (runPersist $ P.insert t :: AppHandler TutorialId)
   setId k (Entity _ t) = Entity k t
 
@@ -66,11 +66,11 @@ instance Factory App AuthUser A.UserId (IO T.Text) where
                    return (fromJust $ A.userId au')
   setId i a = a { A.userId = Just i }
 
-type DependentFields = (SnapHspecM App TutorialEntity, SnapHspecM App TutorialEntity)
+newtype DependentFields = DependentFields (SnapHspecM App TutorialEntity, SnapHspecM App TutorialEntity)
 
 instance Factory App DependencyEntity DependencyId DependentFields where
-  factoryFields = (create (), create ())
-  build (mtutorial1, mtutorial2) = do
+  factoryFields = DependentFields (create (), create ())
+  build (DependentFields (mtutorial1, mtutorial2)) = do
     t1 <- mtutorial1
     t2 <- mtutorial2
     return $ (Entity (mkKey 0) (Dependency (entityKey t1) (entityKey t2)))
@@ -80,14 +80,14 @@ instance Factory App DependencyEntity DependencyId DependentFields where
 type HspecApp = SnapHspecM App
 
 setTitle :: T.Text -> TutorialFields -> TutorialFields
-setTitle title (x, y, _, icon, publish) = (x, y, title, icon, publish)
+setTitle title (TutorialFields (x, y, _, icon, publish)) = TutorialFields (x, y, title, icon, publish)
 setMode :: Publish -> TutorialFields -> TutorialFields
-setMode mode (x, y, title, icon, _) = (x, y, title, icon, mode)
+setMode mode (TutorialFields (x, y, title, icon, _)) = TutorialFields (x, y, title, icon, mode)
 
 setDependent1 :: SnapHspecM App TutorialEntity -> DependentFields -> DependentFields
-setDependent1 l (_,r) = (l,r)
+setDependent1 l (DependentFields (_,r)) = DependentFields (l,r)
 setDependent2 :: SnapHspecM App TutorialEntity -> DependentFields -> DependentFields
-setDependent2 r (l,_) = (l,r)
+setDependent2 r (DependentFields (l,_)) = DependentFields (l,r)
 
 setDependentModes m1 m2 = setDependent1 (create (setMode m1)) . setDependent2 (create (setMode m2))
 
