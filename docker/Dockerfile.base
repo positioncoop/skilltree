@@ -5,8 +5,8 @@ RUN apt-get install zlib1g-dev libssl-dev -y
 RUN apt-get install git -y
 RUN apt-get install libpq-dev postgresql-client -y
 ENV LANG en_US.utf8
-RUN cabal update
 ADD ./skilltree.cabal /srv/skilltree.cabal
+RUN cabal update
 ADD ./deps /srv/deps
 RUN cd /srv && cabal sandbox init
 RUN cd /srv && bash /srv/deps/add-all
