@@ -15,7 +15,7 @@
     <apply-content/>
   </div>
 
-  <div class='courses'></div>
+  <div class="courses"></div>
 
   <div id="javascript-helpers" style="display:none;">
     <!-- this is hacky, but currently necessary - exposes variables such as default icons to javascript -->

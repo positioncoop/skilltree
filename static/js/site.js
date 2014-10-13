@@ -30,7 +30,7 @@ $(function() {
       drawCreate(tutorialData);
       drawTools(tutorialData, dependencyData);
       setupSteps();
-      setupCourses();
+      drawCourses(courseData);
     }
   }
 });
@@ -52,15 +52,11 @@ function setupTreeCanvas() {
   });
 }
 
-function setupCourses() {
+function drawCourses(courseData) {
   var container = $(".courses");
-  container.append("<h3>Courses</h3>");
-  container.css({"position": "absolute",
-                 "top": "0px",
-                 "left": "10px"
-                });
+  container.append("<div class='title'>Courses</div>");
 
-  data.forEach(function(c) {
+  courseData.forEach(function(c) {
     var course = $("<div class='course'>");
     course.append(c.title);
     if (isLoggedIn) {
@@ -69,6 +65,12 @@ function setupCourses() {
     }
 
     course.append(": Week ");
+    if (isLoggedIn) {
+      course.append($("<a href='/courses/" + c.id + "/weeks/new'>").append($("<button>").text("+")));
+      course.append($("<a href='/courses/" + c.id + "/weeks/delete'>").append($("<button>").text("-")));
+    }
+
+
     c.weeks.forEach(function(w) {
       var weekLink = $("<a href='#'>").text(w.number);
       function turnOn() {
@@ -116,12 +118,6 @@ function setupCourses() {
       course.append(weekLink).append(" ");
     });
 
-    if (isLoggedIn) {
-      course.append($("<a href='/courses/" + c.id + "/weeks/new'>").text("+"));
-      course.append(" ");
-      course.append($("<a href='/courses/" + c.id + "/weeks/delete'>").text("-"));
-    }
-
     container.append(course);
   });
 
@@ -130,7 +126,5 @@ function setupCourses() {
     form.append($("<input type='text' name='new.title'>"));
     form.append($("<input type='submit' value='+'>"));
     container.append(form);
-
   }
-  $("body").append(container);
 }

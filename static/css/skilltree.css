@@ -18,10 +18,17 @@ body {
 }
 
 input, textarea {
-
   font-family: 'Open Sans', Helvetica, Arial, sans-serif;
 }
 
+.btn {
+  padding: 0 3px;
+  border: 1px #ccc solid;
+  margin: 5px;
+  text-decoration: none;
+  border-radius: 2px;
+  background-color: white;
+}
 
 .logged-in .container {
   margin-top: 40px;
@@ -32,8 +39,6 @@ input, textarea {
   height: 99%;
 }
 
-
-
 .section-logo {
   position: absolute;
   top:  30px;
@@ -42,8 +47,9 @@ input, textarea {
 
 .courses {
   position: absolute;
-  left: 100px;
-  top: 200px;
+  left: 30px;
+  top: 150px;
+  padding: 10px 0;
   border: 1px solid cyan;
   height: 100px;
   width: 300px;
