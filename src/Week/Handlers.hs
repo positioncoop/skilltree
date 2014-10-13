@@ -14,52 +14,54 @@ import           Prelude                 hiding ((++))
 import           Snap.Extras.CoreUtils
 import           Snap.Extras.JSON
 import           Snap.Plus
+import           Snap.Plus.Handlers
 import           Snap.Snaplet.Auth
 import           Snap.Snaplet.Persistent
 import           Text.Digestive.Snap     (runForm)
 
-import qualified Course.Types            as C
+import           Course.Types
 import           TutorialWeek.Types
 import           Week.Queries
 import           Week.Types
 
 import           Application
 
-authCheck :: AppHandler ()
-authCheck = redirect "/auth/login"
+nestedWeekResource :: CourseEntity -> Resource Week
+nestedWeekResource c = Resource pass (authorize $ newH c) (const pass) (const pass) (const pass)
+                                [] [("delete", authorize $ deleteWeekH c)]
 
-routes :: C.CourseEntity -> [(Text, AppHandler ())]
-routes centity = [ ("new", ifTop $ requireUser auth authCheck $ newH centity)
-                 , ("delete", requireUser auth authCheck $ deleteH centity)
-                 , (":week_id", ifTop showH)
-                 , (":week_id/toggle_tutorial", requireUser auth authCheck $ toggleTutorialH centity)
-                 ]
+weekResource :: Resource Week
+weekResource = Resource pass pass showH (const pass) (const pass) [("toggle_tutorial", toggleTutorialH)] []
 
-showH :: AppHandler ()
-showH = do
-  i <- requireParam "week_id"
+routes = resourceRoutes weekResource
+nestedRoutes c = resourceRoutes (nestedWeekResource c)
+
+
+showH :: WeekEntity -> AppHandler ()
+showH (Entity weekKey _) = do
   loggedIn <- with auth isLoggedIn
-  ts <- if loggedIn then lookupTutorialsByWeek i
-                    else lookupPublishedTutorialsByWeek i
+  ts <- if loggedIn then lookupTutorialsByWeek weekKey
+                    else lookupPublishedTutorialsByWeek weekKey
   writeJSON ts
 
-newH :: C.CourseEntity -> AppHandler ()
+newH :: CourseEntity -> AppHandler ()
 newH (Entity ckey _) = do
   nweeks <- runPersist $ count [WeekCourseId ==. ckey]
   runPersist $ insert (Week ckey (nweeks + 1))
   redirectReferer
 
-deleteH :: C.CourseEntity -> AppHandler ()
-deleteH (Entity ckey _) = do
+deleteWeekH :: CourseEntity -> AppHandler ()
+deleteWeekH (Entity ckey _) = do
   weeks <- runPersist $ selectList [WeekCourseId ==. ckey] [Desc WeekNumber, LimitTo 1]
   case weeks of
-    (Entity k _:_) -> runPersist $ delete k
+    (Entity k _:_) ->
+      do tutorialWeeks <- runPersist $ count [TutorialWeekWeekId ==. k]
+         when (tutorialWeeks == 0) $ runPersist $ delete k
     _ -> return ()
   redirectReferer
 
-toggleTutorialH :: C.CourseEntity -> AppHandler ()
-toggleTutorialH (Entity ckey _) = do
-  wkey <- requireParam "week_id"
+toggleTutorialH :: WeekEntity -> AppHandler ()
+toggleTutorialH (Entity wkey _) = do
   tkey <- requireParam "tutorial_id"
   let fil = [TutorialWeekTutorialId ==. tkey, TutorialWeekWeekId ==. wkey]
   c <- runPersist $ count fil

@@ -38,12 +38,14 @@ import qualified Course.Handlers
 import qualified Dependency.Handlers
 import qualified Step.Handlers
 import qualified Tutorial.Handlers
+import qualified Week.Handlers
 
 routes :: [(Text, AppHandler ())]
 routes = [ ("tutorials",    route Tutorial.Handlers.routes)
          , ("steps",        routeResource Step.Handlers.stepResource)
          , ("dependencies", route Dependency.Handlers.routes)
          , ("courses",      route Course.Handlers.routes)
+         , ("weeks",        route Week.Handlers.routes)
          , ("auth",         route Auth.Handlers.routes)
          , ("",             ifTop $ redirect "tutorials")
          , ("",             serveDirectory "static")

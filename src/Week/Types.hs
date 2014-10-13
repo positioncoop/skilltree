@@ -36,5 +36,5 @@ instance ToJSON (Entity Week) where
 weekPath :: WeekEntity -> Text
 weekPath (Entity key _) = "/weeks/" ++ showKey key
 
-weekDeletePath :: WeekEntity -> Text
-weekDeletePath entity = weekPath entity ++ "/delete"
+weekDeletePath :: C.CourseEntity -> Text
+weekDeletePath entity = C.coursePath entity ++ "/weeks/delete"

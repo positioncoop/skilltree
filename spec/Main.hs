@@ -120,16 +120,21 @@ setDependentModes m1 m2 = setDependent1 (create (setMode m1)) . setDependent2 (c
 setCourseTitle :: Text -> CourseFields -> CourseFields
 setCourseTitle t _ = CourseFields (return t)
 
+setWeekCourse :: CourseId -> WeekFields -> WeekFields
+setWeekCourse courseId _ = WeekFields (return courseId)
+
 deleteAll :: AppHandler ()
 deleteAll = do runPersist $ P.deleteWhere ([] :: [P.Filter Dependency])
-               runPersist $ P.deleteWhere ([] :: [P.Filter Tutorial])
                runPersist $ P.deleteWhere ([] :: [P.Filter TutorialWeek])
+               runPersist $ P.deleteWhere ([] :: [P.Filter Tutorial])
                runPersist $ P.deleteWhere ([] :: [P.Filter Week])
                runPersist $ P.deleteWhere ([] :: [P.Filter Course])
                void $ execute_ "delete from snap_auth_user"
 
 courseCount :: HspecApp Int
 courseCount = eval $ runPersist $ P.count ([] :: [P.Filter Course])
+weekCount :: HspecApp Int
+weekCount = eval $ runPersist $ P.count ([] :: [P.Filter Week])
 
 main :: IO ()
 main = hspec $ do
@@ -193,11 +198,24 @@ main = hspec $ do
                 >>= shouldNotHaveText "A great course"
          it "should not allow deletion of a course with weeks" $ withAccount $
            do (Entity courseKey _) <- create (setCourseTitle "A great course") :: HspecApp CourseEntity
-              create (\(WeekFields _) -> WeekFields (return courseKey)) :: HspecApp WeekEntity
+              create (setWeekCourse courseKey) :: HspecApp WeekEntity
               post (deletePath courseKey) (params [])
                 >>= should300
               get' "/courses" (params [("format", "json")])
                 >>= shouldHaveText "A great course"
+    describe "weeks" $
+      do it "should delete a week" $ withAccount $
+           do course@(Entity courseKey _) <- create () :: HspecApp CourseEntity
+              create (setWeekCourse courseKey) :: HspecApp WeekEntity
+              post (weekDeletePath course) (params [])
+              weekCount >>= shouldEqual 0
+         it "should not allow deletion of a week if it has tutorials" $ withAccount $
+           do course@(Entity courseKey _) <- create () :: HspecApp CourseEntity
+              (Entity wkey _) <- create (setWeekCourse courseKey) :: HspecApp WeekEntity
+              (Entity tkey _) <- create () :: HspecApp TutorialEntity
+              eval $ runPersist $ P.insert (TutorialWeek tkey wkey)
+              post (weekDeletePath course) (params [])
+              weekCount >>= shouldEqual 1
   describe "accounts" $ snap (route routes) app $ afterEval deleteAll $ do
     let userCount = numberQuery' "select count(*) from snap_auth_user"
     describe "signup" $

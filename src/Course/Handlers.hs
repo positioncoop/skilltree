@@ -28,7 +28,7 @@ import           Application
 
 courseResource :: Resource Course
 courseResource = Resource indexH (authorize newH) (const pass) (const pass) (authorize . deleteH)
-                          [("weeks", route . Week.Handlers.routes)]
+                          [("weeks", route . Week.Handlers.nestedRoutes)]
                           []
 
 routes :: [(Text, AppHandler ())]

@@ -81,7 +81,7 @@ function drawCourses(courseData) {
             var e = $(_e);
             var data = e.data("json");
             var add = $("<a class='add-week-button' data-add-week-id='" +
-                        data.id + "' href='/courses/" + c.id + "/weeks/" +
+                        data.id + "' href='/weeks/" +
                         w.id + "/toggle_tutorial?tutorial_id=" + data.id + "'>add</button>").on("click", function () {
             });
             add.css({"position": "absolute"
@@ -95,7 +95,7 @@ function drawCourses(courseData) {
           });
         }
 
-        $.ajax("/courses/" + c.id + "/weeks/" + w.id, {
+        $.ajax("/weeks/" + w.id, {
           success: function (data, status, xhr) {
             data.forEach(function(t) {
               $("a[data-add-week-id=" + t.id + "]").text("remove");
