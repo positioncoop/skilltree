@@ -1,6 +1,7 @@
 $(function() {
   var tutorialData = null;
   var dependencyData = null;
+  var courseData = null;
 
   d3.json("/tutorials?format=json", function(error, data) {
     data.sort(function(a,b) { return d3.ascending(parseInt(a.id), parseInt(b.id)); });
@@ -13,8 +14,15 @@ $(function() {
     drawSkilltree();
   });
 
+  $.ajax("/courses", {
+    success: function (data, status, xhr) {
+      courseData = data;
+      drawSkilltree();
+    }
+  });
+
   function drawSkilltree() {
-    if (tutorialData !== null && dependencyData !== null) {
+    if (tutorialData !== null && dependencyData !== null && courseData !== null) {
       setupTreeCanvas();
       lookupDefaultIconPath();
       drawLines(dependencyData);
@@ -22,10 +30,9 @@ $(function() {
       drawCreate(tutorialData);
       drawTools(tutorialData, dependencyData);
       setupSteps();
+      setupCourses();
     }
   }
-
-
 });
 
 function lookupDefaultIconPath() {
@@ -33,17 +40,8 @@ function lookupDefaultIconPath() {
 }
 
 function setupTreeCanvas() {
-
-    d3.select("svg.tree").append("g").attr("class", "tutorials");
-    d3.select("svg.tree").append("g").attr("class", "paths");
-/*  $(".section-tree").mousemove(function (e) {
-    var toScroll = $(".section-tree");
-    var x = e.pageX - toScroll.offset().left;
-    var y = e.pageY - toScroll.offset().top;
-    var scrollToX = (x / toScroll.width()) * (toScroll[0].scrollWidth - toScroll.width());
-    var scrollToY = (y / toScroll.height()) * (toScroll[0].scrollHeight - toScroll.height());
-    toScroll.scrollTop(scrollToY);
-  } */
+  d3.select("svg.tree").append("g").attr("class", "tutorials");
+  d3.select("svg.tree").append("g").attr("class", "paths");
 
   if ( $.cookie("treeScroll") !== null ) {
     $(".section-tree").scrollTop( $.cookie("treeScroll") );
@@ -54,5 +52,85 @@ function setupTreeCanvas() {
   });
 }
 
+function setupCourses() {
+  var container = $(".courses");
+  container.append("<h3>Courses</h3>");
+  container.css({"position": "absolute",
+                 "top": "0px",
+                 "left": "10px"
+                });
 
+  data.forEach(function(c) {
+    var course = $("<div class='course'>");
+    course.append(c.title);
+    if (isLoggedIn) {
+      course.append(" ");
+      course.append($("<a onclick=\"return confirm('Are you sure you want to delete this?')\" href='/courses/" + c.id + "/delete'>del</a>"));
+    }
 
+    course.append(": Week ");
+    c.weeks.forEach(function(w) {
+      var weekLink = $("<a href='#'>").text(w.number);
+      function turnOn() {
+        $(".add-week-button").remove();
+        $("g.tutorial").attr("stroke-width", 0).attr("stroke", "")
+        if (isLoggedIn) {
+          $("g.tutorial").each(function (_,_e) {
+            var e = $(_e);
+            var data = e.data("json");
+            var add = $("<a class='add-week-button' data-add-week-id='" +
+                        data.id + "' href='/courses/" + c.id + "/weeks/" +
+                        w.id + "/toggle_tutorial?tutorial_id=" + data.id + "'>add</button>").on("click", function () {
+            });
+            add.css({"position": "absolute"
+                     ,"display": "block"
+                     ,"background-color": "white"
+                     ,"border": "2px solid #ccc"
+                     ,"padding": "5px"
+                     ,"top": e.position().top
+                     ,"left": e.position().left});
+            $("body").append(add);
+          });
+        }
+
+        $.ajax("/courses/" + c.id + "/weeks/" + w.id, {
+          success: function (data, status, xhr) {
+            data.forEach(function(t) {
+              $("a[data-add-week-id=" + t.id + "]").text("remove");
+              $("g[data-tutorial-id=" + t.id + "]").attr("stroke", "red").attr("stroke-width", "5");
+            });
+          }
+        });
+
+        weekLink.off("click.turn-on");
+
+        weekLink.on("click.turn-off", function () {
+          $(".add-week-button").remove();
+          $("g.tutorial").attr("stroke-width", 0).attr("stroke", "");
+          weekLink.on("click.turn-on", turnOn);
+        });
+      }
+
+      weekLink.on("click.turn-on", turnOn);
+
+      course.append(weekLink).append(" ");
+    });
+
+    if (isLoggedIn) {
+      course.append($("<a href='/courses/" + c.id + "/weeks/new'>").text("+"));
+      course.append(" ");
+      course.append($("<a href='/courses/" + c.id + "/weeks/delete'>").text("-"));
+    }
+
+    container.append(course);
+  });
+
+  if (isLoggedIn) {
+    var form = $("<form method='post' action='/courses/new'>");
+    form.append($("<input type='text' name='new.title'>"));
+    form.append($("<input type='submit' value='+'>"));
+    container.append(form);
+
+  }
+  $("body").append(container);
+}
