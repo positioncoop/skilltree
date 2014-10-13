@@ -10,8 +10,7 @@ import           Prelude                            hiding ((++))
 import           Data.Maybe
 import           Data.Text                          (Text)
 import qualified Data.Text                          as T
-import           Snap.Plus                          (liftIO, route, void, with,
-                                                     (++))
+import           Snap.Plus
 import           Snap.Plus.Paths
 import           Snap.Snaplet.Auth                  (AuthUser (..))
 import qualified Snap.Snaplet.Auth                  as A
@@ -95,6 +94,15 @@ instance Factory App CourseEntity CourseId CourseFields where
     save (Entity _ c) = eval $ runPersist $ P.insert c
     setId k (Entity _ c) = Entity k c
 
+newtype WeekFields = WeekFields (HspecApp CourseId)
+
+instance Factory App WeekEntity WeekId WeekFields where
+  factoryFields = WeekFields (entityKey <$> create ())
+  build (WeekFields mCourseId) = do courseId <- mCourseId
+                                    return (Entity (mkKey 0) (Week courseId 1))
+  save (Entity _ c) = eval $ runPersist $ P.insert c
+  setId k (Entity _ c) = Entity k c
+
 type HspecApp = SnapHspecM App
 
 setTitle :: Text -> TutorialFields -> TutorialFields
@@ -120,6 +128,8 @@ deleteAll = do runPersist $ P.deleteWhere ([] :: [P.Filter Dependency])
                runPersist $ P.deleteWhere ([] :: [P.Filter Course])
                void $ execute_ "delete from snap_auth_user"
 
+courseCount :: HspecApp Int
+courseCount = eval $ runPersist $ P.count ([] :: [P.Filter Course])
 
 main :: IO ()
 main = hspec $ do
@@ -165,8 +175,14 @@ main = hspec $ do
            do create (setDependentModes Draft Draft) :: HspecApp DependencyEntity
               get' "/dependencies" (params [("format", "json")])
                 >>= shouldHaveText "source"
-    describe "/courses?format=json" $
-      do it "should return all courses" $
+    describe "courses" $
+      do it "should create a course" $ withAccount $
+           do post "/courses/new" (params [("new.title", "ARD2")])
+              courseCount >>= shouldEqual 1
+         it "should not allow a blank course title" $ withAccount $
+           do post "/courses/new" (params [("new.title", "")])
+              courseCount >>= shouldEqual 0
+         it "should return all courses" $
            do create (setCourseTitle "A great course") :: HspecApp CourseEntity
               get' "/courses" (params [("format", "json")])
                 >>= shouldHaveText "A great course"
@@ -175,6 +191,13 @@ main = hspec $ do
               post (deletePath courseKey) (params [])
               get' "/courses" (params [("format", "json")])
                 >>= shouldNotHaveText "A great course"
+         it "should not allow deletion of a course with weeks" $ withAccount $
+           do (Entity courseKey _) <- create (setCourseTitle "A great course") :: HspecApp CourseEntity
+              create (\(WeekFields _) -> WeekFields (return courseKey)) :: HspecApp WeekEntity
+              post (deletePath courseKey) (params [])
+                >>= should300
+              get' "/courses" (params [("format", "json")])
+                >>= shouldHaveText "A great course"
   describe "accounts" $ snap (route routes) app $ afterEval deleteAll $ do
     let userCount = numberQuery' "select count(*) from snap_auth_user"
     describe "signup" $

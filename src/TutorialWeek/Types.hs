@@ -28,4 +28,4 @@ TutorialWeek
   deriving Eq
 |]
 
-type WeekEntity = Entity TutorialWeek
+type TutorialWeekEntity = Entity TutorialWeek

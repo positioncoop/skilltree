@@ -40,9 +40,8 @@ indexH = routeFormats [([JSON], indexJsonH)]
 indexJsonH :: AppHandler ()
 indexJsonH = do
   courses <- runPersist $ selectList [] [] :: AppHandler [CourseEntity]
-  coursesWithWeeks <- mapM (\c@(Entity key _) ->
-                               do wks <- runPersist $ selectList [W.WeekCourseId ==. key] []
-                                  return (c, wks))
+  coursesWithWeeks <- mapM (\c -> do wks <- lookupCourseWeeks c
+                                     return (c, wks))
                            courses
   writeJSON $ map formatJSON coursesWithWeeks
   where formatJSON (Entity k (Course title), wks) =
@@ -60,6 +59,11 @@ newH = do
       redirectReferer
 
 deleteH :: Entity Course -> AppHandler ()
-deleteH _course@(Entity courseKey _) = do
-  runPersist $ delete (courseKey :: Key Course)
+deleteH course@(Entity courseKey _) = do
+  weeks <- lookupCourseWeeks course
+  when (null weeks) $
+    runPersist $ delete (courseKey :: Key Course)
   redirectReferer
+
+lookupCourseWeeks :: CourseEntity -> AppHandler [W.WeekEntity]
+lookupCourseWeeks (Entity key _) = runPersist $ selectList [W.WeekCourseId ==. key] []

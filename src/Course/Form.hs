@@ -27,4 +27,4 @@ import           Application
 import           Course.Types
 
 newForm :: Form Text AppHandler Course
-newForm = Course <$> "title" .: text Nothing
+newForm = Course <$> "title" .: nonEmpty (text Nothing)
