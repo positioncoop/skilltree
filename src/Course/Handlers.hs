@@ -26,26 +26,24 @@ import qualified Week.Types              as W
 
 import           Application
 
-authCheck :: AppHandler ()
-authCheck = redirect "/auth/login"
+courseResource :: Resource Course
+courseResource = Resource indexH (authorize newH) (const pass) (const pass) (authorize . deleteH)
+                          [("weeks", route . Week.Handlers.routes)]
+                          []
 
 routes :: [(Text, AppHandler ())]
-routes = [ ("", ifTop indexH)
-         , ("new", ifTop $ requireUser auth authCheck newH)
-         , (":id/delete", requireUser auth authCheck deleteH)
-         , (":id/weeks", do i <- requireParam "id"
-                            course <- require $ runPersist $ get i
-                            route $ Week.Handlers.routes $ Entity i course)
-         ]
+routes = resourceRoutes courseResource
 
 indexH :: AppHandler ()
-indexH = do
-  loggedIn <- with auth isLoggedIn
+indexH = routeFormats [([JSON], indexJsonH)]
+
+indexJsonH :: AppHandler ()
+indexJsonH = do
   courses <- runPersist $ selectList [] [] :: AppHandler [CourseEntity]
-  coursesWithWeeks <-
-   mapM (\c@(Entity key _) -> do wks <- runPersist $ selectList [W.WeekCourseId ==. key] []
-                                 return (c, wks))
-        courses
+  coursesWithWeeks <- mapM (\c@(Entity key _) ->
+                               do wks <- runPersist $ selectList [W.WeekCourseId ==. key] []
+                                  return (c, wks))
+                           courses
   writeJSON $ map formatJSON coursesWithWeeks
   where formatJSON (Entity k (Course title), wks) =
           object [ "id" .= showKey k
@@ -56,13 +54,12 @@ newH :: AppHandler ()
 newH = do
   response <- runForm "new" Course.Form.newForm
   case response of
-    (_, Nothing) -> redirect "/"
+    (_, Nothing) -> redirectReferer
     (_, Just course) -> do
       void $ runPersist $ insert course
-      redirect "/"
+      redirectReferer
 
-deleteH :: AppHandler ()
-deleteH = do
-  courseKey <- requireParam "id"
+deleteH :: Entity Course -> AppHandler ()
+deleteH _course@(Entity courseKey _) = do
   runPersist $ delete (courseKey :: Key Course)
   redirectReferer

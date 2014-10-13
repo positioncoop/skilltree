@@ -14,7 +14,7 @@ $(function() {
     drawSkilltree();
   });
 
-  $.ajax("/courses", {
+  $.ajax("/courses?format=json", {
     success: function (data, status, xhr) {
       courseData = data;
       drawSkilltree();

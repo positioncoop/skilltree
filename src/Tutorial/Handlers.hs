@@ -32,9 +32,9 @@ import           Application
 
 tutorialResource :: Resource Tutorial
 tutorialResource = Resource indexH (authorize newH) showH (authorize . editH) (authorize . deleteH)
-                   [("move", authorize . moveH)
-                   ,("steps", authorize . routeResource . Step.Handlers.nestedStepResource)]
-                   [("admin", authorize $ render "tutorials/admin")]
+                            [("move", authorize . moveH)
+                            ,("steps", authorize . routeResource . Step.Handlers.nestedStepResource)]
+                            []
 
 routes :: [(Text, AppHandler ())]
 routes = resourceRoutes tutorialResource
