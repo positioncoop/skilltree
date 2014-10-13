@@ -34,10 +34,10 @@ import           Application
 import           FileStore
 
 import qualified Auth.Handlers
+import qualified Course.Handlers
 import qualified Dependency.Handlers
 import qualified Step.Handlers
 import qualified Tutorial.Handlers
-import qualified Course.Handlers
 
 routes :: [(Text, AppHandler ())]
 routes = [ ("tutorials",    route Tutorial.Handlers.routes)

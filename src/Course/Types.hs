@@ -1,16 +1,23 @@
-{-# LANGUAGE QuasiQuotes, TypeFamilies, GeneralizedNewtypeDeriving, TemplateHaskell,
-             OverloadedStrings, GADTs, FlexibleContexts, FlexibleInstances, EmptyDataDecls #-}
+{-# LANGUAGE EmptyDataDecls             #-}
+{-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE GADTs                      #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE QuasiQuotes                #-}
+{-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE TypeFamilies               #-}
 
 module Course.Types where
 
-import Prelude hiding ((++))
-import Snap.Plus
-import Database.Persist.Types
-import Database.Persist.TH
-import Snap.Snaplet.Persistent (showKey)
-import Data.Aeson.Types
+import           Data.Aeson.Types
+import           Database.Persist.TH
+import           Database.Persist.Types
+import           Prelude                 hiding ((++))
+import           Snap.Plus
+import           Snap.Snaplet.Persistent (showKey)
 
-import qualified Tutorial.Types as T
+import qualified Tutorial.Types          as T
 
 share [mkPersist sqlSettings] [persistLowerCase|
 Course

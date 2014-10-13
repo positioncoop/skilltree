@@ -1,12 +1,12 @@
 module Week.Queries where
 
+import           Database.Esqueleto
 import qualified Snap.Snaplet.Persistent as P
-import Database.Esqueleto
-import Tutorial.Types
-import Week.Types
-import TutorialWeek.Types
+import           Tutorial.Types
+import           TutorialWeek.Types
+import           Week.Types
 
-import Application
+import           Application
 
 lookupTutorialsByWeek :: Key Week -> AppHandler [TutorialEntity]
 lookupTutorialsByWeek k =

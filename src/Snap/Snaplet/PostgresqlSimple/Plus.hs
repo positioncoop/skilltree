@@ -6,9 +6,9 @@ module Snap.Snaplet.PostgresqlSimple.Plus ( module Snap.Snaplet.PostgresqlSimple
                                           , numberQuery'
   ) where
 
-import Data.Maybe (listToMaybe, fromJust)
-import Control.Monad (void, join, MonadPlus, mzero)
-import Snap.Snaplet.PostgresqlSimple
+import           Control.Monad                 (MonadPlus, join, mzero, void)
+import           Data.Maybe                    (fromJust, listToMaybe)
+import           Snap.Snaplet.PostgresqlSimple
 
 singleQuery :: (HasPostgres m, Functor m, ToRow q, FromRow r) => Query -> q -> m (Maybe r)
 singleQuery stmt attrs = fmap listToMaybe $ query stmt attrs

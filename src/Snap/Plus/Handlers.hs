@@ -1,28 +1,33 @@
-{-# LANGUAGE OverloadedStrings, GADTs, FlexibleInstances,
-    TypeFamilies, NoMonomorphismRestriction, ScopedTypeVariables,
-    FlexibleContexts #-}
+{-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE FlexibleContexts          #-}
+{-# LANGUAGE FlexibleInstances         #-}
+{-# LANGUAGE GADTs                     #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE OverloadedStrings         #-}
+{-# LANGUAGE ScopedTypeVariables       #-}
+{-# LANGUAGE TypeFamilies              #-}
 
 module Snap.Plus.Handlers where
 
-import Prelude hiding ((++))
-import Snap.Plus
-import Snap.Snaplet.Auth
-import Database.Persist
-import Database.Persist.Sql
-import Snap.Snaplet.Persistent
+import           Database.Persist
+import           Database.Persist.Sql
+import           Prelude                 hiding ((++))
+import           Snap.Plus
+import           Snap.Snaplet.Auth
+import           Snap.Snaplet.Persistent
 
-import Application
+import           Application
 
 authorize :: AppHandler t -> AppHandler t
 authorize = requireUser auth (redirect "/auth/login")
 
 data Resource record = (PersistEntity record, PersistEntityBackend record ~ SqlBackend)
-                     => Resource {indexHandlerField :: AppHandler ()
-                                 ,newHandlerField :: AppHandler ()
-                                 ,showHandlerField :: Entity record -> AppHandler ()
-                                 ,editHandlerField :: Entity record -> AppHandler ()
-                                 ,deleteHandlerField :: Entity record -> AppHandler ()
-                                 ,moreMemberRoutes :: [(Text, Entity record -> AppHandler ())]
+                     => Resource {indexHandlerField    :: AppHandler ()
+                                 ,newHandlerField      :: AppHandler ()
+                                 ,showHandlerField     :: Entity record -> AppHandler ()
+                                 ,editHandlerField     :: Entity record -> AppHandler ()
+                                 ,deleteHandlerField   :: Entity record -> AppHandler ()
+                                 ,moreMemberRoutes     :: [(Text, Entity record -> AppHandler ())]
                                  ,moreCollectionRoutes :: [(Text, AppHandler ())]}
 
 replaceEntity :: (PersistEntity record, PersistEntityBackend record ~ SqlBackend)
