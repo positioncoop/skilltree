@@ -3,6 +3,7 @@
 {-# LANGUAGE FlexibleInstances          #-}
 {-# LANGUAGE GADTs                      #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE QuasiQuotes                #-}
 {-# LANGUAGE TemplateHaskell            #-}
@@ -15,6 +16,7 @@ import           Database.Persist.TH
 import           Database.Persist.Types
 import           Prelude                 hiding ((++))
 import           Snap.Plus
+import           Snap.Plus.Paths
 import           Snap.Snaplet.Persistent (showKey)
 
 import qualified Tutorial.Types          as T
@@ -33,3 +35,6 @@ coursePath (Entity key _) = "/courses/" ++ showKey key
 
 courseDeletePath :: CourseEntity -> Text
 courseDeletePath entity = coursePath entity ++ "/delete"
+
+instance Paths CourseId Course where
+  indexPath _ = "/courses/"

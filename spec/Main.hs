@@ -5,9 +5,14 @@
 
 module Main where
 
+import           Prelude                            hiding ((++))
+
 import           Data.Maybe
+import           Data.Text                          (Text)
 import qualified Data.Text                          as T
-import           Snap.Plus                          (liftIO, route, void, with)
+import           Snap.Plus                          (liftIO, route, void, with,
+                                                     (++))
+import           Snap.Plus.Paths
 import           Snap.Snaplet.Auth                  (AuthUser (..))
 import qualified Snap.Snaplet.Auth                  as A
 import           Snap.Snaplet.PostgresqlSimple.Plus
@@ -16,12 +21,15 @@ import           Test.Hspec
 import           Test.Hspec.Snap
 
 import           Application
+import           Course.Types
 import           Database.Persist                   (Entity (..))
 import qualified Database.Persist                   as P
 import           Dependency.Types
 import           Site
 import           Snap.Snaplet.Persistent
 import           Tutorial.Types
+import           TutorialWeek.Types
+import           Week.Types
 
 class FactoryArgs d t where
   toArgs :: t -> d -> d
@@ -46,15 +54,15 @@ class Factory b a c d | a -> b, a -> c, a -> d, d -> a where
   reload = return
 
 
-newtype TutorialFields = TutorialFields (Int, Int, T.Text, Maybe FilePath, Publish)
+newtype TutorialFields = TutorialFields (Int, Int, Text, Maybe FilePath, Publish)
 
 instance Factory App TutorialEntity TutorialId TutorialFields where
   factoryFields = TutorialFields (0, 0, "Untitled", Nothing, Draft)
   build (TutorialFields (x,y,t,ic,pub)) = return (Entity (mkKey 0) (Tutorial x y t ic pub))
-  save (Entity _ t) = eval $ (runPersist $ P.insert t :: AppHandler TutorialId)
+  save (Entity _ t) = eval (runPersist $ P.insert t :: AppHandler TutorialId)
   setId k (Entity _ t) = Entity k t
 
-instance Factory App AuthUser A.UserId (IO T.Text) where
+instance Factory App AuthUser A.UserId (IO Text) where
   factoryFields = do n <- randomIO :: IO Int
                      return $ T.pack $ "user" ++ show (n `mod` 10000)
   build mlogin = do username <- liftIO mlogin
@@ -73,13 +81,23 @@ instance Factory App DependencyEntity DependencyId DependentFields where
   build (DependentFields (mtutorial1, mtutorial2)) = do
     t1 <- mtutorial1
     t2 <- mtutorial2
-    return $ (Entity (mkKey 0) (Dependency (entityKey t1) (entityKey t2)))
+    return (Entity (mkKey 0) (Dependency (entityKey t1) (entityKey t2)))
   save (Entity _ d)  = eval $ runPersist $ P.insert d
   setId k (Entity _ d) = Entity k d
 
+newtype CourseFields = CourseFields (IO Text)
+
+instance Factory App CourseEntity CourseId CourseFields where
+    factoryFields = CourseFields $ do n <- randomIO :: IO Int
+                                      return $ T.pack $ "course " ++ show (n `mod` 10000)
+    build (CourseFields atitle) = do title <- liftIO atitle
+                                     return (Entity (mkKey 0) (Course title))
+    save (Entity _ c) = eval $ runPersist $ P.insert c
+    setId k (Entity _ c) = Entity k c
+
 type HspecApp = SnapHspecM App
 
-setTitle :: T.Text -> TutorialFields -> TutorialFields
+setTitle :: Text -> TutorialFields -> TutorialFields
 setTitle title (TutorialFields (x, y, _, icon, publish)) = TutorialFields (x, y, title, icon, publish)
 setMode :: Publish -> TutorialFields -> TutorialFields
 setMode mode (TutorialFields (x, y, title, icon, _)) = TutorialFields (x, y, title, icon, mode)
@@ -91,9 +109,15 @@ setDependent2 r (DependentFields (l,_)) = DependentFields (l,r)
 
 setDependentModes m1 m2 = setDependent1 (create (setMode m1)) . setDependent2 (create (setMode m2))
 
+setCourseTitle :: Text -> CourseFields -> CourseFields
+setCourseTitle t _ = CourseFields (return t)
+
 deleteAll :: AppHandler ()
 deleteAll = do runPersist $ P.deleteWhere ([] :: [P.Filter Dependency])
                runPersist $ P.deleteWhere ([] :: [P.Filter Tutorial])
+               runPersist $ P.deleteWhere ([] :: [P.Filter TutorialWeek])
+               runPersist $ P.deleteWhere ([] :: [P.Filter Week])
+               runPersist $ P.deleteWhere ([] :: [P.Filter Course])
                void $ execute_ "delete from snap_auth_user"
 
 
@@ -141,6 +165,16 @@ main = hspec $ do
            do create (setDependentModes Draft Draft) :: HspecApp DependencyEntity
               get' "/dependencies" (params [("format", "json")])
                 >>= shouldHaveText "source"
+    describe "/courses?format=json" $
+      do it "should return all courses" $
+           do create (setCourseTitle "A great course") :: HspecApp CourseEntity
+              get' "/courses" (params [("format", "json")])
+                >>= shouldHaveText "A great course"
+         it "should delete a course" $ withAccount $
+           do (Entity courseKey _) <- create (setCourseTitle "A great course") :: HspecApp CourseEntity
+              post (deletePath courseKey) (params [])
+              get' "/courses" (params [("format", "json")])
+                >>= shouldNotHaveText "A great course"
   describe "accounts" $ snap (route routes) app $ afterEval deleteAll $ do
     let userCount = numberQuery' "select count(*) from snap_auth_user"
     describe "signup" $
