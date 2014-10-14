@@ -11,6 +11,7 @@
     <script type="text/javascript" src="/js/tutorials/admin.js"></script>
     <script type="text/javascript" src="/js/tutorials/create.js"></script>
     <script type="text/javascript" src="/js/steps/move.js"></script>
+    <script type="text/javascript" src="/js/courses/draw.js"></script>
     <script type="text/javascript" src="/js/auth.js"></script>
     <script type="text/javascript" src="/js/site.js"></script>
     <ifLoggedIn><script type="text/javascript">window.isLoggedIn = true;</script></ifLoggedIn>
